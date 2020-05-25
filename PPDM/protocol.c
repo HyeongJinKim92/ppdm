@@ -25,7 +25,6 @@ using namespace std;
 void protocol::set_Param(parsed_query * user_query)
 {
 	query = user_query->query;
-	cout << query << endl;
 	if(query == RANGE)					rquery_t = user_query->rquery_t;
 	else if(query == TOPK)				tquery_t = user_query->tquery_t;
 	else if(query == KNN)				kquery_t = user_query->kquery_t;
@@ -148,7 +147,7 @@ void	protocol::protocol_setkey(paillier_pubkey_t* pubkey, paillier_prvkey_t* prv
 	mpz_powm(plain_minus_two->m, plain_minus_two->m, plain_minus->m, pubkey->n_squared);
 	l = paillier_enc(0, pubkey, plain_minus_two, paillier_get_rand_devurandom);
 
-	plain_MAX = paillier_plaintext_from_ui(pow(2, size));
+	plain_MAX = paillier_plaintext_from_ui(pow(2, size/2));
 
 
 	ciper_zero = paillier_enc(0, pubkey, plain_zero, paillier_get_rand_devurandom);	// ciper_zero를 암호화 0으로 셋팅

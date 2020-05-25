@@ -153,8 +153,7 @@ class protocol
 		int G_CMP(int mr1, int m1r1, int mr2, int m2r2);
 
 
-		////////////////////range////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////		
-
+		////////////////////***************range***************////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////		
 		int** sRange_M(paillier_ciphertext_t*** data, boundary q, boundary* node, int NumData, int NumNode, int *result_num); //리턴 타입 변경!!
 		int** sRange_I(paillier_ciphertext_t*** data, boundary q, boundary* node, int NumData, int NumNode, int* result_num);
 		int** sRange_G(paillier_ciphertext_t*** data, boundary q, boundary* node, int NumData, int NumNode, int* result_num);
@@ -238,6 +237,9 @@ class protocol
 		int ** STopk_M(paillier_ciphertext_t*** data, paillier_ciphertext_t** q, int NumData);
 		int** STopk_I(paillier_ciphertext_t*** data, paillier_ciphertext_t** q, boundary* node, paillier_ciphertext_t** max_val, int NumData, int NumNode);
 		int** STopk_G(paillier_ciphertext_t*** data, paillier_ciphertext_t** q, boundary* node, paillier_ciphertext_t** max_val, int NumData, int NumNode);
+		int** STopk_PM(paillier_ciphertext_t*** data, paillier_ciphertext_t** q, boundary* node, paillier_ciphertext_t** max_val, int NumData, int NumNode);
+		int** STopk_PGI(paillier_ciphertext_t*** data, paillier_ciphertext_t** q, boundary* node, paillier_ciphertext_t** max_val, int NumData, int NumNode);
+		int** STopk_PAI(paillier_ciphertext_t*** data, paillier_ciphertext_t** q, boundary* node, paillier_ciphertext_t** max_val, int NumData, int NumNode);
 
 
 		int** STopk(paillier_ciphertext_t*** data, paillier_ciphertext_t** query, boundary* node, paillier_ciphertext_t** max_val, int NumData, int NumNode);

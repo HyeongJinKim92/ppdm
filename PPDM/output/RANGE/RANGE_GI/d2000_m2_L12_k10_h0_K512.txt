@@ -19,3 +19,24 @@ data_SPE(range) : 1  (inf%)
 1	1	
 
 
+query : 
+total time : 0
+node_SBD : 0  (-nan%)
+node_SRO : 1  (inf%) 	 node_expansion(verify) : 0 (-nan%)
+node_retrieval : 6  (inf%) 	 node_retrieval(verify) : 0 (-nan%)
+data_SSED_SBD : 0  (-nan%) 	 data_SBOR : 0 (-nan%)
+sMINn : 0  (-nan%) 	 sMINn (verify): 0 (-nan%)
+data_SPE(range) : 1  (inf%) 
+# retrieved node : 1
+0	0	
+0	0	
+0	0	
+1	0	
+0	0	
+0	0	
+1	1	
+0	1	
+0	1	
+1	1	
+
+
