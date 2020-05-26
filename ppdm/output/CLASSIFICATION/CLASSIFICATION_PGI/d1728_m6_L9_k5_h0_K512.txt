@@ -1,0 +1,22 @@
+query : 
+total time : 0
+node_SBD : 0  (-nan%)
+node_SRO : 0  (-nan%) 	 node_expansion(verify) : 0 (-nan%)
+node_retrieval : 0  (-nan%) 	 node_retrieval(verify) : 0 (-nan%)
+data_SSED_SBD : 0  (-nan%) 	 data_SBOR : 0 (-nan%)
+sMINn : 0  (-nan%) 	 sMINn (verify): 0 (-nan%)
+data_SPE(range) : 0  (-nan%) 
+# retrieved node : 0
+
+
+query : 
+total time : 0
+node_SBD : 0  (-nan%)
+node_SRO : 0  (inf%) 	 node_expansion(verify) : 0 (inf%)
+node_retrieval : 0  (-nan%) 	 node_retrieval(verify) : 5 (inf%)
+data_SSED_SBD : 0  (-nan%) 	 data_SBOR : 0 (-nan%)
+sMINn : 0  (-nan%) 	 sMINn (verify): 0 (-nan%)
+data_SPE(range) : 0  (-nan%) 
+# retrieved node : 7
+
+

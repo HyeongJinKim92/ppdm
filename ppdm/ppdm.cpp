@@ -267,9 +267,9 @@ int knn_main(parsed_query* user_query)
 	if(user_query->kquery_t == KNN_B)			SkNNm = proto.SkNN_B(cipher, cipher_query, user_query->k, user_query->data_n); //KNNB
 	else if(user_query->kquery_t == KNN_I) 		SkNNm = proto.SkNN_I(cipher, cipher_query, node, user_query->k, user_query->data_n, NumNode);  //KNNI
 	else if(user_query->kquery_t == KNN_GI) 	SkNNm = proto.SkNN_G(cipher, cipher_query, node, user_query->k, user_query->data_n, NumNode); //KNNGI
-//	else if(user_query->kquery_t == KNN_PB) 	SkNNm = proto.sRange_PM(ciper, q, node, user_query->data_n, user_query->NumNode, &result_num); //KNNPGI
-//	else if(user_query->kquery_t == KNN_PGI) 	SkNNm = proto.sRange_PGI(ciper, q, node, user_query->data_n, user_query->NumNode, &result_num); //KNNPGI
-//	else if(user_query->kquery_t == KNN_PAI) 	SkNNm = proto.sRange_PAI(ciper, q, node, user_query->data_n, user_query->NumNode, &result_num); //KNNPAI
+	else if(user_query->kquery_t == KNN_PB) 	SkNNm = proto.SkNN_PB(cipher, cipher_query, node, user_query->k, user_query->data_n, NumNode); //KNNGI
+	else if(user_query->kquery_t == KNN_PGI) 	SkNNm = proto.SkNN_PGI(cipher, cipher_query, node, user_query->k, user_query->data_n, NumNode); //KNNGI
+	else if(user_query->kquery_t == KNN_PAI) 	SkNNm = proto.SkNN_PAI(cipher, cipher_query, node, user_query->k, user_query->data_n, NumNode); //KNNGI
 
 	if(user_query->kquery_t == KNN_B)			setting.TimeResult_write_int(shellquery, SkNNm, result_num, "KNN/KNN_B", proto); //KNNB
 	else if(user_query->kquery_t == KNN_I) 		setting.TimeResult_write_int(shellquery, SkNNm, result_num, "KNN/KNN_I", proto);  //KNNI
@@ -337,21 +337,21 @@ int classification_main(parsed_query* user_query)
 		Entire_set[i] = paillier_create_enc(i);
 	}
 	int result_num=0;
-	int** SkNNm = 0;
+	int** classification = 0;
 
-	if(user_query->cquery_t == CLASSIFICATION_B)			SkNNm = proto.Classification_M(cipher, cipher_query, Entire_set, user_query->k, user_query->data_n, Entire_num);	
-	else if(user_query->cquery_t == CLASSIFICATION_I) 		SkNNm = proto.Classification_I(cipher, cipher_query, Entire_set, node, user_query->k, user_query->data_n, NumNode, Entire_num);	
-	else if(user_query->cquery_t == CLASSIFICATION_GI) 		SkNNm = proto.Classification_G(cipher, cipher_query, Entire_set, node, user_query->k, user_query->data_n, NumNode, Entire_num);
-//	else if(user_query->cquery_t == CLASSIFICATION_PB) 		SkNNm = proto.sRange_PM(ciper, q, node, user_query->data_n, user_query->NumNode, &result_num); 
-//	else if(user_query->cquery_t == CLASSIFICATION_PGI) 	SkNNm = proto.sRange_PGI(ciper, q, node, user_query->data_n, user_query->NumNode, &result_num); 
-//	else if(user_query->cquery_t == CLASSIFICATION_PAI) 	SkNNm = proto.sRange_PAI(ciper, q, node, user_query->data_n, user_query->NumNode, &result_num); 
+	if(user_query->cquery_t == CLASSIFICATION_B)			classification = proto.Classification_B(cipher, cipher_query, Entire_set, user_query->k, user_query->data_n, Entire_num);	
+	else if(user_query->cquery_t == CLASSIFICATION_I) 		classification = proto.Classification_I(cipher, cipher_query, Entire_set, node, user_query->k, user_query->data_n, NumNode, Entire_num);	
+	else if(user_query->cquery_t == CLASSIFICATION_GI) 		classification = proto.Classification_G(cipher, cipher_query, Entire_set, node, user_query->k, user_query->data_n, NumNode, Entire_num);
+	else if(user_query->cquery_t == CLASSIFICATION_PB) 		classification = proto.Classification_PB(cipher, cipher_query, Entire_set, node, user_query->k, user_query->data_n, NumNode, Entire_num);
+	else if(user_query->cquery_t == CLASSIFICATION_PGI) 	classification = proto.Classification_PGI(cipher, cipher_query, Entire_set, node, user_query->k, user_query->data_n, NumNode, Entire_num);
+	else if(user_query->cquery_t == CLASSIFICATION_PAI) 	classification = proto.Classification_PAI(cipher, cipher_query, Entire_set, node, user_query->k, user_query->data_n, NumNode, Entire_num);
 
-	if(user_query->cquery_t == CLASSIFICATION_B)			setting.TimeResult_write_int(shellquery, SkNNm, result_num, "CLASSIFICATION/CLASSIFICATION_B", proto); 
-	else if(user_query->cquery_t == CLASSIFICATION_I) 		setting.TimeResult_write_int(shellquery, SkNNm, result_num, "CLASSIFICATION/CLASSIFICATION_I", proto); 
-	else if(user_query->cquery_t == CLASSIFICATION_GI) 		setting.TimeResult_write_int(shellquery, SkNNm, result_num, "CLASSIFICATION/CLASSIFICATION_GI", proto);
-	else if(user_query->cquery_t == CLASSIFICATION_PB) 		setting.TimeResult_write_int(shellquery, SkNNm, result_num, "CLASSIFICATION/CLASSIFICATION_PB", proto); 
-	else if(user_query->cquery_t == CLASSIFICATION_PGI) 	setting.TimeResult_write_int(shellquery, SkNNm, result_num, "CLASSIFICATION/CLASSIFICATION_PGI", proto);
-	else if(user_query->cquery_t == CLASSIFICATION_PAI) 	setting.TimeResult_write_int(shellquery, SkNNm, result_num, "CLASSIFICATION/CLASSIFICATION_PAI", proto);
+	if(user_query->cquery_t == CLASSIFICATION_B)			setting.TimeResult_write_int(shellquery, classification, result_num, "CLASSIFICATION/CLASSIFICATION_B", proto); 
+	else if(user_query->cquery_t == CLASSIFICATION_I) 		setting.TimeResult_write_int(shellquery, classification, result_num, "CLASSIFICATION/CLASSIFICATION_I", proto); 
+	else if(user_query->cquery_t == CLASSIFICATION_GI) 		setting.TimeResult_write_int(shellquery, classification, result_num, "CLASSIFICATION/CLASSIFICATION_GI", proto);
+	else if(user_query->cquery_t == CLASSIFICATION_PB) 		setting.TimeResult_write_int(shellquery, classification, result_num, "CLASSIFICATION/CLASSIFICATION_PB", proto); 
+	else if(user_query->cquery_t == CLASSIFICATION_PGI) 	setting.TimeResult_write_int(shellquery, classification, result_num, "CLASSIFICATION/CLASSIFICATION_PGI", proto);
+	else if(user_query->cquery_t == CLASSIFICATION_PAI) 	setting.TimeResult_write_int(shellquery, classification, result_num, "CLASSIFICATION/CLASSIFICATION_PAI", proto);
 
 	proto.protocol_free();
 	return 0;
@@ -376,7 +376,7 @@ int kmeans_main(parsed_query* user_query)
 
 	char kd_filename[128]; 
 
-	if(	user_query->tquery_t != KMEANS_B )
+	if(	user_query->mquery_t != KMEANS_B )
 	{
 		char kd_filename[128]; 
 		sprintf(kd_filename, "input/Grid/Grid_d%d_m%d_L%d_h%d.txt", user_query->data_n, user_query->dim_n, user_query->bit_s, user_query->tree_level);
@@ -394,9 +394,9 @@ int kmeans_main(parsed_query* user_query)
 	if(user_query->mquery_t == KMEANS_B)			Cluster = proto.Clustering_m(cipher, user_query->data_n, user_query->k, 2);
 	else if(user_query->mquery_t == KMEANS_I) 		Cluster = proto.Clustering_Grid(cipher, node, NumNode, user_query->data_n, user_query->k);	
 	else if(user_query->mquery_t == KMEANS_GI) 		Cluster = proto.Clustering_Grid_preprocessing(cipher, node, NumNode, user_query->data_n, user_query->k);
-//	else if(user_query->mquery_t == KMEANS_PB) 		cluseter = proto.sRange_PM(ciper, q, node, user_query->data_n, user_query->NumNode, &result_num); 
-//	else if(user_query->mquery_t == KMEANS_PGI) 	cluseter = proto.sRange_PGI(ciper, q, node, user_query->data_n, user_query->NumNode, &result_num); 
-//	else if(user_query->mquery_t == KMEANS_PAI) 	cluseter = proto.sRange_PAI(ciper, q, node, user_query->data_n, user_query->NumNode, &result_num); 
+	else if(user_query->mquery_t == KMEANS_PB) 		Cluster = proto.Clustering_Grid_preprocessing(cipher, node, NumNode, user_query->data_n, user_query->k);
+	else if(user_query->mquery_t == KMEANS_PGI) 	Cluster = proto.Clustering_Grid_preprocessing(cipher, node, NumNode, user_query->data_n, user_query->k);
+	else if(user_query->mquery_t == KMEANS_PAI) 	Cluster = proto.Clustering_Grid_preprocessing(cipher, node, NumNode, user_query->data_n, user_query->k);
 
 
 	printf("result\n");

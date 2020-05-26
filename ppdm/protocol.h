@@ -189,7 +189,7 @@ class protocol
 		paillier_ciphertext_t*** GSRO_sNodeRetrievalforRange(paillier_ciphertext_t*** data, paillier_ciphertext_t** ciper_qLL, paillier_ciphertext_t** ciper_qRR, boundary* node, int NumData, int NumNode, int* cnt, int* NumNodeGroup, int type);
 		paillier_ciphertext_t*** sRange_result(paillier_ciphertext_t** alpha, paillier_ciphertext_t*** cand, int cnt, int NumNodeGroup, int * result_num);
 
-		//parallel
+		//parallel range
 		paillier_ciphertext_t* DP_GSRO_inThread(paillier_ciphertext_t** qLL, paillier_ciphertext_t** qRR,	paillier_ciphertext_t** nodeLL,	paillier_ciphertext_t** nodeRR, int idx);
 		paillier_ciphertext_t*** Parallel_GSRO_sNodeRetrievalforRange(paillier_ciphertext_t*** data, paillier_ciphertext_t** cipher_qLL, paillier_ciphertext_t** cipher_qRR, boundary* node, int NumData, int NumNode, int* cnt, int* NumNodeGroup, int type);
 		paillier_ciphertext_t*** Parallel_GSRO_inMultithread(int cnt, paillier_ciphertext_t*** cand, boundary q, paillier_ciphertext_t** alpha, paillier_ciphertext_t* cipher_rand);
@@ -211,6 +211,10 @@ class protocol
 		int** SkNN_PB(paillier_ciphertext_t*** data, paillier_ciphertext_t** q, boundary* node, int k, int NumData, int NumNode);
 		int** SkNN_PGI(paillier_ciphertext_t*** data, paillier_ciphertext_t** q, boundary* node, int k, int NumData, int NumNode);
 		int** SkNN_PAI(paillier_ciphertext_t*** data, paillier_ciphertext_t** q, boundary* node, int k, int NumData, int NumNode);
+
+		//parallel knn
+		void Parallel_GSRO_kNN(paillier_ciphertext_t** cipher_qLL, paillier_ciphertext_t** cipher_qRR, paillier_ciphertext_t** alpha, boundary* node, int NumNode, int* cnt, int* NumNodeGroup, bool type);
+
 
 		int * SkNNm_Bob(paillier_ciphertext_t** ciper_result_array, int rand, int k);	
 		int ** SkNNm_Bob2(paillier_ciphertext_t*** ciper_result, int rand, int k, int col_num);
@@ -289,9 +293,12 @@ class protocol
 		int MAXn(paillier_ciphertext_t** ciper, int cnt);
 
 		//Classification
-		int** Classification_M(paillier_ciphertext_t*** ciper, paillier_ciphertext_t** qeury, paillier_ciphertext_t** Entire_set, int k, int row_number, int Entire_num);
+		int** Classification_B(paillier_ciphertext_t*** ciper, paillier_ciphertext_t** qeury, paillier_ciphertext_t** Entire_set, int k, int row_number, int Entire_num);
 		int** Classification_I(paillier_ciphertext_t*** data, paillier_ciphertext_t** query, paillier_ciphertext_t** Entire_set, boundary* node, int k, int NumData, int NumNode, int Entire_num);
 		int** Classification_G(paillier_ciphertext_t*** data, paillier_ciphertext_t** query, paillier_ciphertext_t** Entire_set, boundary* node, int k, int NumData, int NumNode, int Entire_num);
+		int** Classification_PB(paillier_ciphertext_t*** data, paillier_ciphertext_t** query, paillier_ciphertext_t** Entire_set, boundary* node, int k, int NumData, int NumNode, int Entire_num);
+		int** Classification_PGI(paillier_ciphertext_t*** data, paillier_ciphertext_t** query, paillier_ciphertext_t** Entire_set, boundary* node, int k, int NumData, int NumNode, int Entire_num);
+		int** Classification_PAI(paillier_ciphertext_t*** data, paillier_ciphertext_t** query, paillier_ciphertext_t** Entire_set, boundary* node, int k, int NumData, int NumNode, int Entire_num);
 
 
 		paillier_ciphertext_t** SF_P1(paillier_ciphertext_t** Entire_set, paillier_ciphertext_t** K_set, int w, int k);
@@ -315,6 +322,12 @@ class protocol
 		paillier_ciphertext_t* boundary_dist(boundary node, paillier_ciphertext_t** former_Center, int NumNode);
 		paillier_ciphertext_t*** Clustering_Grid_preprocessing(paillier_ciphertext_t*** ciper, boundary* node, int NumNode, int NumData, int k);
 		paillier_ciphertext_t** G_Smin_bool(paillier_ciphertext_t** data, int number);
+
+		paillier_ciphertext_t*** Clustering_PB(paillier_ciphertext_t*** ciper, boundary* node, int NumNode, int NumData, int k);
+		paillier_ciphertext_t*** Clustering_PGI(paillier_ciphertext_t*** ciper, boundary* node, int NumNode, int NumData, int k);
+		paillier_ciphertext_t*** Clustering_PAI(paillier_ciphertext_t*** ciper, boundary* node, int NumNode, int NumData, int k);
+
+
 };
 
 

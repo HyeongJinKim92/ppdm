@@ -130,7 +130,7 @@ void protocol::protocol_free(){
 	paillier_freeciphertext(ciper_MAX);
 }
 
-void	protocol::protocol_setkey(paillier_pubkey_t* pubkey, paillier_prvkey_t* prvkey, int modulus)
+void protocol::protocol_setkey(paillier_pubkey_t* pubkey, paillier_prvkey_t* prvkey, int modulus)
 {
 	modul = modulus;
 	int i;

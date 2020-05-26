@@ -1,0 +1,88 @@
+query : 
+total time : 0
+node_SBD : 0  (-nan%)
+node_SRO : 0  (-nan%) 	 node_expansion(verify) : 0 (-nan%)
+node_retrieval : 0  (-nan%) 	 node_retrieval(verify) : 0 (-nan%)
+data_SSED_SBD : 0  (-nan%) 	 data_SBOR : 0 (-nan%)
+sMINn : 0  (-nan%) 	 sMINn (verify): 0 (-nan%)
+data_SPE(range) : 0  (-nan%) 
+# retrieved node : 0
+
+
+query : 
+total time : 0
+node_SBD : 0  (-nan%)
+node_SRO : 0  (-nan%) 	 node_expansion(verify) : 0 (-nan%)
+node_retrieval : 0  (-nan%) 	 node_retrieval(verify) : 0 (-nan%)
+data_SSED_SBD : 0  (-nan%) 	 data_SBOR : 0 (-nan%)
+sMINn : 0  (-nan%) 	 sMINn (verify): 0 (-nan%)
+data_SPE(range) : 0  (-nan%) 
+# retrieved node : 63
+
+
+query : 
+total time : 0
+node_SBD : 0  (-nan%)
+node_SRO : 0  (-nan%) 	 node_expansion(verify) : 0 (-nan%)
+node_retrieval : 0  (-nan%) 	 node_retrieval(verify) : 0 (-nan%)
+data_SSED_SBD : 0  (-nan%) 	 data_SBOR : 0 (-nan%)
+sMINn : 0  (-nan%) 	 sMINn (verify): 0 (-nan%)
+data_SPE(range) : 0  (-nan%) 
+# retrieved node : 63
+
+
+query : 
+total time : 0
+node_SBD : 0  (-nan%)
+node_SRO : 0  (-nan%) 	 node_expansion(verify) : 0 (-nan%)
+node_retrieval : 0  (-nan%) 	 node_retrieval(verify) : 0 (-nan%)
+data_SSED_SBD : 0  (-nan%) 	 data_SBOR : 0 (-nan%)
+sMINn : 0  (-nan%) 	 sMINn (verify): 0 (-nan%)
+data_SPE(range) : 0  (-nan%) 
+# retrieved node : 64
+
+
+query : 
+total time : 0
+node_SBD : 0  (-nan%)
+node_SRO : 0  (-nan%) 	 node_expansion(verify) : 0 (-nan%)
+node_retrieval : 0  (-nan%) 	 node_retrieval(verify) : 0 (-nan%)
+data_SSED_SBD : 0  (-nan%) 	 data_SBOR : 0 (-nan%)
+sMINn : 0  (-nan%) 	 sMINn (verify): 0 (-nan%)
+data_SPE(range) : 0  (-nan%) 
+# retrieved node : 7
+
+
+query : 
+total time : 0
+node_SBD : 0  (-nan%)
+node_SRO : 0  (-nan%) 	 node_expansion(verify) : 0 (-nan%)
+node_retrieval : 0  (-nan%) 	 node_retrieval(verify) : 0 (-nan%)
+data_SSED_SBD : 0  (-nan%) 	 data_SBOR : 0 (-nan%)
+sMINn : 0  (-nan%) 	 sMINn (verify): 0 (-nan%)
+data_SPE(range) : 0  (-nan%) 
+# retrieved node : 6
+
+
+query : 
+total time : 0
+node_SBD : 0  (-nan%)
+node_SRO : 0  (-nan%) 	 node_expansion(verify) : 0 (-nan%)
+node_retrieval : 0  (-nan%) 	 node_retrieval(verify) : 0 (-nan%)
+data_SSED_SBD : 0  (-nan%) 	 data_SBOR : 0 (-nan%)
+sMINn : 0  (-nan%) 	 sMINn (verify): 0 (-nan%)
+data_SPE(range) : 0  (-nan%) 
+# retrieved node : 4
+
+
+query : 
+total time : 0
+node_SBD : 0  (-nan%)
+node_SRO : 0  (-nan%) 	 node_expansion(verify) : 0 (-nan%)
+node_retrieval : 0  (-nan%) 	 node_retrieval(verify) : 0 (-nan%)
+data_SSED_SBD : 0  (-nan%) 	 data_SBOR : 0 (-nan%)
+sMINn : 0  (-nan%) 	 sMINn (verify): 0 (-nan%)
+data_SPE(range) : 0  (-nan%) 
+# retrieved node : 4
+
+

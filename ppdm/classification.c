@@ -828,8 +828,8 @@ int** protocol::Classification_I(paillier_ciphertext_t*** data, paillier_ciphert
 	return sknn;
 }
 
-int** protocol::Classification_M(paillier_ciphertext_t*** data, paillier_ciphertext_t** query, paillier_ciphertext_t** Entire_set, int k, int row_number, int Entire_num){
-	printf("Classification_m start\n");
+int** protocol::Classification_B(paillier_ciphertext_t*** data, paillier_ciphertext_t** query, paillier_ciphertext_t** Entire_set, int k, int row_number, int Entire_num){
+	printf("Classification_B start\n");
 	int i=0, s=0, n=0, t=0, j=0;
 	int rand = 5;
 	n = row_number;

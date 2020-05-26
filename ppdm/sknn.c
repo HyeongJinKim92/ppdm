@@ -258,9 +258,11 @@ paillier_ciphertext_t* protocol::GSCMP_sub(paillier_ciphertext_t* ru, paillier_c
 	int a = mpz_get_ui(plain_U->m);
 	int b = mpz_get_ui(plain_V->m);
 	int R = mpz_get_ui(plain_R->m);
-	
+
+	mtx.lock();
 	makeGate();
-	
+	mtx.unlock();
+
 	if(G_CMP( b , R , a , R)){
 		alpha = paillier_create_enc(1);
 	}else{
