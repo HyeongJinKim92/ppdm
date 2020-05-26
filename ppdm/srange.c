@@ -49,24 +49,6 @@ paillier_ciphertext_t*** protocol::sNodeRetrievalforRange(paillier_ciphertext_t*
 		node_SBD_time += (float)(endTime-startTime)/(CLOCKS_PER_SEC);
 
 
-		// debugging
-		/*
-		printf("%dth node LL bound\n", i);
-		for(j=0; j<dim; j++) {
-			for(m=0; m<size+1; m++) {
-				gmp_printf("%Zd", paillier_dec(0, pub, prv, ciper_nodeLL_bit[j][m]));
-			}
-			printf("\n");
-		}
-		printf("%dth node RR bound\n", i);
-		for(j=0; j<dim; j++) {
-			for(m=0; m<size+1; m++) {
-				gmp_printf("%Zd", paillier_dec(0, pub, prv, ciper_nodeRR_bit[j][m]));
-			}
-			printf("\n");
-		}
-		*/
-
 		startTime = clock();
 
 		if(type == 0) {
@@ -86,14 +68,6 @@ paillier_ciphertext_t*** protocol::sNodeRetrievalforRange(paillier_ciphertext_t*
 	printf("node SBD time: %f\n", node_SBD_time);
 	printf("SRO time : %f\n", node_SRO_time);
 	
-	// debugging
-	/*
-	printf("alpha\n");
-	for(i=0; i<NumNode; i++) {
-		gmp_printf("%Zd ",paillier_dec(0, pub, prv, alpha[i]));
-	}
-	printf("\n");
-	*/
 
 	startTime = clock();
 
@@ -201,18 +175,6 @@ paillier_ciphertext_t*** protocol::sNodeRetrievalforRange(paillier_ciphertext_t*
 	endTime = clock();
 	data_extract_first_time = (float)(endTime-startTime)/(CLOCKS_PER_SEC);
 	printf("Node Retrieval time : %f\n", data_extract_first_time);
-
-	// debugging
-	/*
-	for(i=0; i<*cnt; i++) {
-		gmp_printf("%dth data -> coord : ", i);
-		for(j=0; j<dim; j++) {
-			gmp_printf("%Zd ", paillier_dec(0, pub, prv, cand[i][j]));
-		}
-		printf("\n");
-	}
-	*/
-
 	return cand;
 }
 
@@ -242,43 +204,6 @@ int** protocol::sRange_I(paillier_ciphertext_t*** data, boundary q, boundary* no
 		ciper_qLL_bit[i] = SBD_for_SRO(q.LL[i], 0);			// query LL bound 변환
 		ciper_qRR_bit[i] = SBD_for_SRO(q.RR[i], 1);		// query RR bound 변환
 	}
-
-
-	/* 
-	printf("Query LL bound\n");
-	for(i=0; i<dim; i++) {
-		for(j=0; j<size+1; j++) {
-			gmp_printf("%Zd", paillier_dec(0, pub, prv, ciper_qLL_bit[i][j]));
-		}
-		printf("\n");
-	}
-	printf("Query RR bound\n");
-	for(i=0; i<dim; i++) {	
-		for(j=0; j<size+1; j++) {
-			gmp_printf("%Zd", paillier_dec(0, pub, prv, ciper_qRR_bit[i][j]));
-		}
-		printf("\n");
-	}
-	*/
-
-
-	/*
-	paillier_ciphertext_t** alpha = (paillier_ciphertext_t**) malloc(sizeof(paillier_ciphertext_t*)*NumNode);
-	for(i=0; i<NumNode; i++){
-		alpha[i] = (paillier_ciphertext_t*) malloc(sizeof(paillier_ciphertext_t));
-		mpz_init(alpha[i]->c);
-	}
-	*/
-	/*		
-	paillier_ciphertext_t*** cand = (paillier_ciphertext_t***)malloc(sizeof(paillier_ciphertext_t**)*(*NumNodeGroup)*FanOut);
-	for( i = 0 ; i < *NumNodeGroup*FanOut ; i++ ){
-		cand[i] = (paillier_ciphertext_t**)malloc(sizeof(paillier_ciphertext_t*)*dim);
-		for( j = 0 ; j < dim ; j ++ ){
-			cand[i][j] = (paillier_ciphertext_t*) malloc(sizeof(paillier_ciphertext_t));
-			mpz_init(cand[i][j]->c);
-		}
-	}
-	*/
 
 	int cnt = 0;	 // 질의 영역과 겹치는 노드 내에 존재하는 총 데이터의 수
 
@@ -455,11 +380,11 @@ int ** protocol::sRange_sub(paillier_ciphertext_t** alpha, int node_num, int * s
 
 int** protocol::sRange_B(paillier_ciphertext_t*** data, boundary q, boundary* node, int NumData, int NumNode,int* result_num)
 {
-	printf("\n=====now Range_m start=====\n");
+	printf("\n=====now sRange_B start=====\n");
 
-	printf("NumNode : %d\n", NumNode);
+	printf("NumNode : %d %d %d \n", NumNode, dim, NumData);
 	int i=0, j=0, m=0;
-
+	
 	time_t startTime = 0;
 	time_t endTime = 0;
 	float gap = 0.0;
@@ -478,33 +403,8 @@ int** protocol::sRange_B(paillier_ciphertext_t*** data, boundary q, boundary* no
 		ciper_qLL_bit[i] = SBD_for_SRO(q.LL[i], 0);			// query LL bound 변환
 		ciper_qRR_bit[i] = SBD_for_SRO(q.RR[i], 1);		// query RR bound 변환
 	}
-	
-/*
-	for(int i=0; i<NumData; i++)
-		for(int j=0; j<dim; j++)
-			gmp_printf("%Zd\n", paillier_dec(0, pub, prv, data[i][j]));
-*/
 
 
-	/* 
-	printf("Query LL bound\n");
-	for(i=0; i<dim; i++) {
-		for(j=0; j<size+1; j++) {
-			gmp_printf("%Zd", paillier_dec(0, pub, prv, ciper_qLL_bit[i][j]));
-		}
-		printf("\n");
-	}
-	printf("Query RR bound\n");
-	for(i=0; i<dim; i++) {	
-		for(j=0; j<size+1; j++) {
-			gmp_printf("%Zd", paillier_dec(0, pub, prv, ciper_qRR_bit[i][j]));
-		}
-		printf("\n");
-	}
-	*/
-
-
-	
 	paillier_ciphertext_t** alpha = (paillier_ciphertext_t**) malloc(sizeof(paillier_ciphertext_t*)*NumData);
 	for(i=0; i<NumData; i++){
 		alpha[i] = (paillier_ciphertext_t*) malloc(sizeof(paillier_ciphertext_t));
@@ -515,27 +415,6 @@ int** protocol::sRange_B(paillier_ciphertext_t*** data, boundary q, boundary* no
 	paillier_ciphertext_t*** candLL_bit = (paillier_ciphertext_t***)malloc(sizeof(paillier_ciphertext_t**)*dim);
 	paillier_ciphertext_t*** candRR_bit = (paillier_ciphertext_t***)malloc(sizeof(paillier_ciphertext_t**)*dim);
 
-/*
-
-	for(i=0; i<NumData; i++) {
-		startTime = clock();
-
-		for(j=0; j<dim; j++) {
-			candLL_bit[j] = SBD_for_SRO(data[i][j], 0);			// query cand 변환
-			candRR_bit[j] = SBD_for_SRO(data[i][j], 1);		
-		}				
-		endTime = clock();
-		data_SSED_SBD_time += (float)(endTime-startTime)/(CLOCKS_PER_SEC);
-
-		startTime = clock();
-	
-		alpha[i]=SRO(candLL_bit,candRR_bit,ciper_qLL_bit, ciper_qRR_bit);	
-		//alpha[i]=SPE(cand_bit,ciper_nodeLL_bit, ciper_nodeRR_bit);	
-
-		endTime = clock();
-		data_SPE_time += (float)(endTime-startTime)/(CLOCKS_PER_SEC);
-	}
-*/
 
 
 	for(i=0; i<NumData; i++) {
@@ -543,19 +422,18 @@ int** protocol::sRange_B(paillier_ciphertext_t*** data, boundary q, boundary* no
 			candLL_bit[j] = SBD_for_SRO(data[i][j], 0);			// query cand 변환
 			candRR_bit[j] = SBD_for_SRO(data[i][j], 1);		
 		}		
-		alpha[i]=SRO(candLL_bit,candRR_bit,ciper_qLL_bit, ciper_qRR_bit);
-		//alpha[i]=SPE(cand_bit,ciper_nodeLL_bit, ciper_nodeRR_bit);		
+		alpha[i]=SRO(candLL_bit, candRR_bit, ciper_qLL_bit, ciper_qRR_bit);
 	}
 
 	//알파값 확인
+/*
 	printf("SPE alpha\n");
 	for(i=0; i<NumData; i++) {
 		gmp_printf("%Zd ",paillier_dec(0, pub, prv, alpha[i]));
 	}
-	printf("\n");		
-
-	//paillier_ciphertext_t*** result = (paillier_ciphertext_t***)malloc(sizeof(paillier_ciphertext_t**)*NumNodeGroup*FanOut); 
-	paillier_ciphertext_t*** result = (paillier_ciphertext_t***)malloc(sizeof(paillier_ciphertext_t**)*100); //할당방법 변경해야하고
+	printf("\n");
+*/
+	paillier_ciphertext_t*** result = (paillier_ciphertext_t***)malloc(sizeof(paillier_ciphertext_t**)*NumData); //할당방법 변경해야하고
 
 	//값 확인 && If αi = 1, E(t’i)를 result에 삽입
 	for(i=0; i<NumData; i++){

@@ -6,6 +6,9 @@
 #include <iostream>
 #include <sstream>
 #include <fstream>
+#include <string>
+#include <chrono>
+
 
 #include "ppdm.h"
 
@@ -30,10 +33,10 @@ void ppdm_main(char* argv[])
 
 int range_main(parsed_query * user_query)
 {
+
 	paillier_pubkey_t* pub;
 	paillier_prvkey_t* prv;
 	int i=0, j=0;
-
 
 	paillier_keygen(user_query->key_s, &pub,&prv, paillier_get_rand_devurandom);
 
@@ -59,27 +62,37 @@ int range_main(parsed_query * user_query)
 	char kd_filename[128]; 		
 	boundary* node = 0;
 	
-	if(	user_query->rquery_t != RANGE_B )
-	{
-		sprintf(kd_filename, "input/kd_range/KD_d%d_m%d_L%d_h%d.txt", user_query->data_n, user_query->dim_n, user_query->bit_s, user_query->tree_level);
-		node = setting.KdInfo_read(kd_filename, user_query->dim_n, &NumNode);	
-	}
-
+	sprintf(kd_filename, "input/kd_range/KD_d%d_m%d_L%d_h%d.txt", user_query->data_n, user_query->dim_n, user_query->bit_s, user_query->tree_level);
+	node = setting.KdInfo_read(kd_filename, user_query->dim_n, &NumNode);	
 
 	char inputFilename[128]; 
 	sprintf(inputFilename, "input/range/d%d_m%d_L%d.txt", user_query->data_n, user_query->dim_n, user_query->bit_s);
 	paillier_ciphertext_t*** cipher = setting.InputData_read(inputFilename, user_query->dim_n, user_query->data_n);
 	
-	printf("\n===== sRange start =====\n");
 	int result_num=0;
 	int** result = 0;
 	
+
+	std::chrono::system_clock::time_point startTime;
+    std::chrono::system_clock::time_point endTime;
+    std::chrono::duration<float> duration_sec;
+
+
+    startTime = std::chrono::system_clock::now();
+
 	if(user_query->rquery_t == RANGE_B)			result = proto.sRange_B(cipher, q, node, user_query->data_n, NumNode, &result_num); //rangeB
 	else if(user_query->rquery_t == RANGE_I) 	result = proto.sRange_I(cipher, q, node, user_query->data_n, NumNode, &result_num);  //rangeI
 	else if(user_query->rquery_t == RANGE_GI) 	result = proto.sRange_G(cipher, q, node, user_query->data_n, NumNode, &result_num); //rangeGI
 	else if(user_query->rquery_t == RANGE_PB) 	result = proto.sRange_PB(cipher, q, node, user_query->data_n, NumNode, &result_num); //rangePB
 	else if(user_query->rquery_t == RANGE_PGI) 	result = proto.sRange_PGI(cipher, q, node, user_query->data_n, NumNode, &result_num); //rangePGI
 	else if(user_query->rquery_t == RANGE_PAI) 	result = proto.sRange_PAI(cipher, q, node, user_query->data_n, NumNode, &result_num); //rangePAI
+
+
+	endTime = std::chrono::system_clock::now();
+	duration_sec = endTime - startTime;
+	proto.total_time = duration_sec.count();
+	std::cout << "RANGE TIME : " << proto.total_time << " sec" << std::endl; 
+
 
 	if(user_query->rquery_t == RANGE_B)			setting.TimeResult_write_int(shellquery, result, result_num, "RANGE/RANGE_B", proto); //rangeB
 	else if(user_query->rquery_t == RANGE_I) 	setting.TimeResult_write_int(shellquery, result, result_num, "RANGE/RANGE_I", proto);  //rangeI
@@ -185,20 +198,32 @@ int topk_main(parsed_query* user_query)
 	sprintf(inputFilename, "input/topk/d%d_m%d_L%d.txt", user_query->data_n, user_query->dim_n, user_query->bit_s);
 	paillier_ciphertext_t*** cipher = setting.InputData_read(inputFilename, user_query->dim_n, user_query->data_n);
 
-
-
-	printf("\n===== Top-k start =====\n");
-
 	int result_num=0;
 	int** topk = 0;
 
 	
+	std::chrono::system_clock::time_point startTime;
+    std::chrono::system_clock::time_point endTime;
+    std::chrono::duration<float> duration_sec;
+
+
+    startTime = std::chrono::system_clock::now();
+
+
 	if(user_query->tquery_t == TOPK_B)			topk = proto.STopk_B(cipher, cipher_query, user_query->data_n); //TOPKB
 	else if(user_query->tquery_t == TOPK_I) 	topk =  proto.STopk_I(cipher, cipher_query, node, max_val, user_query->data_n, NumNode);  //TOPKI
 	else if(user_query->tquery_t == TOPK_GI) 	topk = proto.STopk_G(cipher, cipher_query, node, max_val, user_query->data_n, NumNode); //TOPKGI
 	else if(user_query->tquery_t == TOPK_PB) 	topk = proto.STopk_PB(cipher, cipher_query, node, max_val, user_query->data_n, NumNode); //TOPKPGI
 	else if(user_query->tquery_t == TOPK_PGI) 	topk = proto.STopk_PGI(cipher, cipher_query, node, max_val, user_query->data_n, NumNode); //TOPKPGI
 	else if(user_query->tquery_t == TOPK_PAI) 	topk = proto.STopk_PAI(cipher, cipher_query, node, max_val, user_query->data_n, NumNode); //TOPKPAI
+
+
+	endTime = std::chrono::system_clock::now();
+	duration_sec = endTime - startTime;
+	proto.total_time = duration_sec.count();
+	std::cout << "RANGE TIME : " << proto.total_time << " sec" << std::endl; 
+
+
 
 	if(user_query->tquery_t == TOPK_B)			setting.TimeResult_write_int(shellquery, topk, result_num, "TOPK/TOPK_B", proto); //TOPKB
 	else if(user_query->tquery_t == TOPK_I) 	setting.TimeResult_write_int(shellquery, topk, result_num, "TOPK/TOPK_I", proto);  //TOPKI
@@ -264,12 +289,28 @@ int knn_main(parsed_query* user_query)
 	int result_num=0;
 	int** SkNNm = 0;
 
+
+	std::chrono::system_clock::time_point startTime;
+    std::chrono::system_clock::time_point endTime;
+    std::chrono::duration<float> duration_sec;
+
+
+    startTime = std::chrono::system_clock::now();
+
 	if(user_query->kquery_t == KNN_B)			SkNNm = proto.SkNN_B(cipher, cipher_query, user_query->k, user_query->data_n); //KNNB
 	else if(user_query->kquery_t == KNN_I) 		SkNNm = proto.SkNN_I(cipher, cipher_query, node, user_query->k, user_query->data_n, NumNode);  //KNNI
 	else if(user_query->kquery_t == KNN_GI) 	SkNNm = proto.SkNN_G(cipher, cipher_query, node, user_query->k, user_query->data_n, NumNode); //KNNGI
 	else if(user_query->kquery_t == KNN_PB) 	SkNNm = proto.SkNN_PB(cipher, cipher_query, node, user_query->k, user_query->data_n, NumNode); //KNNGI
 	else if(user_query->kquery_t == KNN_PGI) 	SkNNm = proto.SkNN_PGI(cipher, cipher_query, node, user_query->k, user_query->data_n, NumNode); //KNNGI
 	else if(user_query->kquery_t == KNN_PAI) 	SkNNm = proto.SkNN_PAI(cipher, cipher_query, node, user_query->k, user_query->data_n, NumNode); //KNNGI
+
+	endTime = std::chrono::system_clock::now();
+	duration_sec = endTime - startTime;
+	proto.total_time = duration_sec.count();
+	std::cout << "kNN TIME : " << proto.total_time << " sec" << std::endl; 
+
+
+
 
 	if(user_query->kquery_t == KNN_B)			setting.TimeResult_write_int(shellquery, SkNNm, result_num, "KNN/KNN_B", proto); //KNNB
 	else if(user_query->kquery_t == KNN_I) 		setting.TimeResult_write_int(shellquery, SkNNm, result_num, "KNN/KNN_I", proto);  //KNNI
@@ -339,12 +380,31 @@ int classification_main(parsed_query* user_query)
 	int result_num=0;
 	int** classification = 0;
 
+
+
+	std::chrono::system_clock::time_point startTime;
+    std::chrono::system_clock::time_point endTime;
+    std::chrono::duration<float> duration_sec;
+
+
+    startTime = std::chrono::system_clock::now();
+
+
+
 	if(user_query->cquery_t == CLASSIFICATION_B)			classification = proto.Classification_B(cipher, cipher_query, Entire_set, user_query->k, user_query->data_n, Entire_num);	
 	else if(user_query->cquery_t == CLASSIFICATION_I) 		classification = proto.Classification_I(cipher, cipher_query, Entire_set, node, user_query->k, user_query->data_n, NumNode, Entire_num);	
 	else if(user_query->cquery_t == CLASSIFICATION_GI) 		classification = proto.Classification_G(cipher, cipher_query, Entire_set, node, user_query->k, user_query->data_n, NumNode, Entire_num);
 	else if(user_query->cquery_t == CLASSIFICATION_PB) 		classification = proto.Classification_PB(cipher, cipher_query, Entire_set, node, user_query->k, user_query->data_n, NumNode, Entire_num);
 	else if(user_query->cquery_t == CLASSIFICATION_PGI) 	classification = proto.Classification_PGI(cipher, cipher_query, Entire_set, node, user_query->k, user_query->data_n, NumNode, Entire_num);
 	else if(user_query->cquery_t == CLASSIFICATION_PAI) 	classification = proto.Classification_PAI(cipher, cipher_query, Entire_set, node, user_query->k, user_query->data_n, NumNode, Entire_num);
+
+
+	endTime = std::chrono::system_clock::now();
+	duration_sec = endTime - startTime;
+	proto.total_time = duration_sec.count();
+	std::cout << "RANGE TIME : " << proto.total_time << " sec" << std::endl; 
+
+
 
 	if(user_query->cquery_t == CLASSIFICATION_B)			setting.TimeResult_write_int(shellquery, classification, result_num, "CLASSIFICATION/CLASSIFICATION_B", proto); 
 	else if(user_query->cquery_t == CLASSIFICATION_I) 		setting.TimeResult_write_int(shellquery, classification, result_num, "CLASSIFICATION/CLASSIFICATION_I", proto); 
@@ -379,7 +439,7 @@ int kmeans_main(parsed_query* user_query)
 	if(	user_query->mquery_t != KMEANS_B )
 	{
 		char kd_filename[128]; 
-		sprintf(kd_filename, "input/Grid/Grid_d%d_m%d_L%d_h%d.txt", user_query->data_n, user_query->dim_n, user_query->bit_s, user_query->tree_level);
+		sprintf(kd_filename, "input/Grid/Grid_%d_m%d_L%d_h%d.txt", user_query->data_n, user_query->dim_n, user_query->bit_s, user_query->tree_level);
 		node = setting.KdInfo_read(kd_filename, user_query->dim_n, &NumNode);	
 	}
 
@@ -391,12 +451,27 @@ int kmeans_main(parsed_query* user_query)
 	paillier_ciphertext_t*** Cluster;
 	int result_num=0;
 
+
+
+
+	std::chrono::system_clock::time_point startTime;
+    std::chrono::system_clock::time_point endTime;
+    std::chrono::duration<float> duration_sec;
+
+    startTime = std::chrono::system_clock::now();
+
 	if(user_query->mquery_t == KMEANS_B)			Cluster = proto.Clustering_m(cipher, user_query->data_n, user_query->k, 2);
 	else if(user_query->mquery_t == KMEANS_I) 		Cluster = proto.Clustering_Grid(cipher, node, NumNode, user_query->data_n, user_query->k);	
 	else if(user_query->mquery_t == KMEANS_GI) 		Cluster = proto.Clustering_Grid_preprocessing(cipher, node, NumNode, user_query->data_n, user_query->k);
-	else if(user_query->mquery_t == KMEANS_PB) 		Cluster = proto.Clustering_Grid_preprocessing(cipher, node, NumNode, user_query->data_n, user_query->k);
-	else if(user_query->mquery_t == KMEANS_PGI) 	Cluster = proto.Clustering_Grid_preprocessing(cipher, node, NumNode, user_query->data_n, user_query->k);
-	else if(user_query->mquery_t == KMEANS_PAI) 	Cluster = proto.Clustering_Grid_preprocessing(cipher, node, NumNode, user_query->data_n, user_query->k);
+	else if(user_query->mquery_t == KMEANS_PB) 		Cluster = proto.Clustering_PB(cipher, node, NumNode, user_query->data_n, user_query->k);
+	else if(user_query->mquery_t == KMEANS_PGI) 	Cluster = proto.Clustering_PGI(cipher, node, NumNode, user_query->data_n, user_query->k);
+	else if(user_query->mquery_t == KMEANS_PAI) 	Cluster = proto.Clustering_PAI(cipher, node, NumNode, user_query->data_n, user_query->k);
+
+	endTime = std::chrono::system_clock::now();
+	duration_sec = endTime - startTime;
+	proto.total_time = duration_sec.count();
+	std::cout << "KMEANS TIME : " << proto.total_time << " sec" << std::endl; 
+
 
 
 	printf("result\n");

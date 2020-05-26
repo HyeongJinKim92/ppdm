@@ -1,0 +1,11 @@
+query : 
+total time : 0
+node_SBD : 40  (inf%)
+node_SRO : 40  (inf%) 	 node_expansion(verify) : 16 (inf%)
+node_retrieval : 11  (inf%) 	 node_retrieval(verify) : 11 (inf%)
+data_SSED_SBD : 9  (inf%) 	 data_SBOR : 38 (inf%)
+sMINn : 23  (inf%) 	 sMINn (verify): 77 (inf%)
+data_SPE(range) : 0  (-nan%) 
+# retrieved node : 4
+
+

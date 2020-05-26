@@ -331,6 +331,11 @@ class protocol
 		paillier_ciphertext_t*** Clustering_PAI(paillier_ciphertext_t*** ciper, boundary* node, int NumNode, int NumData, int k);
 
 
+		////parallel clustering
+		paillier_ciphertext_t*** Parallel_Clustering_m_Grid(paillier_ciphertext_t*** ciper, int NumData, int k, int b, paillier_ciphertext_t*** former_Center);
+		void Parallel_Compute_Cluster(int NumData, paillier_ciphertext_t*** cipher, paillier_ciphertext_t*** former_Center, paillier_ciphertext_t*** NewSumCluster, paillier_ciphertext_t** NewSumCntCluster);
+
+
 };
 
 

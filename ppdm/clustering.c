@@ -303,11 +303,10 @@ paillier_plaintext_t* protocol::SETC(paillier_ciphertext_t*** former, paillier_c
 		L = SM_p1(H_[i], L);
 	}
 	paillier_exp(pubkey, R, Y, beta);
-	/*
+	
 	gmp_printf("L : %Zd\n", paillier_dec(0, pubkey, prvkey, L));
 	gmp_printf("R : %Zd\n", paillier_dec(0, pubkey, prvkey, R));
 	gmp_printf("SC : %Zd\n", paillier_dec(0, pubkey, prvkey, SC(L,R)));
-	*/
 	return paillier_dec(0, pubkey, prvkey, SC(L,R));
 }
 

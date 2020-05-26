@@ -46,5 +46,8 @@ void classipmInThread2(int index, std::vector<int> inputIdx, paillier_ciphertext
 void SBOR_inThread(int index, std::vector<int> inputIdx, paillier_ciphertext_t **cipher_V, paillier_ciphertext_t ***cipher_SBD_distance, protocol proto);
 void Smin_basic1_InThread(int index, std::vector<int> inputIdx, paillier_ciphertext_t** ciper1, paillier_ciphertext_t** ciper2, bool func, paillier_ciphertext_t* ciper_Rand_value, paillier_plaintext_t* Rand_value, paillier_ciphertext_t** ciper_W, paillier_ciphertext_t** ciper_R, paillier_ciphertext_t** ciper_H, paillier_ciphertext_t** ciper_L,	paillier_ciphertext_t** ciper_M, paillier_ciphertext_t** ciper_lambda, paillier_ciphertext_t** ciper_min, paillier_ciphertext_t** ciper_O, paillier_ciphertext_t** ciper_G, paillier_ciphertext_t** temp, paillier_ciphertext_t** temp2, paillier_ciphertext_t** temp3, protocol proto);
 
+//CLUSTERING
+void Comp_Cluster_inThread(paillier_ciphertext_t*** cipher, paillier_ciphertext_t*** former_Center, std::vector<int> inputIdx, paillier_ciphertext_t*** NewSumCluster, paillier_ciphertext_t** NewSumCntCluster, protocol proto, int i);
+
 
 #endif

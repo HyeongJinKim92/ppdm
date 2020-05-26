@@ -6,11 +6,13 @@
 #include <thread>
 #include <chrono>
 #include <vector>
+#include <mutex>
 #include <iostream>
 #include "parallel_protocol.h"
 
 using namespace std;
 
+static mutex mtx;
 
 void DP_GSRO_MultithreadforTopk(paillier_ciphertext_t **qLL, paillier_ciphertext_t **qRR, std::vector<int> input, boundary *node, paillier_ciphertext_t **alpha, protocol proto, bool verify)
 {
@@ -545,4 +547,43 @@ void Smin_basic1_InThread(int index, std::vector<int> inputIdx, paillier_ciphert
 		
 		paillier_mul(proto.pubkey, ciper_L[inputIdx[i]], ciper_O[inputIdx[i]], ciper_W[inputIdx[i]]);
 	}
+}
+
+void Comp_Cluster_inThread(paillier_ciphertext_t*** cipher, paillier_ciphertext_t*** former_Center, std::vector<int> inputIdx, paillier_ciphertext_t*** NewSumCluster, paillier_ciphertext_t** NewSumCntCluster, protocol proto, int i)
+{
+	paillier_ciphertext_t** Distance_center_data = new paillier_ciphertext_t*[proto.k];
+	paillier_ciphertext_t** idx_arr = new paillier_ciphertext_t*[proto.k];
+	paillier_ciphertext_t* tmp_data = new paillier_ciphertext_t;
+
+	for( int j = 0 ; j < proto.k ; j++){
+		Distance_center_data[j] = new paillier_ciphertext_t;
+		idx_arr[j] = new paillier_ciphertext_t;
+
+		mpz_init(Distance_center_data[j]->c);
+		mpz_init(idx_arr[j]->c);
+	}
+	mpz_init(tmp_data->c);
+
+	for(int i = 0 ; i < inputIdx.size() ; i++){
+		int num = inputIdx[i];
+		for( int j = 0 ; j < proto.k ; j++){
+			Distance_center_data[j] = proto.SSEDm(cipher[num], former_Center[j], proto.dim);
+		}
+		
+		idx_arr = proto.Smin_bool(Distance_center_data, proto.k);
+
+		mtx.lock();
+		for( int j = 0 ; j < proto.k ; j++ ){
+			paillier_mul(proto.pubkey, NewSumCntCluster[j], idx_arr[j], NewSumCntCluster[j]);
+			for( int e = 0 ; e < proto.dim ; e++ ){
+				tmp_data = proto.SM_p1(idx_arr[j], cipher[num][e]);
+				paillier_mul(proto.pubkey, NewSumCluster[j][e], NewSumCluster[j][e], tmp_data);
+			}
+
+		}
+		mtx.unlock();
+	}
+	delete [] Distance_center_data;
+	delete [] idx_arr;
+	delete [] tmp_data;
 }

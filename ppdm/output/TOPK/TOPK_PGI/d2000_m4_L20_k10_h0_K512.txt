@@ -240,3 +240,14 @@ data_SPE(range) : 0  (-nan%)
 # retrieved node : 6
 
 
+query : 
+total time : 0
+node_SBD : 0  (-nan%)
+node_SRO : 0  (-nan%) 	 node_expansion(verify) : 1 (inf%)
+node_retrieval : 12  (inf%) 	 node_retrieval(verify) : 12 (inf%)
+data_SSED_SBD : 0  (-nan%) 	 data_SBOR : 0 (-nan%)
+sMINn : 0  (inf%) 	 sMINn (verify): 1 (inf%)
+data_SPE(range) : 0  (-nan%) 
+# retrieved node : 4
+
+
