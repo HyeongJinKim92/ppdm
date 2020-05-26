@@ -1,0 +1,906 @@
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+#include <gmp.h>
+#include <time.h>
+#include <sstream.h>
+#include <fstream.h>
+
+//#include "paillier.h"
+#include "protocol.h"
+#include "util/typedefs.h"
+#include "util/config.h"
+#include "circuit/circuit.h"
+
+#define TOKEN " "
+
+protocol proto;
+int* Q = 0;
+
+CConfig* pConfig = new CConfig();
+CCircuit* pCircuit = NULL;
+
+void makeGate()
+{
+	// input
+	int BitSize = 12; // setting needs
+	int NumInputs = 4;
+	int InputRange = 0;
+	vector<USHORT> Ports = { 7766 };
+	vector<string> Addrs = { "localhost" };
+	int NumParties = 1;
+	int PID = 0;
+
+	string tempstr;
+	tempstr = "8936097950764538541647693880373941060412422053330581106416547022143872696986309618392492140173286901378451169263228782167065246660381840799235731486130087";
+	istringstream pis(tempstr);
+	ZZ p;
+	pis >> p;
+
+	tempstr = "7660915846360464914746169975675514711978996378800371841846530440188167304050642048045944447898172503094027848348928324282770185052123039167705188057761352";
+	istringstream gis(tempstr);
+	ZZ g;
+	gis >> g;
+
+	tempstr = "2323967942723790652936980"; // seed for server
+	string CircCreateName = "smsn";
+	vector<int> CircCreateParam = { NumInputs, BitSize }; // input, reps
+
+	pConfig->SetAddrPID(Addrs);
+	pConfig->SetPortPID(Ports);
+	pConfig->SetNumParties(NumParties);
+
+	pConfig->SetNumInputs(NumInputs);
+	pConfig->SetPID(PID);
+
+	pConfig->SetP(p);
+	pConfig->SetG(g);
+	pConfig->SetSeed(tempstr);
+	
+	pConfig->SetCircCreateName(CircCreateName);
+	pConfig->SetCircCreateParam(CircCreateParam);
+
+	pCircuit = CREATE_CIRCUIT(pConfig->GetNumParties(), pConfig->GetCircCreateName(),
+		pConfig->GetCircCreateParams());
+}
+
+int SMSn(int mr1, int m1r1, int mr2, int m2r2) // -r1, m1+r1, -r2, m2+r2
+{
+	double tc1 = clock();
+
+	vector<int> InputDatas = NULL;
+	// input setting
+	InputData.push_back(mr1);
+	InputData.push_back(m1r1);
+	InputData.push_back(mr2);
+	InputData.push_back(m2r2);
+
+	// circtool get
+	GATE* gates = pCircuit->Gates();
+	gates[0].val = 0;
+	gates[1].val = 1;
+
+	for (unsigned i = 0; i<4; i++) // 4 input
+	{
+		int bits = pCircuit->GetNumVBits(i);
+		int start = pCircuit->GetInputStart(i);
+		int end = pCircuit->GetInputEnd(i);
+		cout << i << "th Start Gate Num : " << start << ", End Gate Num : " << end << endl;
+		
+		int j = start;
+		for (int j = start; j <= end; j++)
+		{
+			for (int k = 0; k<bits; k++)
+			{
+				int mask = (1 << k);
+				gates[j].val = (char)!!(InputDatas[i] & mask);
+				j++;
+			}
+		}
+	}
+
+	pCircuit->Evaluate();
+	pCircuit->Save("SMSnCirc.txt", TRUE);
+
+	int o_start = pCircuit->GetOutputStart(0);
+
+	return gates[o_start].val; // if a > b, then return 1 else return 0
+	// if 1
+	// then return first *
+	// if 0
+	// then return second *
+}
+
+boundary* KdInfo_read(char* kdFilename, int dim ,int* NumNode){	
+	boundary* node;
+
+	paillier_plaintext_t * plain;
+	FILE *pFile = NULL;
+	char *token;
+	char strTemp[1000000];
+	char *pStr = NULL;
+	char file_name[128]; 
+	int i=0;
+	int j=0;
+
+	//printf("dim : %d\n", dim);
+	
+	//sprintf(file_name, "input/%s",kdFilename); 
+
+	pFile = fopen(kdFilename, "r" );
+
+	printf("kd file name : %s\n",kdFilename);
+	
+	//전체 노드 수 읽는
+	if( pFile != NULL ){
+		pStr = fgets( strTemp, sizeof(strTemp), pFile );		
+		*NumNode=atoi(pStr);
+	}
+	
+	printf("NumNode : %d\n",*NumNode);
+
+	node = (boundary*)malloc(sizeof(boundary)*(*NumNode));
+	for(i=0; i<*NumNode; i++) {
+		node[i].LL =  (paillier_ciphertext_t**)malloc(sizeof(paillier_ciphertext_t*)*dim);
+		node[i].RR =  (paillier_ciphertext_t**)malloc(sizeof(paillier_ciphertext_t*)*dim);
+	}
+	
+	// node setting
+	i=0;
+	if( pFile != NULL ){   	//파일에서 kd-tree 정보 읽기		
+		 while( !feof( pFile ) ){				
+            pStr = fgets( strTemp, sizeof(strTemp), pFile );
+			token=strtok(pStr ,TOKEN);
+			j=0;
+			while(token != NULL && i< *NumNode ){				
+				if(j==0){	//노드 id
+					node[i].node_id=atoi(token);
+					//printf("\nID : %d\n", node[i].node_id);
+				}
+				else if(j>0 && j<=dim){ //LL
+					plain = paillier_plaintext_from_ui(atoi(token));
+					node[i].LL[j-1]=paillier_enc(0, pub, plain, paillier_get_rand_devurandom);
+					//printf("LL : %s\n", token);
+				}else if(j>dim && j<=dim*2){ //RR
+					plain = paillier_plaintext_from_ui(atoi(token));
+					node[i].RR[j-dim-1]=paillier_enc(0, pub, plain, paillier_get_rand_devurandom);
+					//printf("RR : %s\n", token);
+				}else if(j>dim*2 && j<=dim*2+1){ // FanOut 
+					node[i].NumData=atoi(token);
+					node[i].indata_id=(int*)malloc(sizeof(int)*atoi(token));	
+					//printf("FanOut : %d\n", node[i].NumData);
+				}else if(j>dim*2+1 && j<=dim*2+1+node[i].NumData){
+					//printf("i : %d , j : %d , indata : %d\n",i,j,atoi(token));
+					node[i].indata_id[j-(2*dim)-2]=atoi(token);
+					//printf("i : %d , j : %d , indata : %d\n",i,j,atoi(token));
+					//printf("mcmcmc\n");
+					//printf("%d ", node[i].indata_id[j-(2*dim)-2]);
+					//printf(" j : %d \n",j);
+				}				
+				token = strtok(NULL, TOKEN);
+				j++;
+			 }
+			 i++;
+		}
+    } //파일 읽기 끝 
+	fclose(pFile);
+
+	return node; 
+}
+
+paillier_ciphertext_t*** InputData_read(char* inputFilename,int dim, int NumData){
+	//input 데이터 파일 읽기
+	FILE *pFile = NULL;
+	char *token;
+	char strTemp[255];
+	char *pStr = NULL;
+	
+	//char file_name[128]; 
+	//sprintf(file_name, "input/%s",inputFilename); 
+
+	pFile = fopen(inputFilename, "r" );
+
+	printf("input file name : %s\n",inputFilename);
+
+	int i=0;
+	int j=0;
+
+	paillier_plaintext_t * plain;
+
+	paillier_ciphertext_t*** ciper = (paillier_ciphertext_t***)malloc(sizeof(paillier_ciphertext_t**)*NumData);
+	for( i = 0 ; i < NumData ; i++ ){
+		ciper[i] = (paillier_ciphertext_t**)malloc(sizeof(paillier_ciphertext_t*)*dim);
+	}
+	i=0;
+	if( pFile != NULL ){   	
+		 while( !feof( pFile ) ){	
+			j=0;
+			pStr = fgets( strTemp, sizeof(strTemp), pFile );
+			token=strtok(pStr ,TOKEN);
+			while(token != NULL && token !=" " ){
+				//printf("%s\n",token);
+				plain = paillier_plaintext_from_ui(atoi(token));
+				ciper[i][j]=paillier_enc(0, pub, plain, paillier_get_rand_devurandom);				
+				token = strtok(NULL, TOKEN);
+				j++;
+			 }
+			 i++;
+		}
+	} //파일 읽기 끝 
+
+	fclose(pFile);
+	return ciper;
+	
+}
+
+void TimeResult_write_ciper(float time,paillier_ciphertext_t*** result,int result_num,int NumData,char* app, int bitsize,int dim){
+	FILE *fp_output;
+	char file_name[128]; 
+	sprintf(file_name, "output/%s/d%d_L%d.txt",app ,NumData,bitsize); 
+	fp_output=fopen(file_name,"a");
+
+	fprintf(fp_output,"time : %f\n", time);	 // 시간 기록
+	//fprintf(fp_output,"# retrieved node : %d\n", totalNumOfRetrievedNodes); // 탐색한 총 노드의 개수 기록
+
+	//printf("result num : %d\n",result_num);
+
+	//result file write
+	for(int i=0;i<result_num;i++){
+		for(int j=0; j<dim; j++) {				
+				paillier_plaintext_t* output_for_file=paillier_dec(0, pub, prv, result[i][j]);
+				gmp_fprintf(fp_output,"%Zd  ",output_for_file);
+			}
+		fprintf(fp_output,"\n");
+	}	
+	fprintf(fp_output,"\n\n");
+	fclose(fp_output);	
+}
+
+
+void TimeResult_write_int(float time,int** result,int result_num,int NumData,char* app, int bitsize,int dim, int tree_level){
+	FILE *fp_output;
+	char file_name[128]; 
+	sprintf(file_name, "output/%s/d%d_m%d_L%d_k%d_h%d.txt",app ,NumData,dim,bitsize,result_num,tree_level); 
+	fp_output=fopen(file_name,"a");
+
+	printf("node_SBD : %.0f  (%.0f%%)\n", proto.node_SBD_time, (proto.node_SBD_time/proto.total_time)*100);
+	printf("node_SRO : %.0f  (%.0f%%) \t node_expansion(verify) : %.0f (%.0f%%)\n", proto.node_SRO_time, (proto.node_SRO_time/proto.total_time)*100, proto.node_expansion_time, (proto.node_expansion_time/proto.total_time)*100);
+	printf("node_retrieval : %.0f  (%.0f%%) \t node_retrieval(verify) : %.0f (%.0f%%)\n", proto.data_extract_first_time, (proto.data_extract_first_time/proto.total_time)*100, proto.data_extract_second_time, (proto.data_extract_second_time/proto.total_time)*100);
+	printf("data_SSED_SBD : %.0f  (%.0f%%) \t data_SBOR : %.0f (%.0f%%)\n", proto.data_SSED_SBD_time, (proto.data_SSED_SBD_time/proto.total_time)*100, proto.data_SBOR_time, (proto.data_SBOR_time/proto.total_time)*100);
+	printf("sMINn : %.0f  (%.0f%%) \t sMINn (verify): %.0f (%.0f%%)\n", proto.sMINn_first_time, (proto.sMINn_first_time/proto.total_time)*100, proto.sMINn_second_time, (proto.sMINn_second_time/proto.total_time)*100);
+
+
+	fprintf(fp_output,"total time : %.0f\n", proto.total_time);
+	fprintf(fp_output,"node_SBD : %.0f  (%.0f%%)\n", proto.node_SBD_time, (proto.node_SBD_time/proto.total_time)*100);
+	fprintf(fp_output,"node_SRO : %.0f  (%.0f%%) \t node_expansion(verify) : %.0f (%.0f%%)\n", proto.node_SRO_time, proto.node_expansion_time, (proto.node_SRO_time/proto.total_time)*100, (proto.node_expansion_time/proto.total_time)*100);
+	fprintf(fp_output,"node_retrieval : %.0f  (%.0f%%) \t node_retrieval(verify) : %.0f (%.0f%%)\n", proto.data_extract_first_time, proto.data_extract_second_time, (proto.data_extract_first_time/proto.total_time)*100, (proto.data_extract_second_time/proto.total_time)*100);
+	fprintf(fp_output,"data_SSED_SBD : %.0f  (%.0f%%) \t data_SBOR : %.0f (%.0f%%)\n", proto.data_SSED_SBD_time, proto.data_SBOR_time, (proto.data_SSED_SBD_time/proto.total_time)*100, (proto.data_SBOR_time/proto.total_time)*100);
+	fprintf(fp_output,"sMINn : %.0f  (%.0f%%) \t sMINn (verify): %.0f (%.0f%%)\n", proto.sMINn_first_time, proto.sMINn_second_time, (proto.sMINn_first_time/proto.total_time)*100, (proto.sMINn_second_time/proto.total_time)*100);
+
+	fprintf(fp_output,"# retrieved node : %d\n", proto.totalNumOfRetrievedNodes); // 탐색한 총 노드의 개수 기록
+
+	//printf("result num : %d\n",result_num);
+
+	//result file write
+	for(int i=0;i<result_num;i++){
+		for(int j=0; j<dim; j++) {				
+				fprintf(fp_output,"%d\t", result[i][j]);
+			}
+		fprintf(fp_output,"\n");
+	}	
+	fprintf(fp_output,"\n\n");
+	fclose(fp_output);	
+}
+
+
+int skNN_main(int datanum,int dimension,int requiredK,int bitsize, int service_type, int tree_level) {
+	int modulus = 1024;
+	paillier_pubkey_t* pub;
+	paillier_prvkey_t* prv;
+	int i=0, j=0;
+
+	time_t startTime = 0;
+	time_t endTime = 0;
+	float gap;
+
+	paillier_keygen(1024, &pub,&prv, paillier_get_rand_devurandom);
+
+	paillier_setkey(pub, prv);
+	proto.protocol_setkey(pub, prv);
+
+	int dim = dimension, k = requiredK;
+	int num=0;
+	int NumData = datanum;
+
+	/*
+	Q[0] = 4; 
+	Q[1] = 5; 
+	Q[2] = 6; 
+	Q[3] = 4; 
+	Q[4] = 6; 
+	Q[5] = 4; 
+*/
+
+	paillier_ciphertext_t** ciper_query = (paillier_ciphertext_t**)malloc(sizeof(paillier_ciphertext_t*)*dim); 
+	for( i = 0 ; i < dim ; i++ ){
+		ciper_query[i] = paillier_create_enc(Q[i]);
+	}
+
+	printf("\nquery : ");
+	for(i = 0 ; i < dim ; i++ ){				
+		gmp_printf("%Zd \t", paillier_dec(0, pub, prv, ciper_query[i]));
+	}
+	printf("\n\n");
+
+	int NumNode = 0;
+	char kd_filename[128]; 
+	boundary* node = 0;
+
+	if(service_type == 3) {
+		sprintf(kd_filename, "input/KD_d%d_m%d_L%d_h%d.txt",datanum,dim,bitsize,tree_level);
+		//printf("kd_filename : %s\n",kd_filename);
+		node = KdInfo_read(kd_filename,dim,&NumNode);
+		//printf("NumNode : %d\n",NumNode);
+	}
+
+	int result_num=0;
+	char inputFilename[128]; 
+	sprintf(inputFilename, "input/d%d_m%d_L%d.txt",datanum,dim,bitsize);
+	//printf("inputfilename : %s\n",inputFilename);
+
+	paillier_ciphertext_t*** ciper = InputData_read(inputFilename,dim,NumData);
+
+	printf("\n===== SKNN start =====\n");
+	startTime = clock();
+	int** SkNNm = 0;
+
+	if(service_type == 2) {
+		SkNNm = proto.SkNNm_2(ciper, ciper_query, k, NumData);
+	}
+	else if(service_type == 3) {
+		SkNNm = proto.SkNNsi(ciper, ciper_query, node, k, NumData, NumNode);
+	}
+	endTime = clock();
+
+	proto.total_time = (float)(endTime-startTime)/(CLOCKS_PER_SEC);
+	printf("\ntime : %f\n", proto.total_time);
+
+	if(service_type == 2) {
+		TimeResult_write_int(gap,SkNNm,k,NumData,"skNNm",bitsize,dim,tree_level);
+	}
+	else if(service_type == 3) {
+		TimeResult_write_int(gap,SkNNm,k,NumData,"skNNI",bitsize,dim,tree_level);
+	}
+
+	for( i = 0 ; i < k ; i++ ){
+		printf("%d result : ", (i+1) );
+		for ( j = 0 ; j < dim ; j++ ){
+			printf("%d \t", SkNNm[i][j]);
+		}
+		printf("\n");
+	}
+
+	proto.protocol_free();
+	return 0;
+}
+
+int sTopk_main(int datanum,int dimension, int requiredK) {
+	int modulus = 1024;
+	paillier_pubkey_t* pub;
+	paillier_prvkey_t* prv;
+	int i=0, j=0;
+
+	time_t startTime = 0;
+	time_t endTime = 0;
+	float gap;
+
+	paillier_keygen(1024, &pub,&prv, paillier_get_rand_devurandom);
+
+	paillier_setkey(pub, prv);
+	proto.protocol_setkey(pub, prv);
+
+	int dim = dimension, k = requiredK;
+	int num=0;
+
+	int* Q=(int*)malloc(sizeof(int)*dim+1);
+	
+
+	Q[0] =3; 
+	Q[1] = -1; 
+	Q[2] = 3;	 // hint
+
+
+	paillier_ciphertext_t** ciper_query = (paillier_ciphertext_t**)malloc(sizeof(paillier_ciphertext_t*)*dim); 
+	paillier_ciphertext_t** max_val = (paillier_ciphertext_t**)malloc(sizeof(paillier_ciphertext_t*)*dim); 
+
+	//paillier_plaintext_t* plain_zero = paillier_plaintext_from_ui(0);
+	//paillier_ciphertext_t* ciper_zero = paillier_enc(0, pub, plain_zero, paillier_get_rand_devurandom);
+	paillier_ciphertext_t* ciper_zero = paillier_create_enc(0);
+	
+	//gmp_printf("%Zd \n", paillier_dec(0, pub, prv, ciper_zero));
+
+	//paillier_mul(pub, ciper_zero , ciper_zero , ciper_query[0]);
+	//gmp_printf("%Zd \n", paillier_dec(0, pub, prv, ciper_zero));
+
+
+	for( i = 0 ; i < dim+1 ; i++ ){
+		if(Q[i] <0) {
+			ciper_query[i] = paillier_create_enc(Q[i]*(-1));	// 양수로 바꿔서 일단 암호화 한 후, 
+			paillier_subtract(pub, ciper_query[i] , ciper_zero , ciper_query[i]);	 // 0에서 빼서 음수로 전환
+		}
+		else {
+			ciper_query[i] = paillier_create_enc(Q[i]);
+		}
+		max_val[i] = paillier_create_enc(10);
+	}
+
+	printf("query : ");
+	for(i = 0 ; i < dim+1 ; i++ ){				
+		if(i == dim)	// hint
+			printf("hint : ");
+		gmp_printf("%Zd \t", paillier_dec(0, pub, prv, ciper_query[i]));
+	}
+	printf("\n");
+
+/*
+	void* res = (paillier_ciphertext_to_bytes
+
+
+    if (rhs.val.size() > val.size())
+    {
+        val.resize(rhs.val.size(), 0);
+    }
+    for (size_t i = 0; i < val.size(); ++i)
+    {
+        val[i] = (pos ? val[i] : -val[i]) + (i < rhs.val.size() ? (rhs.pos ? rhs.val[i] : -rhs.val[i]) : 0);
+    }
+    correct();
+    return *this;
+*/
+
+
+
+
+	int NumNode = 0;
+
+	paillier_plaintext_t * plain;
+	FILE *pFile = NULL;
+	char *token;
+	char strTemp[10000];
+	char *pStr = NULL;
+
+	//printf("dim : %d\n", dim);
+
+	pFile = fopen("test.txt", "r" );
+	//pFile = fopen("lv4_size12_record1000.txt", "r" );
+
+	//전체 노드 수 읽는
+	if( pFile != NULL ){
+		pStr = fgets( strTemp, sizeof(strTemp), pFile );
+		NumNode = atoi(pStr);
+	}
+	
+	//printf("NumNode : %d\n",NumNode);
+
+	boundary* node;
+
+	node = (boundary*)malloc(sizeof(boundary)*NumNode);
+	for(i=0; i<NumNode; i++) {
+		node[i].LL =  (paillier_ciphertext_t**)malloc(sizeof(paillier_ciphertext_t*)*dim);
+		node[i].RR =  (paillier_ciphertext_t**)malloc(sizeof(paillier_ciphertext_t*)*dim);
+	}
+
+	//printf("Nodes info \n");
+	// node setting
+	i=0;
+	if( pFile != NULL ){   	//파일에서 kd-tree 정보 읽기		
+		 while( !feof( pFile ) ){				
+            pStr = fgets( strTemp, sizeof(strTemp), pFile );
+			token=strtok(pStr ,TOKEN);
+			j=0;
+			while(token != NULL && i< NumNode ){
+				if(j==0){	//노드 id
+					node[i].node_id=atoi(token);
+					//printf("\nID : %d\n", node[i].node_id);
+				}
+				else if(j>0 && j<=dim){ //LL
+					plain = paillier_plaintext_from_ui(atoi(token));
+					node[i].LL[j-1]=paillier_enc(0, pub, plain, paillier_get_rand_devurandom);
+					//printf("LL : %s\n", token);
+				}else if(j>dim && j<=dim*2){ //RR
+					plain = paillier_plaintext_from_ui(atoi(token));
+					node[i].RR[j-dim-1]=paillier_enc(0, pub, plain, paillier_get_rand_devurandom);
+					//printf("RR : %s\n", token);
+				}else if(j>dim*2 && j<=dim*2+1){ // FanOut 
+					node[i].NumData=atoi(token);
+					node[i].indata_id=(int*)malloc(sizeof(int)*atoi(token));	
+					//printf("FanOut : %d\n", node[i].NumData);
+				}else if(j>dim*2+1 && j<=dim*2+1+node[i].NumData){
+					node[i].indata_id[j-6]=atoi(token);
+					//printf("%d ", node[i].indata_id[j-6]);
+				}				
+				token = strtok(NULL, TOKEN);
+				j++;
+			 }
+			 i++;
+		}
+    } //파일 읽기 끝 
+	
+	int NumData = datanum;
+
+	paillier_ciphertext_t*** ciper = (paillier_ciphertext_t***)malloc(sizeof(paillier_ciphertext_t**)*NumData);
+	for( i = 0 ; i < NumData ; i++ ){
+		ciper[i] = (paillier_ciphertext_t**)malloc(sizeof(paillier_ciphertext_t*)*dim);
+		/*for( j = 0 ; j < dim ; j ++ ){
+			ciper[i][j] = paillier_create_enc((i % 5)+1);
+		}*/
+	}	
+
+	/*
+	FILE *pFile2 = NULL;
+	char *token2;
+	char strTemp2[255];
+	char *pStr2 = NULL;
+	pFile2 = fopen("input.txt", "r" );
+
+	i=0;
+	if( pFile2 != NULL ){   	
+		 while( !feof( pFile2 ) ){	
+			j=0;
+			pStr2 = fgets( strTemp2, sizeof(strTemp2), pFile2 );
+			token=strtok(pStr2 ,TOKEN);
+			while(token != NULL && token !=" " ){
+				//printf("%s\n",token);
+				plain = paillier_plaintext_from_ui(atoi(token));
+				ciper[i][j]=paillier_enc(0, pub, plain, paillier_get_rand_devurandom);				
+				token = strtok(NULL, TOKEN);
+				j++;
+			 }
+			 i++;
+		}
+	} //파일 읽기 끝 
+	//printf("i : %d\n",i);
+	//printf("j : %d\n",j);
+	*/
+
+	ciper[0][0] = paillier_create_enc(2);
+	ciper[0][1] = paillier_create_enc(1);
+	ciper[1][0] = paillier_create_enc(3);
+	ciper[1][1] = paillier_create_enc(3);
+	ciper[2][0] = paillier_create_enc(1);
+	ciper[2][1] = paillier_create_enc(8);
+	ciper[3][0] = paillier_create_enc(4);
+	ciper[3][1] = paillier_create_enc(7);
+	ciper[4][0] = paillier_create_enc(6);
+	ciper[4][1] = paillier_create_enc(1);
+	ciper[5][0] = paillier_create_enc(8);
+	ciper[5][1] = paillier_create_enc(5);
+	ciper[6][0] = paillier_create_enc(7);
+	ciper[6][1] = paillier_create_enc(7);
+	ciper[7][0] = paillier_create_enc(9);
+	ciper[7][1] = paillier_create_enc(9);
+
+	/*
+	for( i = 0 ; i < 8 ; i++ ){
+		for ( j = 0 ; j < dim ; j++ ){
+			printf("%Zd \t", ciper[i][j]);
+		}
+		printf("\n");
+	}
+	*/
+
+	printf("STopk start \n");
+	startTime = clock();
+	int** result  = NULL;
+	//SkNNm = SkNNm_2(ciper, ciper_query, k, NumData, dim);
+	result = proto.STopk(ciper, ciper_query, node, max_val, NumData, NumNode);
+	endTime = clock();
+
+	gap = (float)(endTime-startTime)/(CLOCKS_PER_SEC);
+	printf("time : %f\n", gap);
+
+	for( i = 0 ; i < k ; i++ ){
+		printf("%d result : ", (i+1) );
+		for ( j = 0 ; j < dim ; j++ ){
+			printf("%d \t", result[i][j]);
+		}
+		printf("\n");
+	}
+
+
+	proto.protocol_free();
+	return 0;
+}
+
+void	SRange_main(int datanum, int dimension, int bitsize, char* app,int tree_level,int requiredK) {
+	paillier_pubkey_t* pub;
+	paillier_prvkey_t* prv;
+
+	paillier_keygen(1024, &pub,&prv, paillier_get_rand_devurandom);
+	paillier_setkey(pub, prv);
+	proto.protocol_setkey(pub,prv);
+	
+	int i=0, j=0;
+	int modulus = 1024;
+	//int k = 4;
+	int dim = dimension;
+	int NumData = datanum;
+	int NumNode=0;
+
+
+	time_t startTime = 0;
+	time_t endTime = 0;
+	float gap;
+
+	boundary q;
+	
+	// query setting start
+	q.LL =  (paillier_ciphertext_t**)malloc(sizeof(paillier_ciphertext_t*)*dim);
+	q.RR =  (paillier_ciphertext_t**)malloc(sizeof(paillier_ciphertext_t*)*dim);
+
+	printf("Query info \n");
+	q.LL[0] =  paillier_create_enc(22);
+	paillier_print("LL : ", q.LL[0]);
+	q.LL[1] =  paillier_create_enc(22);
+	paillier_print("LL : ", q.LL[1]);
+	q.LL[2] =  paillier_create_enc(6);
+	paillier_print("LL : ", q.LL[2]);
+	q.LL[3] =  paillier_create_enc(7);
+	paillier_print("LL : ", q.LL[3]);
+	q.LL[4] =  paillier_create_enc(21);
+	paillier_print("LL : ", q.LL[4]);
+	q.LL[5] =  paillier_create_enc(4);
+	paillier_print("LL : ", q.LL[5]);
+
+
+	q.RR[0] =  paillier_create_enc(23);
+	paillier_print("RR : ", q.RR[0]);
+	q.RR[1] =  paillier_create_enc(23);
+	paillier_print("RR : ", q.RR[1]);
+	q.RR[2] =  paillier_create_enc(7);
+	paillier_print("RR : ", q.RR[2]);
+	q.RR[3] =  paillier_create_enc(8);
+	paillier_print("RR : ", q.RR[3]);
+	q.RR[4] =  paillier_create_enc(22);
+	paillier_print("RR : ", q.RR[4]);
+	q.RR[5] =  paillier_create_enc(5);
+	paillier_print("RR : ", q.RR[5]);
+
+	// query setting end
+
+
+	//char* kd_filename = "test.txt";
+	//char* kd_filename =	"KD_lv4_size12_record1000.txt";
+	//char* kd_filename =	"KD_lv4_size12_record10000.txt";
+	char kd_filename[128]; 
+	sprintf(kd_filename, "input/KD_d%d_m%d_L%d_h%d.txt",datanum,dimension,bitsize,tree_level);
+	printf("kd_filename : %s\n",kd_filename);
+	boundary* node = KdInfo_read(kd_filename,dim,&NumNode);	
+	
+
+	/*
+	//test 용
+	paillier_ciphertext_t*** ciper = (paillier_ciphertext_t***)malloc(sizeof(paillier_ciphertext_t**)*NumData); 
+	for( i = 0 ; i < NumData ; i++ ){
+		ciper[i] = (paillier_ciphertext_t**)malloc(sizeof(paillier_ciphertext_t*)*dim);
+		for( j = 0 ; j < dim ; j ++ ){
+			ciper[i][j] = paillier_create_enc((i % 5)+1);
+		}
+	}*/
+
+
+	int result_num=0;
+	//char* inputFilename = "input/SRange_d1000_m2_L12_k0_h3.txt";
+	//char* inputFilename = "input_size12_record10000.txt";
+	//char* inputFilename = "test.txt";
+	
+	char inputFilename[128]; 
+	sprintf(inputFilename, "input/d%d_m%d_L%d.txt",datanum,dimension,bitsize);
+	//printf("inputfilename : %s\n",inputFilename);
+
+	paillier_ciphertext_t*** ciper = InputData_read(inputFilename,dim,NumData);
+
+	startTime = clock();
+
+	paillier_ciphertext_t*** result = proto.faster_sRange(ciper, q, node, NumData, NumNode,&result_num);
+	//proto.sRange_basic(ciper, q, node, NumData, NumNode,&result_num);
+	endTime = clock();
+
+	gap = (float)(endTime-startTime)/(CLOCKS_PER_SEC);
+	printf("wall time : %f\n", gap);
+
+	//TimeResult_write_ciper(gap,result,result_num,NumData,app,bitsize,dim);
+	
+	//free
+	for(i=0; i<2; i++) {
+		for(j=0; j<dim; j++) {
+			paillier_freeciphertext(	node[i].LL[j]);	
+			paillier_freeciphertext(	node[i].RR[j]);
+		}
+	}
+	
+	for(j=0; j<dim; j++) {
+			paillier_freeciphertext(q.LL[j]);		
+			paillier_freeciphertext(q.RR[j]);
+	}
+
+	free(node);
+}
+
+/*
+void	SRange_main_garbled(int datanum, int dimension, int bitsize, char* app,int tree_level,int requiredK) {
+	// Gate 선언
+	// 필요 정보 셋팅
+
+	// 암호화 셋팅
+	paillier_pubkey_t* pub;
+	paillier_prvkey_t* prv;
+
+	paillier_keygen(1024, &pub,&prv, paillier_get_rand_devurandom);
+	paillier_setkey(pub, prv);
+	proto.protocol_setkey(pub,prv);
+	
+	int i=0, j=0;
+	// int modulus = 1024;
+	// int k = 4;
+	int dim = dimension;
+
+	int NumData = datanum;
+	int NumNode=0;
+
+
+	time_t startTime = 0;
+	time_t endTime = 0;
+	float gap;
+
+	boundary q;
+	
+	// query setting start
+	q.LL =  (paillier_ciphertext_t**)malloc(sizeof(paillier_ciphertext_t*)*dim);
+	q.RR =  (paillier_ciphertext_t**)malloc(sizeof(paillier_ciphertext_t*)*dim);
+
+	printf("Query info \n");
+	q.LL[0] =  paillier_create_enc(22);
+	paillier_print("LL : ", q.LL[0]);
+	q.LL[1] =  paillier_create_enc(22);
+	paillier_print("LL : ", q.LL[1]);
+	q.LL[2] =  paillier_create_enc(6);
+	paillier_print("LL : ", q.LL[2]);
+	q.LL[3] =  paillier_create_enc(7);
+	paillier_print("LL : ", q.LL[3]);
+	q.LL[4] =  paillier_create_enc(21);
+	paillier_print("LL : ", q.LL[4]);
+	q.LL[5] =  paillier_create_enc(4);
+	paillier_print("LL : ", q.LL[5]);
+
+
+	q.RR[0] =  paillier_create_enc(23);
+	paillier_print("RR : ", q.RR[0]);
+	q.RR[1] =  paillier_create_enc(23);
+	paillier_print("RR : ", q.RR[1]);
+	q.RR[2] =  paillier_create_enc(7);
+	paillier_print("RR : ", q.RR[2]);
+	q.RR[3] =  paillier_create_enc(8);
+	paillier_print("RR : ", q.RR[3]);
+	q.RR[4] =  paillier_create_enc(22);
+	paillier_print("RR : ", q.RR[4]);
+	q.RR[5] =  paillier_create_enc(5);
+	paillier_print("RR : ", q.RR[5]);
+
+	// query setting end
+
+
+	//char* kd_filename = "test.txt";
+	//char* kd_filename =	"KD_lv4_size12_record1000.txt";
+	//char* kd_filename =	"KD_lv4_size12_record10000.txt";
+	char kd_filename[128]; 
+	sprintf(kd_filename, "input/KD_d%d_m%d_L%d_h%d.txt",datanum,dimension,bitsize,tree_level);
+	printf("kd_filename : %s\n",kd_filename);
+	boundary* node = KdInfo_read(kd_filename,dim,&NumNode);	
+	
+
+	/*
+	//test 용
+	paillier_ciphertext_t*** ciper = (paillier_ciphertext_t***)malloc(sizeof(paillier_ciphertext_t**)*NumData); 
+	for( i = 0 ; i < NumData ; i++ ){
+		ciper[i] = (paillier_ciphertext_t**)malloc(sizeof(paillier_ciphertext_t*)*dim);
+		for( j = 0 ; j < dim ; j ++ ){
+			ciper[i][j] = paillier_create_enc((i % 5)+1);
+		}
+	}
+
+
+	int result_num=0;
+	//char* inputFilename = "input/SRange_d1000_m2_L12_k0_h3.txt";
+	//char* inputFilename = "input_size12_record10000.txt";
+	//char* inputFilename = "test.txt";
+	
+	char inputFilename[128]; 
+	sprintf(inputFilename, "input/d%d_m%d_L%d.txt",datanum,dimension,bitsize);
+	//printf("inputfilename : %s\n",inputFilename);
+
+	paillier_ciphertext_t*** ciper = InputData_read(inputFilename,dim,NumData);
+
+	startTime = clock();
+
+	paillier_ciphertext_t*** result = proto.faster_sRange(ciper, q, node, NumData, NumNode,&result_num);
+	//proto.sRange_basic(ciper, q, node, NumData, NumNode,&result_num);
+	endTime = clock();
+
+	gap = (float)(endTime-startTime)/(CLOCKS_PER_SEC);
+	printf("wall time : %f\n", gap);
+
+	//TimeResult_write_ciper(gap,result,result_num,NumData,app,bitsize,dim);
+	
+	//free
+	for(i=0; i<2; i++) {
+		for(j=0; j<dim; j++) {
+			paillier_freeciphertext(	node[i].LL[j]);	
+			paillier_freeciphertext(	node[i].RR[j]);
+		}
+	}
+	
+	for(j=0; j<dim; j++) {
+			paillier_freeciphertext(q.LL[j]);		
+			paillier_freeciphertext(q.RR[j]);
+	}
+
+	free(node);
+}
+*/
+
+int main(int argc, char* argv[]) {
+
+	int service_type = 0;	
+	int datanum = 0;
+	int dimension = 0;
+	int bitsize = 0;
+	int requiredK = 0;
+	int tree_level = 0;
+	
+	if (argc < 6 ) {
+		fputs("(usage) : service_type datanum m size(l) k tree_level query_data\n", stderr);
+	    fputs("service_type : range(1) kNNm(2) kNNI(3) topk(9)\n", stderr);
+		exit(1);
+	}
+
+	service_type = atoi(argv[1]); // range, knn, topk
+	datanum = atoi(argv[2]);
+	dimension = atoi(argv[3]);
+	bitsize = atoi(argv[4]);
+	requiredK = atoi(argv[5]);
+	tree_level = atoi(argv[6]); // k-d tree
+
+	Q=(int*)malloc(sizeof(int)*dimension);
+
+	for(int i=0; i<dimension; i++) {
+		Q[i] = atoi(argv[i+7]);
+	}
+
+	printf("\n\n\n\n\n");
+
+	proto.set_Param(datanum, dimension, bitsize, requiredK, tree_level);
+
+	if(service_type == 1) {
+		SRange_main(datanum,dimension,bitsize,"SRange",tree_level,requiredK);
+	}
+	else if(service_type == 2 || service_type == 3) {	 // 2 : skNNm, 3 : skNNI
+		skNN_main(datanum, dimension, requiredK,bitsize,service_type,tree_level);
+	}
+	else if(service_type == 9) {
+		sTopk_main(datanum, dimension, requiredK);
+	}
+	// add for garbled circuit\
+	else if(service_type == 4) {
+		// SRange_main_garbled(datanum, dimension, requiredK);
+	}
+	else if(service_type == 5) {
+		// skNN_main_garbled(datanum, dimension, requiredK, bitsize, ~~);
+	}
+	else if(service_type == 6) {
+		// sTopK_main_garbled(datanum, dimension, requiredK);
+	}
+
+
+	return 0;
+}
