@@ -4,7 +4,14 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-// KHJ add
+#include <fstream>
+#include <string>
+#include <sstream>
+#include <thread>
+#include <chrono>
+#include <vector>
+#include <mutex>
+#include <iostream>
 #include <math.h>
 #include <time.h>
 #include <gmp.h>
@@ -20,6 +27,10 @@
 */
 class protocol
 {
+
+	private :
+		static std::mutex mtx;
+
 	public :
 		paillier_pubkey_t* pubkey;
 		paillier_prvkey_t* prvkey;
@@ -118,14 +129,17 @@ class protocol
 
 		paillier_ciphertext_t* SM_p2(paillier_ciphertext_t* ciper1, paillier_ciphertext_t* ciper2);
 		paillier_ciphertext_t* SM_p1(paillier_ciphertext_t* ciper1, paillier_ciphertext_t* ciper2);
-		
+		paillier_ciphertext_t* SM_p1(paillier_ciphertext_t* ciper1, paillier_ciphertext_t* ciper2, int idx);
+
 		paillier_ciphertext_t* SSED(paillier_ciphertext_t* ciper1, paillier_ciphertext_t* ciper2);
 		paillier_ciphertext_t* SSEDm(paillier_ciphertext_t** ciper1, paillier_ciphertext_t** ciper2, int col_num);
 		
 		paillier_ciphertext_t* SBOR(paillier_ciphertext_t* ciper1, paillier_ciphertext_t* ciper2);
 		
 		paillier_ciphertext_t* SBXOR(paillier_ciphertext_t* ciper1, paillier_ciphertext_t* ciper2);
-		
+		paillier_ciphertext_t* SBXOR(paillier_ciphertext_t* ciper1, paillier_ciphertext_t* ciper2, int idx);
+				
+
 		paillier_ciphertext_t* SBN(paillier_ciphertext_t* ciper);
 		
 		paillier_ciphertext_t** SBD(paillier_ciphertext_t* ciper1);
@@ -174,6 +188,13 @@ class protocol
 		paillier_ciphertext_t** unDP_GSRO(paillier_ciphertext_t* A, paillier_ciphertext_t* B, int * R1, int * R2);
 		paillier_ciphertext_t*** GSRO_sNodeRetrievalforRange(paillier_ciphertext_t*** data, paillier_ciphertext_t** ciper_qLL, paillier_ciphertext_t** ciper_qRR, boundary* node, int NumData, int NumNode, int* cnt, int* NumNodeGroup, int type);
 		paillier_ciphertext_t*** sRange_result(paillier_ciphertext_t** alpha, paillier_ciphertext_t*** cand, int cnt, int NumNodeGroup, int * result_num);
+
+		//parallel
+		paillier_ciphertext_t* DP_GSRO_inThread(paillier_ciphertext_t** qLL, paillier_ciphertext_t** qRR,	paillier_ciphertext_t** nodeLL,	paillier_ciphertext_t** nodeRR, int idx);
+		paillier_ciphertext_t*** Parallel_GSRO_sNodeRetrievalforRange(paillier_ciphertext_t*** data, paillier_ciphertext_t** cipher_qLL, paillier_ciphertext_t** cipher_qRR, boundary* node, int NumData, int NumNode, int* cnt, int* NumNodeGroup, int type);
+		paillier_ciphertext_t*** Parallel_GSRO_inMultithread(int cnt, paillier_ciphertext_t*** cand, boundary q, paillier_ciphertext_t** alpha, paillier_ciphertext_t* cipher_rand);
+
+
 
 		//»ç¿ëx
 		paillier_ciphertext_t* faster_SRO(paillier_ciphertext_t*** qLL, paillier_ciphertext_t*** qRR, paillier_ciphertext_t*** nodeLL, paillier_ciphertext_t*** nodeRR); 
@@ -244,6 +265,15 @@ class protocol
 		int** STopk_PAI(paillier_ciphertext_t*** data, paillier_ciphertext_t** q, boundary* node, paillier_ciphertext_t** max_val, int NumData, int NumNode);
 
 
+
+		// topk parallel
+		void Parallel_GSRO_Topk(paillier_ciphertext_t** cipher_qLL, paillier_ciphertext_t** cipher_qRR, paillier_ciphertext_t** alpha, boundary* node, int NumNode, int* cnt, int* NumNodeGroup, bool type);
+		paillier_ciphertext_t*** Parallel_GSRO_sNodeRetrievalforTopk(paillier_ciphertext_t*** data, boundary* node, paillier_ciphertext_t** alpha, int NumData, int NumNode, int* cnt, int* NumNodeGroup);
+		void ComputeScoreinMultithread(paillier_ciphertext_t*** data, paillier_ciphertext_t** q, paillier_ciphertext_t** SCORE, int * cnt, bool type);
+		void MAXnMultithread2(int cnt, paillier_ciphertext_t** DIST_MINUS_MIN, paillier_ciphertext_t** DIST, paillier_ciphertext_t* MIN, paillier_ciphertext_t* C_RAND);
+		void MAXnMultithread3(int cnt, int s, paillier_ciphertext_t **V, paillier_ciphertext_t ***V2, paillier_ciphertext_t **SCORE, paillier_ciphertext_t ***cand, paillier_ciphertext_t *MIN, paillier_ciphertext_t ***Result);
+
+
 		int** STopk(paillier_ciphertext_t*** data, paillier_ciphertext_t** query, boundary* node, paillier_ciphertext_t** max_val, int NumData, int NumNode);
 		paillier_ciphertext_t* computeScore(paillier_ciphertext_t** ciper1, paillier_ciphertext_t** ciper2);
 		paillier_ciphertext_t* computeScore2(paillier_ciphertext_t** ciper1, paillier_ciphertext_t** ciper2, paillier_ciphertext_t** coeff, paillier_ciphertext_t* hint);
@@ -268,6 +298,13 @@ class protocol
 		paillier_ciphertext_t*** SF_P2(paillier_ciphertext_t*** S, int w, int k);
 		paillier_ciphertext_t* SCMC(paillier_ciphertext_t** Entire_set, paillier_ciphertext_t** K_set, int w, int k);
 		paillier_ciphertext_t*** sNodeRetrievalforClassification(paillier_ciphertext_t*** data, boundary* node, paillier_ciphertext_t** alpha, int NumData, int NumNode, int* cnt, int* NumNodeGroup);
+
+
+		//Classification parallel
+		void SSEDMultiThread(paillier_ciphertext_t **DIST, paillier_ciphertext_t ***cand, paillier_ciphertext_t **q, int cnt);
+		void SMSnMultithread2(int cnt, paillier_ciphertext_t** DIST_MINUS_MIN, paillier_ciphertext_t** DIST, paillier_ciphertext_t* MIN, paillier_ciphertext_t* C_RAND);
+		void SMSnMultithread3(int cnt, int s, paillier_ciphertext_t **V, paillier_ciphertext_t ***V2, paillier_ciphertext_t **DIST, paillier_ciphertext_t ***cand, paillier_ciphertext_t *MAX, paillier_ciphertext_t ***Result);
+		paillier_ciphertext_t*** sNodeRetrievalforClassificationMultiThread(paillier_ciphertext_t*** data, boundary* node, paillier_ciphertext_t** alpha,	int NumData, int NumNode, int* cnt, int* NumNodeGroup);
 
 		//Clustering 2017 02 01
 		paillier_ciphertext_t*** Clustering_m(paillier_ciphertext_t*** ciper, int NumData, int k, int b);

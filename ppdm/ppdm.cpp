@@ -43,14 +43,12 @@ int range_main(parsed_query * user_query)
 	int NumNode=0;
 
 	boundary q;
-	
-		
+			
 	// query setting start
 	q.LL =  (paillier_ciphertext_t**)malloc(sizeof(paillier_ciphertext_t*)*user_query->dim_n);
 	q.RR =  (paillier_ciphertext_t**)malloc(sizeof(paillier_ciphertext_t*)*user_query->dim_n);
 
 	// query setting end
-
 	for(int i=0; i<user_query->dim_n; i++){
 		q.LL[i] = paillier_create_enc(user_query->qLb[i]);
 		paillier_print("LL : ", q.LL[i]);
@@ -79,14 +77,14 @@ int range_main(parsed_query * user_query)
 	if(user_query->rquery_t == RANGE_B)			result = proto.sRange_B(cipher, q, node, user_query->data_n, NumNode, &result_num); //rangeB
 	else if(user_query->rquery_t == RANGE_I) 	result = proto.sRange_I(cipher, q, node, user_query->data_n, NumNode, &result_num);  //rangeI
 	else if(user_query->rquery_t == RANGE_GI) 	result = proto.sRange_G(cipher, q, node, user_query->data_n, NumNode, &result_num); //rangeGI
-//	else if(user_query->rquery_t == RANGE_PB) 	result = proto.sRange_PM(cipher, q, node, user_query->data_n, NumNode, &result_num); //rangePGI
-//	else if(user_query->rquery_t == RANGE_PGI) 	result = proto.sRange_PGI(cipher, q, node, user_query->data_n, NumNode, &result_num); //rangePGI
-//	else if(user_query->rquery_t == RANGE_PAI) 	result = proto.sRange_PAI(cipher, q, node, user_query->data_n, NumNode, &result_num); //rangePAI
+	else if(user_query->rquery_t == RANGE_PB) 	result = proto.sRange_PB(cipher, q, node, user_query->data_n, NumNode, &result_num); //rangePB
+	else if(user_query->rquery_t == RANGE_PGI) 	result = proto.sRange_PGI(cipher, q, node, user_query->data_n, NumNode, &result_num); //rangePGI
+	else if(user_query->rquery_t == RANGE_PAI) 	result = proto.sRange_PAI(cipher, q, node, user_query->data_n, NumNode, &result_num); //rangePAI
 
 	if(user_query->rquery_t == RANGE_B)			setting.TimeResult_write_int(shellquery, result, result_num, "RANGE/RANGE_B", proto); //rangeB
 	else if(user_query->rquery_t == RANGE_I) 	setting.TimeResult_write_int(shellquery, result, result_num, "RANGE/RANGE_I", proto);  //rangeI
 	else if(user_query->rquery_t == RANGE_GI) 	setting.TimeResult_write_int(shellquery, result, result_num, "RANGE/RANGE_GI", proto); //rangeGI
-	else if(user_query->rquery_t == RANGE_PB) 	setting.TimeResult_write_int(shellquery, result, result_num, "RANGE/RANGE_PB", proto); //rangePGI
+	else if(user_query->rquery_t == RANGE_PB) 	setting.TimeResult_write_int(shellquery, result, result_num, "RANGE/RANGE_PB", proto); //rangePB
 	else if(user_query->rquery_t == RANGE_PGI) 	setting.TimeResult_write_int(shellquery, result, result_num, "RANGE/RANGE_PGI", proto); //rangePAI
 	else if(user_query->rquery_t == RANGE_PAI) 	setting.TimeResult_write_int(shellquery, result, result_num, "RANGE/RANGE_PAI", proto); //rangePAI
 
@@ -198,9 +196,9 @@ int topk_main(parsed_query* user_query)
 	if(user_query->tquery_t == TOPK_B)			topk = proto.STopk_B(cipher, cipher_query, user_query->data_n); //TOPKB
 	else if(user_query->tquery_t == TOPK_I) 	topk =  proto.STopk_I(cipher, cipher_query, node, max_val, user_query->data_n, NumNode);  //TOPKI
 	else if(user_query->tquery_t == TOPK_GI) 	topk = proto.STopk_G(cipher, cipher_query, node, max_val, user_query->data_n, NumNode); //TOPKGI
-//	else if(user_query->tquery_t == TOPK_PB) 	result = proto.sRange_PM(ciper, q, node, user_query->data_n, user_query->NumNode, &result_num); //TOPKPGI
-//	else if(user_query->tquery_t == TOPK_PGI) 	result = proto.sRange_PGI(ciper, q, node, user_query->data_n, user_query->NumNode, &result_num); //TOPKPGI
-//	else if(user_query->tquery_t == TOPK_PAI) 	result = proto.sRange_PAI(ciper, q, node, user_query->data_n, user_query->NumNode, &result_num); //TOPKPAI
+	else if(user_query->tquery_t == TOPK_PB) 	topk = proto.STopk_PB(cipher, cipher_query, node, max_val, user_query->data_n, NumNode); //TOPKPGI
+	else if(user_query->tquery_t == TOPK_PGI) 	topk = proto.STopk_PGI(cipher, cipher_query, node, max_val, user_query->data_n, NumNode); //TOPKPGI
+	else if(user_query->tquery_t == TOPK_PAI) 	topk = proto.STopk_PAI(cipher, cipher_query, node, max_val, user_query->data_n, NumNode); //TOPKPAI
 
 	if(user_query->tquery_t == TOPK_B)			setting.TimeResult_write_int(shellquery, topk, result_num, "TOPK/TOPK_B", proto); //TOPKB
 	else if(user_query->tquery_t == TOPK_I) 	setting.TimeResult_write_int(shellquery, topk, result_num, "TOPK/TOPK_I", proto);  //TOPKI

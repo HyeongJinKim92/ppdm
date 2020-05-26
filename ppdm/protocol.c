@@ -21,6 +21,7 @@ CCircuit* pCircuit = NULL;
 
 using namespace std;
 
+std::mutex protocol::mtx;
 
 void protocol::set_Param(parsed_query * user_query)
 {
@@ -33,11 +34,12 @@ void protocol::set_Param(parsed_query * user_query)
 	else if(query == ASSOCATION)		{}
 	else if(query == TEST)			{}
 	
-	NumData = user_query->data_n;
-	dim = user_query->dim_n;
-	size = user_query->bit_s;
-	k = user_query->k;
-	FanOut = (user_query->data_n / pow(2, user_query->tree_level-1))+1;
+	NumData = user_query->data_n; // data 
+	thread_num = user_query->thread_n; // thread
+	dim = user_query->dim_n; // dim
+	size = user_query->bit_s; // bitsize
+	k = user_query->k; // k
+	FanOut = (user_query->data_n / pow(2, user_query->tree_level-1))+1; // FanOut
 	printf("tree_level : %d\n", user_query->tree_level);
 	printf("datanum : %d, dim : %d, bitsize : %d, requiredK : %d, FanOut : %d\n", user_query->data_n, user_query->dim_n, user_query->bit_s, user_query->k, FanOut);
 	totalNumOfRetrievedNodes = 0;
@@ -312,6 +314,39 @@ paillier_ciphertext_t* protocol::SM_p1(paillier_ciphertext_t* ciper1, paillier_c
 */
 	return result;
 }
+paillier_ciphertext_t* protocol::SM_p1(paillier_ciphertext_t* ciper1, paillier_ciphertext_t* ciper2, int idx){
+	int i = 0;
+ 	
+	paillier_ciphertext_t** temp  = (paillier_ciphertext_t**)malloc(sizeof(paillier_ciphertext_t*)*3);
+	for( i = 0 ; i < 3 ; i++ ){
+		temp[i] = (paillier_ciphertext_t*)malloc(sizeof(paillier_ciphertext_t));
+		mpz_init(temp[i]->c);
+	}
+
+	// compute (c1 + rd2) and (c2 + rd1)
+	paillier_mul(pub, temp[0], ciper1, ciper_rand1);
+	paillier_mul(pub, temp[1], ciper2, ciper_rand2);
+
+	// compute (c1 + rd2) x (c2 + rd1)
+	result = SM_p2(temp[0], temp[1]);
+
+	// delete c1 x rnd2 
+	paillier_exp(pub, temp[2], ciper1, rand2);
+	paillier_subtract(pub, result, result, temp[2]);
+
+	// delete c2 x rnd1
+	paillier_exp(pub, temp[2], ciper2, rand1);
+	paillier_subtract(pub, result, result, temp[2]);
+
+	// delete rnd1 x rnd2
+	paillier_exp(pub, temp[2], ciper_rand1, rand2);
+	paillier_subtract(pub, result, result, temp[2]);
+/*
+	paillier_freeplaintext(rand1);		paillier_freeplaintext(rand2);
+	paillier_freeciphertext(ciper_rand1);	paillier_freeciphertext(ciper_rand2);
+*/
+	return result;
+}
 
 paillier_ciphertext_t* protocol::SM_p2(paillier_ciphertext_t* ciper1, paillier_ciphertext_t* ciper2){
 	paillier_plaintext_t* plain1 = paillier_dec(0, pubkey, prvkey, ciper1);
@@ -422,6 +457,32 @@ paillier_ciphertext_t* protocol::SBXOR(paillier_ciphertext_t* ciper1, paillier_c
 
 	return result;
 }
+paillier_ciphertext_t* protocol::SBXOR(paillier_ciphertext_t* ciper1, paillier_ciphertext_t* ciper2, int idx)
+{
+	paillier_ciphertext_t* result = (paillier_ciphertext_t*) malloc(sizeof(paillier_ciphertext_t));
+	mpz_init(result->c);
+	paillier_ciphertext_t* temp1 = (paillier_ciphertext_t*) malloc(sizeof(paillier_ciphertext_t));
+	mpz_init(temp1->c);
+	paillier_ciphertext_t* temp2 = (paillier_ciphertext_t*) malloc(sizeof(paillier_ciphertext_t));
+	mpz_init(temp2->c);
+
+	// compute (c1 + c2)
+	paillier_mul(pubkey, temp1, ciper1, ciper2);
+
+	// compute  (2*c1*c2)
+	temp2 = SM_p1(ciper1, ciper2, idx);
+	paillier_exp(pubkey, temp2, temp2, plain_two);
+
+	// compute (c1 + c2 -2*c1*c2)
+	paillier_subtract(pubkey, result, temp1, temp2);
+
+	//paillier_print("result : ", result);
+
+	paillier_freeciphertext(temp1);		paillier_freeciphertext(temp2);
+
+	return result;
+}
+
 
 paillier_ciphertext_t** protocol::Smin_basic1(paillier_ciphertext_t** ciper1, paillier_ciphertext_t** ciper2)
 {

@@ -7,7 +7,7 @@ SOURCES_NTL=NTL/*.cpp
 OBJECTS_NTL=NTL/*.o
 SOURCES_CIRCUIT=circuit/*.cpp
 OBJECTS_CIRCUIT=circuit/*.o
-SOURCES_PARALLEL=parallel_srange.cpp parallel_stopk.cpp parallel_sknn.cpp parallel_classification.cpp parallel_clustering.cpp 
+SOURCES_PARALLEL=parallel_srange.cpp parallel_stopk.cpp parallel_sknn.cpp parallel_classification.cpp parallel_clustering.cpp parallel_protocol.cpp
 INCLUDE=..
 
 all: ${BIN}
