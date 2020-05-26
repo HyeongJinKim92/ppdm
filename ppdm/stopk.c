@@ -2252,7 +2252,7 @@ paillier_ciphertext_t** protocol::Topk_sub(paillier_ciphertext_t** ciper_n, int 
 
 	return ciper_U;
 }
-int ** protocol::STopk_M(paillier_ciphertext_t*** data, paillier_ciphertext_t** q, int NumData){
+int ** protocol::STopk_B(paillier_ciphertext_t*** data, paillier_ciphertext_t** q, int NumData){
 	int i = 0;
 	int s = 0;
 	int n = 0;

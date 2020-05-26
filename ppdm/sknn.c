@@ -1200,7 +1200,7 @@ int * protocol::SkNNb_C2(paillier_ciphertext_t** ciper_dist, int k, int row_numb
 
 
 
-int * protocol::SkNN_M(paillier_ciphertext_t** ciper, int Q, int k, int row_number){
+int * protocol::SkNN_B(paillier_ciphertext_t** ciper, int Q, int k, int row_number){
 	int i=0, s=0, n=0, t=0, j=0;
 	int rand = 5;
 	n = row_number;
@@ -1436,7 +1436,7 @@ int ** protocol::SkNNm_Bob2(paillier_ciphertext_t*** ciper_result, int rand, int
 }
 
 // 다차원 배열 SkNN
-int** protocol::SkNN_M(paillier_ciphertext_t*** data, paillier_ciphertext_t** query, int k, int row_number){
+int** protocol::SkNN_B(paillier_ciphertext_t*** data, paillier_ciphertext_t** query, int k, int row_number){
 	int i=0, s=0, n=0, t=0, j=0;
 	int rand = 5;
 	n = row_number;

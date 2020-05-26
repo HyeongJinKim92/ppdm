@@ -453,7 +453,7 @@ int ** protocol::sRange_sub(paillier_ciphertext_t** alpha, int node_num, int * s
 	return sRange_sub_result;
 }
 
-int** protocol::sRange_M(paillier_ciphertext_t*** data, boundary q, boundary* node, int NumData, int NumNode,int* result_num)
+int** protocol::sRange_B(paillier_ciphertext_t*** data, boundary q, boundary* node, int NumData, int NumNode,int* result_num)
 {
 	printf("\n=====now Range_m start=====\n");
 

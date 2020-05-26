@@ -7,13 +7,14 @@ SOURCES_NTL=NTL/*.cpp
 OBJECTS_NTL=NTL/*.o
 SOURCES_CIRCUIT=circuit/*.cpp
 OBJECTS_CIRCUIT=circuit/*.o
+SOURCES_PARALLEL=parallel_srange.cpp parallel_stopk.cpp parallel_sknn.cpp parallel_classification.cpp parallel_clustering.cpp 
 INCLUDE=..
 
 all: ${BIN}
 
 PPDM: ${OBJECTS_NTL} ${OBJECTS_UTIL} ${OBJECTS_CIRCUIT} 
 	${CC} -o PPDM ${CFLAGS} ${OBJECTS_NTL} ${OBJECTS_UTIL} ${OBJECTS_CIRCUIT} \
-	-l${LIBRARIES} ppdm.cpp paillier.c protocol.c sknn.c stopk.c srange.c G_sRange.c setting.c classification.c clustering.c main.c \
+	-l${LIBRARIES} ${SOURCES_PARALLEL} ppdm.cpp paillier.c protocol.c sknn.c stopk.c srange.c G_sRange.c setting.c classification.c clustering.c main.c \
 	-L/usr/include -lgmp -lm -Wno-write-strings
 
 ${OBJECTS_UTIL}: ${SOURCES_UTIL}$  

@@ -76,7 +76,7 @@ int range_main(parsed_query * user_query)
 	int result_num=0;
 	int** result = 0;
 	
-	if(user_query->rquery_t == RANGE_B)			result = proto.sRange_M(cipher, q, node, user_query->data_n, NumNode, &result_num); //rangeB
+	if(user_query->rquery_t == RANGE_B)			result = proto.sRange_B(cipher, q, node, user_query->data_n, NumNode, &result_num); //rangeB
 	else if(user_query->rquery_t == RANGE_I) 	result = proto.sRange_I(cipher, q, node, user_query->data_n, NumNode, &result_num);  //rangeI
 	else if(user_query->rquery_t == RANGE_GI) 	result = proto.sRange_G(cipher, q, node, user_query->data_n, NumNode, &result_num); //rangeGI
 //	else if(user_query->rquery_t == RANGE_PB) 	result = proto.sRange_PM(cipher, q, node, user_query->data_n, NumNode, &result_num); //rangePGI
@@ -195,7 +195,7 @@ int topk_main(parsed_query* user_query)
 	int** topk = 0;
 
 	
-	if(user_query->tquery_t == TOPK_B)			topk = proto.STopk_M(cipher, cipher_query, user_query->data_n); //TOPKB
+	if(user_query->tquery_t == TOPK_B)			topk = proto.STopk_B(cipher, cipher_query, user_query->data_n); //TOPKB
 	else if(user_query->tquery_t == TOPK_I) 	topk =  proto.STopk_I(cipher, cipher_query, node, max_val, user_query->data_n, NumNode);  //TOPKI
 	else if(user_query->tquery_t == TOPK_GI) 	topk = proto.STopk_G(cipher, cipher_query, node, max_val, user_query->data_n, NumNode); //TOPKGI
 //	else if(user_query->tquery_t == TOPK_PB) 	result = proto.sRange_PM(ciper, q, node, user_query->data_n, user_query->NumNode, &result_num); //TOPKPGI
@@ -266,7 +266,7 @@ int knn_main(parsed_query* user_query)
 	int result_num=0;
 	int** SkNNm = 0;
 
-	if(user_query->kquery_t == KNN_B)			SkNNm = proto.SkNN_M(cipher, cipher_query, user_query->k, user_query->data_n); //KNNB
+	if(user_query->kquery_t == KNN_B)			SkNNm = proto.SkNN_B(cipher, cipher_query, user_query->k, user_query->data_n); //KNNB
 	else if(user_query->kquery_t == KNN_I) 		SkNNm = proto.SkNN_I(cipher, cipher_query, node, user_query->k, user_query->data_n, NumNode);  //KNNI
 	else if(user_query->kquery_t == KNN_GI) 	SkNNm = proto.SkNN_G(cipher, cipher_query, node, user_query->k, user_query->data_n, NumNode); //KNNGI
 //	else if(user_query->kquery_t == KNN_PB) 	SkNNm = proto.sRange_PM(ciper, q, node, user_query->data_n, user_query->NumNode, &result_num); //KNNPGI

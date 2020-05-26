@@ -154,10 +154,10 @@ class protocol
 
 
 		////////////////////***************range***************////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////		
-		int** sRange_M(paillier_ciphertext_t*** data, boundary q, boundary* node, int NumData, int NumNode, int *result_num); //리턴 타입 변경!!
+		int** sRange_B(paillier_ciphertext_t*** data, boundary q, boundary* node, int NumData, int NumNode, int *result_num); //리턴 타입 변경!!
 		int** sRange_I(paillier_ciphertext_t*** data, boundary q, boundary* node, int NumData, int NumNode, int* result_num);
 		int** sRange_G(paillier_ciphertext_t*** data, boundary q, boundary* node, int NumData, int NumNode, int* result_num);
-		int** sRange_PM(paillier_ciphertext_t*** data, boundary q, boundary* node, int NumData, int NumNode, int* result_num);
+		int** sRange_PB(paillier_ciphertext_t*** data, boundary q, boundary* node, int NumData, int NumNode, int* result_num);
 		int** sRange_PGI(paillier_ciphertext_t*** data, boundary q, boundary* node, int NumData, int NumNode, int* result_num);
 		int** sRange_PAI(paillier_ciphertext_t*** data, boundary q, boundary* node, int NumData, int NumNode, int* result_num);
 
@@ -183,11 +183,13 @@ class protocol
 	
 
 		////////////////////knn///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////		
-		int * SkNN_M(paillier_ciphertext_t** ciper, int Q, int k, int row_number);
-		int ** SkNN_M(paillier_ciphertext_t*** ciper, paillier_ciphertext_t** qeury, int k, int row_number);
+		int * SkNN_B(paillier_ciphertext_t** ciper, int Q, int k, int row_number);
+		int ** SkNN_B(paillier_ciphertext_t*** ciper, paillier_ciphertext_t** qeury, int k, int row_number);
 		int** SkNN_I(paillier_ciphertext_t*** data, paillier_ciphertext_t** query, boundary* node, int k, int NumData, int NumNode); // Proposed skNN with secure Index (ICDE 2014 + secure index)
 		int** SkNN_G(paillier_ciphertext_t*** data, paillier_ciphertext_t** q, boundary* node, int k, int NumData, int NumNode);
-
+		int** SkNN_PB(paillier_ciphertext_t*** data, paillier_ciphertext_t** q, boundary* node, int k, int NumData, int NumNode);
+		int** SkNN_PGI(paillier_ciphertext_t*** data, paillier_ciphertext_t** q, boundary* node, int k, int NumData, int NumNode);
+		int** SkNN_PAI(paillier_ciphertext_t*** data, paillier_ciphertext_t** q, boundary* node, int k, int NumData, int NumNode);
 
 		int * SkNNm_Bob(paillier_ciphertext_t** ciper_result_array, int rand, int k);	
 		int ** SkNNm_Bob2(paillier_ciphertext_t*** ciper_result, int rand, int k, int col_num);
@@ -234,10 +236,10 @@ class protocol
 		////////////////////top-k//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		
 		//top-k
-		int ** STopk_M(paillier_ciphertext_t*** data, paillier_ciphertext_t** q, int NumData);
+		int ** STopk_B(paillier_ciphertext_t*** data, paillier_ciphertext_t** q, int NumData);
 		int** STopk_I(paillier_ciphertext_t*** data, paillier_ciphertext_t** q, boundary* node, paillier_ciphertext_t** max_val, int NumData, int NumNode);
 		int** STopk_G(paillier_ciphertext_t*** data, paillier_ciphertext_t** q, boundary* node, paillier_ciphertext_t** max_val, int NumData, int NumNode);
-		int** STopk_PM(paillier_ciphertext_t*** data, paillier_ciphertext_t** q, boundary* node, paillier_ciphertext_t** max_val, int NumData, int NumNode);
+		int** STopk_PB(paillier_ciphertext_t*** data, paillier_ciphertext_t** q, boundary* node, paillier_ciphertext_t** max_val, int NumData, int NumNode);
 		int** STopk_PGI(paillier_ciphertext_t*** data, paillier_ciphertext_t** q, boundary* node, paillier_ciphertext_t** max_val, int NumData, int NumNode);
 		int** STopk_PAI(paillier_ciphertext_t*** data, paillier_ciphertext_t** q, boundary* node, paillier_ciphertext_t** max_val, int NumData, int NumNode);
 
