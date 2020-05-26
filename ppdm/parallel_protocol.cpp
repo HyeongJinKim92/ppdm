@@ -336,3 +336,213 @@ void NodeExpansion_Multithread(paillier_ciphertext_t **q, paillier_ciphertext_t 
 	delete temp_nodedist;
 	delete[] cihper_nodedist;
 }
+
+void SSED_SBD_inThread(int index, std::vector<int> inputIdx, paillier_ciphertext_t **query, paillier_ciphertext_t ***data,
+	int dim, paillier_ciphertext_t **cipher_distance, paillier_ciphertext_t ***cipher_SBD_distance, protocol proto)
+{
+	int len = inputIdx.size();
+	
+	for(int i = 0; i < len; i++)
+	{
+		cipher_distance[inputIdx[i]] = proto.SSEDm(query, data[inputIdx[i]], proto.dim);
+		cipher_SBD_distance[inputIdx[i]] = proto.SBD(cipher_distance[inputIdx[i]]);
+		/*
+		paillier_print("dist : ", cipher_distance[inputIdx[i]]);	
+		for(int j = 0; j < proto.size ; j++ ){
+			gmp_printf("%Zd", paillier_dec(0, proto.pubkey, proto.prvkey, cipher_SBD_distance[inputIdx[i]][j]));
+		}
+		printf("\n");
+		*/
+	}
+}
+void SSED_inThread(std::vector<int> inputIdx, paillier_ciphertext_t **query, paillier_ciphertext_t ***data, paillier_ciphertext_t **cipher_distance,
+	protocol proto)
+{
+	int len = inputIdx.size();
+	
+	for(int i = 0; i < len; i++)
+	{
+		cipher_distance[inputIdx[i]] = proto.SSEDm(query, data[inputIdx[i]], proto.dim);
+		//cipher_SBD_distance[inputIdx[i]] = proto.SBD(cipher_distance[inputIdx[i]]);
+		/*
+		paillier_print("dist : ", cipher_distance[inputIdx[i]]);	
+		for(int j = 0; j < proto.size ; j++ ){
+			gmp_printf("%Zd", paillier_dec(0, proto.pubkey, proto.prvkey, cipher_SBD_distance[inputIdx[i]][j]));
+		}
+		printf("\n");
+		*/
+		
+	}
+}
+
+void SBD_inThread(int index, std::vector<int> inputIdx, paillier_ciphertext_t **query, paillier_ciphertext_t ***data, paillier_ciphertext_t **cipher_distance,
+	paillier_ciphertext_t ***cipher_SBD_distance, protocol proto)
+{
+	int len = inputIdx.size();
+	
+	for(int i = 0; i < len; i++)
+	{
+		//cipher_distance[inputIdx[i]] = proto.SSEDm(query, data[inputIdx[i]], dim);
+		cipher_SBD_distance[inputIdx[i]] = proto.SBD(cipher_distance[inputIdx[i]]);
+		/*
+		paillier_print("dist : ", cipher_distance[inputIdx[i]]);	
+		for(int j = 0; j < proto.size ; j++ ){
+			gmp_printf("%Zd", paillier_dec(0, proto.pubkey, proto.prvkey, cipher_SBD_distance[inputIdx[i]][j]));
+		}
+		printf("\n");
+		*/
+	}
+}
+void Smin_n_InThread(int index, std::vector<int> inputIdx, paillier_ciphertext_t ***copy_cipher, paillier_ciphertext_t ***min, protocol proto)
+{
+	paillier_ciphertext_t ***ciper_SBD_distance = new paillier_ciphertext_t **[inputIdx.size()];
+	//paillier_ciphertext_t **smin;
+	//std::cout << "i = " << inputIdx.size() << std::endl;
+	for(int i = 0; i < inputIdx.size(); i++)
+	{
+		ciper_SBD_distance[i] = copy_cipher[inputIdx[i]];
+	}
+	/*
+	for(int i = 0; i < inputIdx.size(); i++)
+	{
+		std::cout << "i = " << i;
+		for(int j = 0; j < proto.size; j++ ) {
+			gmp_printf(" %Zd", paillier_dec(0, proto.pubkey, proto.prvkey, ciper_SBD_distance[i][j]));
+		}
+		std::cout << std::endl;
+	}
+	std::cout << std::endl;
+	*/
+	min[index] = proto.Smin_n(ciper_SBD_distance, inputIdx.size());
+	/*
+	for(int i = 0; i < proto.size; i++)
+	{
+		gmp_printf("%Zd ", paillier_dec(0, proto.pubkey, proto.prvkey, smin[i]));
+		
+	}
+	std::cout << std::endl;
+	*/
+	delete[] ciper_SBD_distance;
+
+	//min[index] = smin;
+	/*
+	for(int i = 0; i < proto.size; i++)
+	{
+		gmp_printf("%Zd ", paillier_dec(0, proto.pubkey, proto.prvkey, min[index][i]));
+		
+	}
+	std::cout << std::endl;
+	*/
+}
+
+void caldistanceInThread(int index, std::vector<int> inputIdx, paillier_ciphertext_t ***cipher_SBD_distance, paillier_ciphertext_t **cipher_distance,
+	protocol proto)
+{
+	paillier_ciphertext_t *cipher_dist	= paillier_create_enc_zero();
+	int len = inputIdx.size();
+
+	for(int i = 0; i < len; i++)
+	{
+		for(int j = proto.size; j > 0; j--)
+		{
+			int t = (int)pow(2, j - 1);
+			paillier_ciphertext_t *cipher_binary = paillier_create_enc(t);
+			cipher_binary = proto.SM_p1(cipher_binary, cipher_SBD_distance[inputIdx[i]][proto.size - j]);
+			paillier_mul(proto.pubkey, cipher_dist, cipher_binary, cipher_dist);
+		}
+		cipher_distance[inputIdx[i]] = cipher_dist;
+		cipher_dist = paillier_enc(0, proto.pubkey, proto.plain_zero, paillier_get_rand_devurandom);
+	}
+	/*
+	if( s != 0 )
+	{
+		for(int i = 0; i < n; i++ )
+		{
+			for(int j = size; j > 0; j--)
+			{
+				t = (int)pow(2, j-1);
+				ciper_binary = paillier_create_enc(t);
+				ciper_binary = SM_p1(ciper_binary, ciper_SBD_distance[i][size-j]);
+				paillier_mul(pubkey, ciper_dist, ciper_binary, ciper_dist);
+			}
+			ciper_distance[i] = ciper_dist;
+			ciper_dist = paillier_enc(0, pubkey, plain_zero, paillier_get_rand_devurandom);
+		}
+	}
+	*/
+}
+
+void classipmInThread1(int index, std::vector<int> inputIdx, paillier_ciphertext_t **cipher_distance, paillier_ciphertext_t *cipher_min,
+	paillier_ciphertext_t *cipher_rand, paillier_ciphertext_t **cipher_mid, protocol proto)
+{
+	paillier_ciphertext_t *temp_dist = paillier_create_enc_zero();
+	int len = inputIdx.size();
+	for(int i = 0; i < len; i++)
+	{
+		paillier_subtract(proto.pubkey, temp_dist, cipher_distance[inputIdx[i]], cipher_min);
+		cipher_mid[inputIdx[i]] = proto.SM_p1(temp_dist, cipher_rand, index);
+		//paillier_print("dist - dist : ", cipher_mid[inputIdx[i]]);
+	}
+}
+
+void classipmInThread2(int index, std::vector<int> inputIdx, paillier_ciphertext_t **cipher_V, paillier_ciphertext_t **cipher_V2,
+	paillier_ciphertext_t ***data, paillier_ciphertext_t **cipher_rabel_result, int s, protocol proto)
+{
+	paillier_ciphertext_t *temp_dist = paillier_create_enc_zero();
+	int len = inputIdx.size();
+	for(int i = 0; i < len; i++)
+	{
+		cipher_V2[inputIdx[i]] = proto.SM_p1(cipher_V[inputIdx[i]], data[inputIdx[i]][proto.dim]);
+		//paillier_print("ciper_V2 : ", cipher_V2[inputIdx[i]]);
+		paillier_mul(proto.pubkey, cipher_rabel_result[s], cipher_V2[inputIdx[i]], cipher_rabel_result[s]);
+	}
+}
+
+void SBOR_inThread(int index, std::vector<int> inputIdx, paillier_ciphertext_t **cipher_V, paillier_ciphertext_t ***cipher_SBD_distance, protocol proto)
+{
+	int len = inputIdx.size();
+	
+	for(int i = 0; i < len; i++)
+	{
+		for(int j = 0; j < proto.size; j++)
+		{
+			cipher_SBD_distance[inputIdx[i]][j] = proto.SBOR(cipher_V[inputIdx[i]], cipher_SBD_distance[inputIdx[i]][j]);
+		}
+	}
+}
+
+void Smin_basic1_InThread(int index, std::vector<int> inputIdx, paillier_ciphertext_t** ciper1, paillier_ciphertext_t** ciper2, bool func,
+	paillier_ciphertext_t* ciper_Rand_value, paillier_plaintext_t* Rand_value,
+	paillier_ciphertext_t** ciper_W, paillier_ciphertext_t** ciper_R, paillier_ciphertext_t** ciper_H, paillier_ciphertext_t** ciper_L,
+	paillier_ciphertext_t** ciper_M, paillier_ciphertext_t** ciper_lambda, paillier_ciphertext_t** ciper_min, paillier_ciphertext_t** ciper_O,
+	paillier_ciphertext_t** ciper_G, paillier_ciphertext_t** temp, paillier_ciphertext_t** temp2, paillier_ciphertext_t** temp3, protocol proto)
+{
+	int len = inputIdx.size();
+
+	for(int i = 0; i < len; i++)
+	{
+		if(func){	// true :  F : u>v	
+			paillier_subtract(proto.pubkey, ciper_W[inputIdx[i]], ciper1[inputIdx[i]], proto.SM_p1(ciper1[inputIdx[i]], ciper2[inputIdx[i]], index));	// W
+			paillier_subtract(proto.pubkey, temp[inputIdx[i]], ciper2[inputIdx[i]], ciper1[inputIdx[i]]);	
+			paillier_mul(proto.pubkey, ciper_R[inputIdx[i]], temp[inputIdx[i]], ciper_Rand_value);	// Gamma
+		}else{
+			paillier_subtract(proto.pubkey, ciper_W[inputIdx[i]], ciper2[inputIdx[i]], proto.SM_p1(ciper1[inputIdx[i]], ciper2[inputIdx[i]], index));
+			paillier_subtract(proto.pubkey, temp[inputIdx[i]], ciper1[inputIdx[i]], ciper2[inputIdx[i]]);
+			paillier_mul(proto.pubkey, ciper_R[inputIdx[i]], temp[inputIdx[i]], ciper_Rand_value);
+		}
+		ciper_G[inputIdx[i]] = proto.SBXOR(ciper1[inputIdx[i]], ciper2[inputIdx[i]]);
+
+		if(inputIdx[i]==0){
+			paillier_exp(proto.pubkey,ciper_H[inputIdx[i]], proto.ciper_zero, Rand_value);
+			paillier_mul(proto.pubkey,ciper_H[inputIdx[i]], ciper_H[inputIdx[i]], ciper_G[inputIdx[i]]);		
+		}else{
+			paillier_exp(proto.pubkey,temp[inputIdx[i]], ciper_H[inputIdx[i]-1], Rand_value);
+			paillier_mul(proto.pubkey,ciper_H[inputIdx[i]], temp[inputIdx[i]], ciper_G[inputIdx[i]]);
+		}
+
+		paillier_mul(proto.pubkey, ciper_O[inputIdx[i]], ciper_H[inputIdx[i]], proto.ciper_minus);	// PI
+		paillier_exp(proto.pubkey, ciper_O[inputIdx[i]], ciper_O[inputIdx[i]], Rand_value);
+		
+		paillier_mul(proto.pubkey, ciper_L[inputIdx[i]], ciper_O[inputIdx[i]], ciper_W[inputIdx[i]]);
+	}
+}
