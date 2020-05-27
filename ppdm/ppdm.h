@@ -33,6 +33,6 @@ int kmeans_main(parsed_query*);
 
 parsed_query * parsing_query(char* argv[]);
 
-void print_query();
+void print_query(parsed_query * query);
 
 #endif

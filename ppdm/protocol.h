@@ -204,16 +204,23 @@ class protocol
 	
 
 		////////////////////knn///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////		
-		int * SkNN_B(paillier_ciphertext_t** ciper, int Q, int k, int row_number);
-		int ** SkNN_B(paillier_ciphertext_t*** ciper, paillier_ciphertext_t** qeury, int k, int row_number);
+		int * SkNN_B(paillier_ciphertext_t** ciper, int Q, int k, int NumData);
+		int ** SkNN_B(paillier_ciphertext_t*** ciper, paillier_ciphertext_t** qeury, int k, int NumData);
 		int** SkNN_I(paillier_ciphertext_t*** data, paillier_ciphertext_t** query, boundary* node, int k, int NumData, int NumNode); // Proposed skNN with secure Index (ICDE 2014 + secure index)
 		int** SkNN_G(paillier_ciphertext_t*** data, paillier_ciphertext_t** q, boundary* node, int k, int NumData, int NumNode);
-		int** SkNN_PB(paillier_ciphertext_t*** data, paillier_ciphertext_t** q, boundary* node, int k, int NumData, int NumNode);
+		int** SkNN_PB(paillier_ciphertext_t*** ciper, paillier_ciphertext_t** qeury, int k, int NumData);
 		int** SkNN_PGI(paillier_ciphertext_t*** data, paillier_ciphertext_t** q, boundary* node, int k, int NumData, int NumNode);
 		int** SkNN_PAI(paillier_ciphertext_t*** data, paillier_ciphertext_t** q, boundary* node, int k, int NumData, int NumNode);
 
 		//parallel knn
 		void Parallel_GSRO_kNN(paillier_ciphertext_t** cipher_qLL, paillier_ciphertext_t** cipher_qRR, paillier_ciphertext_t** alpha, boundary* node, int NumNode, int* cnt, int* NumNodeGroup, bool type);
+
+		// kNN parallel BASIC
+		void kNN_SSED_SBD_inMultithread(paillier_ciphertext_t*** data, paillier_ciphertext_t** query, paillier_ciphertext_t*** cipher_SBD_distance, paillier_ciphertext_t** cipher_distance);
+		void recalculate_DISTforkNN_inMultithread(paillier_ciphertext_t*** cipher_SBD_distance, paillier_ciphertext_t** cipher_distance);
+		void UPDATE_SBD_SCORE_InKNN_PB_inMultithread(paillier_ciphertext_t*** cipher_SBD_distance, paillier_ciphertext_t** cipher_V, int NumData);
+
+
 
 
 		int * SkNNm_Bob(paillier_ciphertext_t** ciper_result_array, int rand, int k);	
@@ -251,7 +258,7 @@ class protocol
 		paillier_ciphertext_t* GSCMP_sub(paillier_ciphertext_t* ru, paillier_ciphertext_t* rv, paillier_ciphertext_t* ciper_Rand);
 
 		//knn_B
-		int ** SkNN_b(paillier_ciphertext_t*** ciper, paillier_ciphertext_t** query, int k, int row_number);
+		int ** SkNN_plain(paillier_ciphertext_t*** ciper, paillier_ciphertext_t** query, int k, int row_number);
 		int * SkNNb_C2(paillier_ciphertext_t** ciper_dist, int k, int row_number);
 		int ** SkNNb_Bob(paillier_ciphertext_t*** ciper_result, int rand, int k);
 		int ** GSRO_SkNNb(paillier_ciphertext_t*** data, paillier_ciphertext_t** q, boundary* node, int k, int NumData, int NumNode);
@@ -276,6 +283,13 @@ class protocol
 		void ComputeScoreinMultithread(paillier_ciphertext_t*** data, paillier_ciphertext_t** q, paillier_ciphertext_t** SCORE, int * cnt, bool type);
 		void MAXnMultithread2(int cnt, paillier_ciphertext_t** DIST_MINUS_MIN, paillier_ciphertext_t** DIST, paillier_ciphertext_t* MIN, paillier_ciphertext_t* C_RAND);
 		void MAXnMultithread3(int cnt, int s, paillier_ciphertext_t **V, paillier_ciphertext_t ***V2, paillier_ciphertext_t **SCORE, paillier_ciphertext_t ***cand, paillier_ciphertext_t *MIN, paillier_ciphertext_t ***Result);
+		// topk parallel BASIC
+		paillier_ciphertext_t** Smax_n_Multithread(paillier_ciphertext_t*** cipher, int number);
+		void recalculate_SCORE_inMultithread(paillier_ciphertext_t*** cipher_SBD_dist, paillier_ciphertext_t** cipher_distance, int NumData);
+		void DuringProcessedInTOPK_PB_inMultithread(paillier_ciphertext_t** cipher_distance, paillier_ciphertext_t** cipher_mid, paillier_ciphertext_t* cipher_min, paillier_ciphertext_t* cipher_rand, int NumData);
+		void ExtractTOPKInTOPK_PB_inMultithread(paillier_ciphertext_t*** data, paillier_ciphertext_t** cipher_V, paillier_ciphertext_t*** cipher_result, int NumData, int serialTOPK);
+		void UPDATE_SBD_SCORE_InTOPK_PB_inMultithread(paillier_ciphertext_t*** cipher_SBD_distance, paillier_ciphertext_t** cipher_V, int NumData);
+		void TOPK_CS_SBD_inMultithread(paillier_ciphertext_t*** data, paillier_ciphertext_t** q, paillier_ciphertext_t*** cipher_SBD_distance, paillier_ciphertext_t** cipher_distance);
 
 
 		int** STopk(paillier_ciphertext_t*** data, paillier_ciphertext_t** query, boundary* node, paillier_ciphertext_t** max_val, int NumData, int NumNode);
@@ -335,6 +349,10 @@ class protocol
 		paillier_ciphertext_t*** Parallel_Clustering_m_Grid(paillier_ciphertext_t*** ciper, int NumData, int k, int b, paillier_ciphertext_t*** former_Center);
 		void Parallel_Compute_Cluster(int NumData, paillier_ciphertext_t*** cipher, paillier_ciphertext_t*** former_Center, paillier_ciphertext_t*** NewSumCluster, paillier_ciphertext_t** NewSumCntCluster);
 
+
+		//Proposed Compare
+		paillier_ciphertext_t * AS_CMP(paillier_ciphertext_t* u, paillier_ciphertext_t* v);
+		paillier_ciphertext_t * AS_CMP_sub(paillier_ciphertext_t* u, paillier_ciphertext_t* v);
 
 };
 

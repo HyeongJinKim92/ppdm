@@ -13,14 +13,158 @@
 
 using namespace std;
 
-
+// PARALLEL + BASIC (RANGE)
 int** protocol::sRange_PB(paillier_ciphertext_t*** data, boundary q, boundary* node, int NumData, int NumNode, int* result_num)
 {
-	return 0;
+	printf("\n=====now sRange_PB start=====\n");
+	
+	if( thread_num < 1 ) 
+	{
+		cout << "THREAD NUM IS ERROR" << endl;
+		exit(1);
+	}
+
+	int i=0, j=0, m=0;
+	
+	time_t startTime = 0;
+	time_t endTime = 0;
+	float gap = 0.0;
+	int rand = 5;
+	int NumNodeGroup = 0;
+
+	paillier_ciphertext_t*** ciper_qLL_bit = (paillier_ciphertext_t***)malloc(sizeof(paillier_ciphertext_t**)*dim);
+	paillier_ciphertext_t*** ciper_qRR_bit = (paillier_ciphertext_t***)malloc(sizeof(paillier_ciphertext_t**)*dim);
+
+	paillier_ciphertext_t* ciper_rand = paillier_create_enc(rand);
+	
+	cout << "\n=====================SBD QUERY=====================\n" << endl;
+	for(i=0; i<dim; i++) {
+		ciper_qLL_bit[i] = SBD_for_SRO(q.LL[i], 0);		// query LL bound 변환
+		ciper_qRR_bit[i] = SBD_for_SRO(q.RR[i], 1);		// query RR bound 변환
+	}
+
+
+	paillier_ciphertext_t** alpha = (paillier_ciphertext_t**) malloc(sizeof(paillier_ciphertext_t*)*NumData);
+
+	cout << "\n=====================PARALLEL SBD DATA and SRO=====================\n" << endl;
+	int threadNum = thread_num;
+	if(threadNum > NumData)
+	{
+		threadNum = NumData;
+	}
+
+	std::vector<int> *inputIdx = new std::vector<int>[threadNum];
+	int count = 0;
+
+	for(int i = 0; i < NumData ; i++)
+	{
+		inputIdx[count++].push_back(i);
+		count %= threadNum;
+	}
+	
+	
+	std::thread *SRO_SBD_Thread = new std::thread[threadNum];
+	for(int i = 0; i < threadNum; i++)
+	{
+		SRO_SBD_Thread[i] = std::thread(SRO_SBD_inThread, std::ref(inputIdx[i]), std::ref(ciper_qLL_bit), std::ref(ciper_qRR_bit), std::ref(data), std::ref(alpha), std::ref(*this));
+	}
+
+	for(int i = 0; i < threadNum; i++)
+	{
+		SRO_SBD_Thread[i].join();
+	}
+	
+	delete[] SRO_SBD_Thread;
+	delete[] inputIdx;
+
+
+
+/*
+	// PARALLEL PART
+	for(i=0; i<NumData; i++) {
+		for(j=0; j<dim; j++) {
+			candLL_bit[j] = SBD_for_SRO(data[i][j], 0);			// query cand 변환
+			candRR_bit[j] = SBD_for_SRO(data[i][j], 1);		
+		}		
+		alpha[i] = SRO(candLL_bit, candRR_bit, ciper_qLL_bit, ciper_qRR_bit);
+	}
+	// ==============
+*/
+	cout << "\n=======================EXTRACT RESULT=====================\n" << endl;
+
+
+	paillier_ciphertext_t*** result = (paillier_ciphertext_t***)malloc(sizeof(paillier_ciphertext_t**)*NumData); //할당방법 변경해야하고
+
+	//값 확인 && If αi = 1, E(t’i)를 result에 삽입
+	for(i=0; i<NumData; i++){
+		if(strcmp( paillier_plaintext_to_str( paillier_dec(0, pub, prv, alpha[i])), paillier_plaintext_to_str(plain_one)) == 0) 
+		{
+			result[(*result_num)]=data[i]; //result에 삽입
+			(*result_num)++;
+			printf("\n");
+		}	
+	}
+
+	// user(Bob)에게 결과 전송을 위해 random 값 삽입
+	for( i = 0 ; i<(*result_num) ; i++ )
+	{
+		for(j=0; j<dim; j++) 
+		{	
+				paillier_mul(pubkey,result[i][j],result[i][j],ciper_rand);
+		}
+	}
+	return FsRange_Bob(result, rand, (*result_num), dim);
 }
+
+
+
+// PARALLEL + GARBLED + INDEX (RANGE)
 int** protocol::sRange_PGI(paillier_ciphertext_t*** data, boundary q, boundary* node, int NumData, int NumNode, int* result_num)
 {
 	printf("\n===== Now sRange_PGI starts =====\n");
+	int i=0, j=0, m=0;
+	int rand = 5;
+	if( thread_num < 1 ) 
+	{
+		cout << "THREAD NUM IS ERROR" << endl;
+		exit(1);
+	}
+	int NumNodeGroup = 0;
+
+	paillier_ciphertext_t* cipher_rand = paillier_create_enc(rand);
+	paillier_print("rand : ",cipher_rand);
+
+
+	int cnt = 0;	 // 질의 영역과 겹치는 노드 내에 존재하는 총 데이터의 수
+
+	paillier_ciphertext_t*** cand ;
+
+	cand = Parallel_GSRO_sNodeRetrievalforRange(data, q.LL, q.RR, node, NumData, NumNode, &cnt, &NumNodeGroup, 1);
+	totalNumOfRetrievedNodes += NumNodeGroup;
+
+
+	paillier_ciphertext_t** alpha = (paillier_ciphertext_t**)malloc(sizeof(paillier_ciphertext_t*)*cnt);
+
+	Parallel_GSRO_inMultithread(cnt, cand, q, alpha, cipher_rand);
+	
+	
+	cout<<"sRangeG NumNodeGroup : " << NumNodeGroup<<endl;
+	cout<<"sRangeG cnt : "<<cnt<<endl;
+	paillier_ciphertext_t*** result;
+	result = sRange_result(alpha, cand, cnt, NumNodeGroup, result_num);
+	
+	cout<<"sRange_result end"<<endl;
+
+	return FsRange_Bob(result, rand, (*result_num), dim);
+}
+
+
+
+// PARALLEL + AS_CMP + INDEX (RANGE)
+int** protocol::sRange_PAI(paillier_ciphertext_t*** data, boundary q, boundary* node, int NumData, int NumNode, int* result_num)
+{
+
+	printf("\n===== Now sRange_PAI starts =====\n");
 	int i=0, j=0, m=0;
 	int rand = 5;
 
@@ -40,33 +184,14 @@ int** protocol::sRange_PGI(paillier_ciphertext_t*** data, boundary q, boundary* 
 
 	paillier_ciphertext_t** alpha = (paillier_ciphertext_t**)malloc(sizeof(paillier_ciphertext_t*)*cnt);
 
-
-	// cand 비트 변환 수행 및 SPE호출
-/*
-	for( i = 0 ; i < cnt ; i++ ) {
-		alpha[i] = DP_GSRO(cand[i], cand[i], q.LL, q.RR);
-
-		for(j=0; j<dim; j++){
-			paillier_mul(pubkey, cand[i][j], cand[i][j], cipher_rand);
-		}
-	}
-*/
 	Parallel_GSRO_inMultithread(cnt, cand, q, alpha, cipher_rand);
-	
 	
 	cout<<"sRangeG NumNodeGroup : " << NumNodeGroup<<endl;
 	cout<<"sRangeG cnt : "<<cnt<<endl;
 	paillier_ciphertext_t*** result;
 	result = sRange_result(alpha, cand, cnt, NumNodeGroup, result_num);
 	
-	cout<<"sRange_result end"<<endl;
-
 	return FsRange_Bob(result, rand, (*result_num), dim);
-}
-
-int** protocol::sRange_PAI(paillier_ciphertext_t*** data, boundary q, boundary* node, int NumData, int NumNode, int* result_num)
-{
-	return 0;
 }
 
 
@@ -176,7 +301,6 @@ paillier_ciphertext_t*** protocol::Parallel_GSRO_sNodeRetrievalforRange(paillier
 
 paillier_ciphertext_t* protocol::DP_GSRO_inThread(paillier_ciphertext_t** qLL, paillier_ciphertext_t** qRR,	paillier_ciphertext_t** nodeLL,	paillier_ciphertext_t** nodeRR, int idx)
 {
-	std::cout << "DP_GSRO start" <<std::endl;
 	int *Flag_array = new int[dim * 2];
 	int *R1 = new int[dim * 2];
 	int *R2 = new int[dim * 2];

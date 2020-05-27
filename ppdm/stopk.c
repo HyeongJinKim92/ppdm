@@ -10,8 +10,7 @@ using namespace std;
 
 paillier_ciphertext_t*** protocol::sNodeRetrievalforTopk(paillier_ciphertext_t*** data, paillier_ciphertext_t*** ciper_qLL_bit, paillier_ciphertext_t*** ciper_qRR_bit, boundary* node, paillier_ciphertext_t** alpha, int NumData, int NumNode, int* cnt, int* NumNodeGroup)
 {
-	printf("\n===== Now sNodeRetrievalforkNN starts =====\n");
-	//printf("NumNode : %d\n", NumNode);
+	printf("\n===== Now sNodeRetrievalforTopk starts =====\n");
 	int i=0, j=0, m=0;
 
 	time_t startTime = 0;
@@ -24,7 +23,6 @@ paillier_ciphertext_t*** protocol::sNodeRetrievalforTopk(paillier_ciphertext_t**
 	if(*NumNodeGroup == 0)
 		return 0;
 
-	printf("set_num : %d\n", *NumNodeGroup);
 
 	for(i=0; i<*NumNodeGroup; i++) {
 		printf("%dth Node Group : ", i+1);
@@ -38,7 +36,7 @@ paillier_ciphertext_t*** protocol::sNodeRetrievalforTopk(paillier_ciphertext_t**
 	int dataId = 0;
 	int z = 0;
 	int remained = 0;	  // 노드 그룹 내에서 아직 처리할 데이터가 남아있는 노드가 몇개인지 저장함
-	cout <<"tmp setting"<<endl;
+
 	paillier_ciphertext_t** tmp = (paillier_ciphertext_t**)malloc(sizeof(paillier_ciphertext_t*)*dim);
 	for( i = 0 ; i < dim; i++ ){
 		tmp[i] = (paillier_ciphertext_t*) malloc(sizeof(paillier_ciphertext_t));
@@ -53,13 +51,12 @@ paillier_ciphertext_t*** protocol::sNodeRetrievalforTopk(paillier_ciphertext_t**
 			mpz_init(cand[i][j]->c);
 		}
 	}
-	cout <<"cand setting"<<endl;
+
 	float progress = 0.1;
 	
 	// 노드 그룹 별로 데이터 추출을 통해, 질의 영역을 포함하는 노드 내 데이터 추출
 	for(i=0; i<*NumNodeGroup; i++) {
 		remained = node_group[i][0];	 // 해당 노드 그룹 내에서 아직 처리할 데이터가 남?팀獵?노드가 몇개인지 저장함
-		cout << remained <<endl;
 		for(j=0; j<FanOut; j++) {
 			cout << j <<endl;
 			if(remained == 0)	// 해당 노드 그룹 내에서 더 이상 처리할 데이터가 없다면, 다음 노드로 넘어감
@@ -72,31 +69,18 @@ paillier_ciphertext_t*** protocol::sNodeRetrievalforTopk(paillier_ciphertext_t**
 
 			for(m=1; m<=node_group[i][0]; m++) {	 // 0번지에 해당 노드 그룹에 몇개의 노드가 있는지가 저장되어 있음
 				nodeId = node_group[i][m];	 // 노드 그룹에서 노드 ID를 하나씩 꺼냄
-				//printf("selected node ID : %d\n", nodeId);
-
 				if(node[nodeId].NumData >= j+1) 
 				{
 					dataId = node[nodeId].indata_id[j];	// 해당 노드에 저장된 데이터 ID를 하나씩 꺼냄
-					//printf("selected data ID : %d\n", dataId);
 
 					for(z=0; z<dim; z++) {
-						//cout << "z : " << z << " " << m << " " << dataId << endl;
 						if(m == 1) {
-							//gmp_printf("data : %Zd, alpha : %Zd \n", paillier_dec(0, pubkey, prvkey,data[dataId][z]), paillier_dec(0, pubkey, prvkey, alpha[nodeId]));
-							//printf("cnt : %d,  dim : %d\n", *cnt, z);
 							cand[*cnt][z] = SM_p1(data[dataId][z], alpha[nodeId]);  // 해당 데이터 ID의 실제 데이터에 접근
-							//gmp_printf("%Zd \n", paillier_dec(0, pubkey, prvkey, cand[*cnt][z]));
 						} else {
-							//gmp_printf("data : %Zd, alpha : %Zd \n", paillier_dec(0, pubkey, prvkey,data[dataId][z]), paillier_dec(0, pubkey, prvkey, alpha[nodeId]));
-							//printf("cnt : %d,  dim : %d\n", *cnt, z);
 							tmp[z] = SM_p1(data[dataId][z], alpha[nodeId]);  // 해당 데이터 ID의 실제 데이터에 접근
-							//gmp_printf("%Zd \n", paillier_dec(0, pubkey, prvkey, cand[*cnt][z]));
-							//gmp_printf("%Zd \n", paillier_dec(0, pubkey, prvkey, tmp[z]));
 							paillier_mul(pubkey, cand[*cnt][z], cand[*cnt][z], tmp[z]);
-							//gmp_printf("cnt : %d, (%Zd)\n", *cnt, paillier_dec(0, pubkey, prvkey, cand[*cnt][z]));
 						}
 					}
-					//printf("\n");
 
 					if(node[nodeId].NumData == j+1)		// 해당 노드가 마지막 데이터를 처리한다면, remained를 1 감소시킴
 						remained--;
@@ -104,37 +88,19 @@ paillier_ciphertext_t*** protocol::sNodeRetrievalforTopk(paillier_ciphertext_t**
 				else {		// 해당 노드에는 데이터가 없지만, 동일 노드 그룹 내 다른 노드에는 아??처리할 데이터가 있는 경우를 핸들링
 					for(z=0; z<dim; z++) {
 						if(m == 1) {
-							//gmp_printf("data : %Zd, alpha : %Zd \n", paillier_dec(0, pubkey, prvkey, ciper_zero), paillier_dec(0, pubkey, prvkey, alpha[nodeId]));
-							//printf("cnt : %d,  dim : %d\n", *cnt, z);
 							cand[*cnt][z] = SM_p1(ciper_zero, alpha[nodeId]);  // 해당 데이터 ID의 실제 데이터에 접근
-							//gmp_printf("%Zd \n", paillier_dec(0, pubkey, prvkey, cand[*cnt][z]));
 						} else {
-							//gmp_printf("data : %Zd, alpha : %Zd \n", paillier_dec(0, pubkey, prvkey, ciper_zero), paillier_dec(0, pubkey, prvkey, alpha[nodeId]));
-							//printf("cnt : %d,  dim : %d\n", *cnt, z);
 							tmp[z] = SM_p1(ciper_zero, alpha[nodeId]);  // 해당 데이터 ID의 실제 데이터에 접근
-							//gmp_printf("%Zd \n", paillier_dec(0, pubkey, prvkey, cand[*cnt][z]));
-							//gmp_printf("%Zd \n", paillier_dec(0, pubkey, prvkey, tmp[z]));
 							paillier_mul(pubkey, cand[*cnt][z], cand[*cnt][z], tmp[z]);
-							//gmp_printf("(%Zd)\n", paillier_dec(0, pubkey, prvkey, cand[*cnt][z]));
 						}
 					}
-					//printf("\n");
+
 				}
 			}
 			(*cnt)++;	// 노드 그룹의 노드들을 한바퀴 돌고나면, 데이터 하나가 완성됨
 		}
 	}
-	//printf("\n");
 
-	/*
-	for(i=0; i<*cnt; i++) {
-		gmp_printf("%dth data -> coord : ", i);
-		for(j=0; j<dim; j++) {
-			gmp_printf("%Zd ", paillier_dec(0, pubkey, prvkey, cand[i][j]));
-		}
-		printf("\n");
-	}
-	*/
 
 	return cand;
 }
@@ -421,15 +387,6 @@ paillier_ciphertext_t** protocol::Smax_n(paillier_ciphertext_t*** ciper, int num
 	}
 	int e, q;
 	
-	/*
-	for(i=0;i<num;i++){
-		for(j=0; j<size; j++){
-				gmp_printf("%Zd", paillier_dec(0, pubkey, prvkey, copy_ciper[i][j]));
-		}
-		printf("\n");
-	}
-	printf("\n");
-	*/
 	paillier_ciphertext_t** sbd = SBD(paillier_create_enc_zero());
 
 	double n = log10(num)/log10(2) - (int)(log10(num)/log10(2));
@@ -2364,27 +2321,13 @@ int ** protocol::STopk_B(paillier_ciphertext_t*** data, paillier_ciphertext_t** 
 			}
 		}
 		
-		/*
-		for( i = 0 ; i < n ; i++ ){
-			paillier_print("distance : ", ciper_distance[i]);
-		}
-		*/
-
 		// 질의-데이터 거리와 min 거리와의 차를 구함 (min 데이터의 경우에만 0으로 만들기 위함)
 		for( i = 0 ; i < n ; i++ ){
 			paillier_subtract(pubkey, temp_dist, ciper_distance[i], ciper_min);
 			ciper_mid[i] = SM_p1(temp_dist, ciper_rand);
-			//paillier_print("dist - dist : ",ciper_mid[i]);
 		}
 
 		ciper_V = Topk_sub(ciper_mid, n);
-
-		/*
-		for( i = 0 ; i < n ; i++ ){
-			printf("%d : ", i);
-			paillier_print("ciper_V : ", ciper_V[i]);
-		}
-		*/
 
 		// min 데이터 추출
 		for( i = 0 ; i < n ; i++ ){
@@ -2415,12 +2358,9 @@ int ** protocol::STopk_B(paillier_ciphertext_t*** data, paillier_ciphertext_t** 
 	
 	// user(Bob)에게 결과 전송을 위해 random 값 삽입
 	for(i=0;i<k;i++){
-		//printf("%d final result : ", i);
 		for(j=0; j<dim; j++){
 			paillier_mul(pubkey,ciper_result[i][j],ciper_result[i][j],ciper_rand);
-			//gmp_printf("%Zd\t", paillier_dec(0, pubkey, prvkey, ciper_result[i][j]));
 		}
-		//printf("\n");
 	}
 
 	paillier_freeciphertext(temp_dist);	

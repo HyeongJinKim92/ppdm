@@ -289,8 +289,6 @@ void protocol::SMSnMultithread3(int cnt, int s, paillier_ciphertext_t **V, paill
 
 int** protocol::Classification_PB(paillier_ciphertext_t*** data, paillier_ciphertext_t** query, paillier_ciphertext_t** Entire_set, boundary* node, int k, int NumData, int NumNode, int Entire_num)
 {
-
-
 	int n = 0, t = 0;
 	int rand = 5;
 	n = NumData;

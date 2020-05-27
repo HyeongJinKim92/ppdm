@@ -251,3 +251,25 @@ data_SPE(range) : 0  (-nan%)
 # retrieved node : 4
 
 
+query : ./PPDM147102000420105121010101010
+total time : 18
+node_SBD : 0  (0%)
+node_SRO : 0  (0%) 	 node_expansion(verify) : 1 (7%)
+node_retrieval : 12  (67%) 	 node_retrieval(verify) : 12 (67%)
+data_SSED_SBD : 0  (0%) 	 data_SBOR : 0 (0%)
+sMINn : 0  (2%) 	 sMINn (verify): 1 (7%)
+data_SPE(range) : 0  (0%) 
+# retrieved node : 4
+
+
+query : ./PPDM147102000420105121010101010
+total time : 17
+node_SBD : 0  (0%)
+node_SRO : 0  (0%) 	 node_expansion(verify) : 0 (0%)
+node_retrieval : 12  (72%) 	 node_retrieval(verify) : 12 (71%)
+data_SSED_SBD : 0  (0%) 	 data_SBOR : 0 (0%)
+sMINn : 0  (2%) 	 sMINn (verify): 1 (8%)
+data_SPE(range) : 0  (0%) 
+# retrieved node : 4
+
+

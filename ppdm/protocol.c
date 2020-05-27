@@ -968,21 +968,6 @@ paillier_ciphertext_t* protocol::SRO(paillier_ciphertext_t*** qLL, paillier_ciph
 				paillier_mul(pubkey,ciper_H[j],temp[j],ciper_G[j]);
 			}
 		}
-	/*	
-		printf("\nW : ");
-		for(j=0; j<size+1; j++) {
-			gmp_printf("%Zd ", paillier_dec(0, pubkey, prvkey, ciper_W[j]));
-		}
-		printf("\nG : ");
-		for(j=0; j<size+1; j++) {
-			gmp_printf("%Zd ", paillier_dec(0, pubkey, prvkey, ciper_G[j]));
-		}
-
-		printf("\nH : ");
-		for(j=0; j<size+1; j++) {
-			gmp_printf("%Zd ", paillier_dec(0, pubkey, prvkey, ciper_H[j]));
-		}
-	*/	
 
 		for(j=0; j<size+1; j++){
 			// compute PI
@@ -994,32 +979,18 @@ paillier_ciphertext_t* protocol::SRO(paillier_ciphertext_t*** qLL, paillier_ciph
 			paillier_exp(pubkey,temp2[j],ciper_W[j],Rand_value); // randomize W
 			paillier_mul(pubkey,ciper_L[j],temp[j], temp2[j]);
 		}
-	/*	
-		printf("\nPI : ");
-		for(j=0; j<size+1; j++) {
-			gmp_printf("%Zd ", paillier_dec(0, pubkey, prvkey, ciper_PI[j]));
-		}
-
-		printf("\nL : ");
-		for(j=0; j<size+1; j++) {
-			gmp_printf("%Zd ", paillier_dec(0, pubkey, prvkey, ciper_L[j]));
-		}
-		printf("\n");
-	*/	
+	
 		alpha = SRO2(ciper_L, alpha);
 
 		if(func){
 			alpha = SBN(alpha);
 		}
-		//gmp_printf("alpha %Zd\n", paillier_dec(0, pubkey, prvkey, alpha));
 	
 		// AND operation (using SM Protocol) 
 		if(i == 0)
 			final_alpha = SM_p1(ciper_one, alpha);	// ÃÖÃÊ¿¡´Â 1°ú AND ¿¬»êÀ» ÇØ¾ßÇÔ. ?Ñ¹øÀÌ¶óµ?0ÀÌ ³ª¿À¸é 0À¸·Î ¹Ù²î´Â ³í¸®
 		else
 			final_alpha = SM_p1(final_alpha, alpha);
-
-		//gmp_printf("final alpha (after) %Zd\n", paillier_dec(0, pubkey, prvkey, alpha));
 	}
 
 
@@ -1047,21 +1018,7 @@ paillier_ciphertext_t* protocol::SRO(paillier_ciphertext_t*** qLL, paillier_ciph
 				paillier_mul(pubkey,ciper_H[j],temp[j],ciper_G[j]);
 			}
 		}
-		/*
-		printf("\nW : ");
-		for(j=0; j<size+1; j++) {
-			gmp_printf("%Zd ", paillier_dec(0, pubkey, prvkey, ciper_W[j]));
-		}
-		printf("\nG : ");
-		for(j=0; j<size+1; j++) {
-			gmp_printf("%Zd ", paillier_dec(0, pubkey, prvkey, ciper_G[j]));
-		}
 
-		printf("\nH : ");
-		for(j=0; j<size+1; j++) {
-			gmp_printf("%Zd ", paillier_dec(0, pubkey, prvkey, ciper_H[j]));
-		}
-		*/
 		for(j=0; j<size+1; j++){
 			// compute PI
 			paillier_mul(pubkey, ciper_PI[j], ciper_H[j], ciper_minus);	// PI
@@ -1072,29 +1029,15 @@ paillier_ciphertext_t* protocol::SRO(paillier_ciphertext_t*** qLL, paillier_ciph
 			paillier_exp(pubkey,temp2[j],ciper_W[j],Rand_value); // randomize W
 			paillier_mul(pubkey,ciper_L[j],temp[j], temp2[j]);
 		}
-		/*
-		printf("\nPI : ");
-		for(j=0; j<size+1; j++) {
-			gmp_printf("%Zd ", paillier_dec(0, pubkey, prvkey, ciper_PI[j]));
-		}
-
-		printf("\nL : ");
-		for(j=0; j<size+1; j++) {
-			gmp_printf("%Zd ", paillier_dec(0, pubkey, prvkey, ciper_L[j]));
-		}
-		printf("\n");
-		*/
+		
 		alpha = SRO2(ciper_L, alpha);
 
 		if(func){
 			alpha = SBN(alpha);
 		}
-		//gmp_printf("alpha %Zd\n", paillier_dec(0, pubkey, prvkey, alpha));
-	
-		// AND operation (using SM Protocol) 
+		
 		final_alpha = SM_p1(final_alpha, alpha);
 
-		//gmp_printf("final alpha (after) %Zd\n", paillier_dec(0, pubkey, prvkey, alpha));
 	}
 
 	// free memory
@@ -1487,4 +1430,28 @@ paillier_ciphertext_t** protocol::G_Smin_bool(paillier_ciphertext_t** data, int 
 	//printf("End Smin_bool\n");
 
 	return index_arr;
+}
+
+paillier_ciphertext_t* protocol::AS_CMP(paillier_ciphertext_t* u, paillier_ciphertext_t* v)
+{
+	return AS_CMP_sub(u, v);
+}
+
+
+paillier_ciphertext_t* protocol::AS_CMP_sub(paillier_ciphertext_t* u, paillier_ciphertext_t* v)
+{
+	paillier_ciphertext_t* AS_CMP_RESULT;	
+
+	paillier_plaintext_t* plain_u = paillier_dec(0, pubkey, prvkey, u);
+	paillier_plaintext_t* plain_v = paillier_dec(0, pubkey, prvkey, v);
+		
+	if ( mpz_cmp(plain_u->m, plain_v->m) <=0 )
+	{
+		AS_CMP_RESULT = paillier_create_enc(1);
+	}
+	else 
+	{
+		AS_CMP_RESULT = paillier_create_enc(0);
+	}
+	return AS_CMP_RESULT;
 }

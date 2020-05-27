@@ -20,3 +20,14 @@ data_SPE(range) : 0  (-nan%)
 # retrieved node : 7
 
 
+query : ./PPDM345101728695512000000
+total time : 35
+node_SBD : 0  (0%)
+node_SRO : 0  (1%) 	 node_expansion(verify) : 0 (1%)
+node_retrieval : 0  (0%) 	 node_retrieval(verify) : 5 (14%)
+data_SSED_SBD : 0  (0%) 	 data_SBOR : 0 (0%)
+sMINn : 0  (0%) 	 sMINn (verify): 0 (0%)
+data_SPE(range) : 0  (0%) 
+# retrieved node : 7
+
+

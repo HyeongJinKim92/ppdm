@@ -11,10 +11,216 @@
 #include "parallel_protocol.h"
 using namespace std;
 
-int** protocol::SkNN_PB(paillier_ciphertext_t*** data, paillier_ciphertext_t** q, boundary* node, int k, int NumData, int NumNode)
+void protocol::kNN_SSED_SBD_inMultithread(paillier_ciphertext_t*** data, paillier_ciphertext_t** query, paillier_ciphertext_t*** cipher_SBD_distance, paillier_ciphertext_t** cipher_distance)
 {
-	return 0;
+	cout << "kNN_SSED_SBD_inMultithread" << endl;
+	int threadNum = thread_num;
+	if(threadNum > NumData)
+	{
+		threadNum = NumData;
+	}
+
+	std::vector<int> *inputIdx = new std::vector<int>[threadNum];
+	int count = 0;
+
+	for(int i = 0; i < NumData; i++)
+	{
+		inputIdx[count++].push_back(i);
+		count %= threadNum;
+	}
+	
+	
+	std::thread *SSED_SBD_thread = new std::thread[threadNum];
+	for(int i = 0; i < threadNum; i++)
+	{
+		SSED_SBD_thread[i] = std::thread(SSED_SBD_inThread, i, std::ref(inputIdx[i]), std::ref(query), std::ref(data), dim,	std::ref(cipher_distance), std::ref(cipher_SBD_distance), std::ref(*this));
+	}
+
+	for(int i = 0; i < threadNum; i++)
+	{
+		SSED_SBD_thread[i].join();
+	}
+	
+	delete[] SSED_SBD_thread;
+	delete[] inputIdx;
 }
+
+void protocol::recalculate_DISTforkNN_inMultithread(paillier_ciphertext_t*** cipher_SBD_distance, paillier_ciphertext_t** cipher_distance)
+{
+	cout << "recalculate_DISTforkNN_inMultithread" << endl;
+	int threadNum = thread_num;
+	if(threadNum > NumData)
+	{
+		threadNum = NumData;
+	}
+
+	std::vector<int> *inputIdx = new std::vector<int>[threadNum];
+	int count = 0;
+
+	for(int i = 0; i < NumData; i++)
+	{
+		inputIdx[count++].push_back(i);
+		count %= threadNum;
+	}
+	
+	std::thread *recalculate_DISTforkNN_Thread = new std::thread[threadNum];
+	for(int i = 0; i < threadNum; i++)
+	{
+		recalculate_DISTforkNN_Thread[i] = std::thread(recalculate_DISTforkNN_inThread, std::ref(inputIdx[i]), std::ref(cipher_SBD_distance), std::ref(cipher_distance), std::ref(*this));
+	}
+
+	for(int i = 0; i < threadNum; i++)
+	{
+		recalculate_DISTforkNN_Thread[i].join();
+	}
+	
+	delete[] recalculate_DISTforkNN_Thread;
+	delete[] inputIdx;
+}
+
+
+void protocol::UPDATE_SBD_SCORE_InKNN_PB_inMultithread(paillier_ciphertext_t*** cipher_SBD_distance, paillier_ciphertext_t** cipher_V, int NumData)
+{
+	cout << "UPDATE_SBD_SCORE_InKNN_PB_inMultithread" << endl;
+	int threadNum = thread_num;
+	if(threadNum > NumData)
+	{
+		threadNum = NumData;
+	}
+
+	std::vector<int> *inputIdx = new std::vector<int>[threadNum];
+	int count = 0;
+
+	for(int i = 0; i < NumData; i++)
+	{
+		inputIdx[count++].push_back(i);
+		count %= threadNum;
+	}
+	std::thread *UPDATE_SBD_SCORE_InKNN_PB_Thread = new std::thread[threadNum];
+	for(int i = 0; i < threadNum; i++)
+	{
+		UPDATE_SBD_SCORE_InKNN_PB_Thread[i] = std::thread(UPDATE_SBD_SCORE_InKNN_PB_inThread, std::ref(inputIdx[i]), std::ref(cipher_SBD_distance), std::ref(cipher_V), std::ref(*this));
+	}
+	for(int i = 0; i < threadNum; i++)
+	{
+		UPDATE_SBD_SCORE_InKNN_PB_Thread[i].join();
+	}
+
+	delete[] UPDATE_SBD_SCORE_InKNN_PB_Thread;
+	delete[] inputIdx;
+}
+
+
+int** protocol::SkNN_PB(paillier_ciphertext_t*** data, paillier_ciphertext_t** query, int k, int NumData)
+{
+	cout << "\n=========================== SkNN_PB start ============================\n" << endl;
+
+	if( thread_num < 1 ) 
+	{
+		cout << "THREAD NUM IS ERROR" << endl;
+		exit(1);
+	}
+
+	int i=0, s=0, n=0, t=0, j=0;
+	int rand = 5;
+	n = NumData;
+	
+	time_t startTime = 0;
+	time_t endTime = 0;
+	float gap = 0.0;
+
+	paillier_plaintext_t * pt = paillier_plaintext_from_ui(0);
+
+	paillier_ciphertext_t* cipher_binary;
+	paillier_ciphertext_t* cipher_min	= paillier_create_enc_zero();
+	paillier_ciphertext_t* cipher_rand	= paillier_create_enc(rand);
+
+	paillier_ciphertext_t** cipher_distance = (paillier_ciphertext_t**)malloc(sizeof(paillier_ciphertext_t*)*NumData);
+	paillier_ciphertext_t*** cipher_SBD_distance = (paillier_ciphertext_t***)malloc(sizeof(paillier_ciphertext_t**)*NumData);
+	paillier_ciphertext_t** cipher_mid = (paillier_ciphertext_t**)malloc(sizeof(paillier_ciphertext_t*)*NumData);
+	paillier_ciphertext_t** cipher_Smin = (paillier_ciphertext_t**)malloc(sizeof(paillier_ciphertext_t*)*NumData);
+	paillier_ciphertext_t** cipher_V=(paillier_ciphertext_t**)malloc(sizeof(paillier_ciphertext_t*)*NumData);
+
+
+	paillier_ciphertext_t*** cipher_result = (paillier_ciphertext_t***)malloc(sizeof(paillier_ciphertext_t**)*k);
+
+	for( i = 0 ; i < size; i++ ){
+		cipher_Smin[i] = ciper_zero;
+	}
+
+	for( i = 0 ; i < NumData ; i++ ){
+		cipher_distance[i] 	= ciper_zero;
+		cipher_SBD_distance[i] = (paillier_ciphertext_t**)malloc(sizeof(paillier_ciphertext_t*)*size);
+		cipher_V[i]	= ciper_zero;
+	}
+
+	for( i = 0 ; i < k ; i++ ){
+		cipher_result[i] = (paillier_ciphertext_t**)malloc(sizeof(paillier_ciphertext_t*)*dim);
+		for( j = 0 ; j < dim; j ++ ){
+			cipher_result[i][j] = paillier_create_enc_zero();
+		}
+	}
+
+	kNN_SSED_SBD_inMultithread(data, query, cipher_SBD_distance, cipher_distance);
+
+	for( s = 0 ; s < k ; s++ ){
+		printf("\n%dth sMINn start \n", s+1);
+
+		startTime = clock();
+		cipher_Smin = Smin_n_Multithread(cipher_SBD_distance, NumData); // bit로 표현된 암호화 min 거리 추출
+		endTime = clock();
+		gap = (float)(endTime-startTime)/(CLOCKS_PER_SEC);
+		sMINn_first_time += gap;
+		printf("%dth sMINn time : %f\n", s+1, gap);	
+	
+		// bit로 표현된 암호화 min 거리를 암호화 정수로 변환
+		for( j = size ; j > 0 ; j-- ){
+			t = (int)pow(2, j-1);
+			cipher_binary = paillier_create_enc(t);
+			cipher_binary = SM_p1(cipher_binary, cipher_Smin[size-j]);
+			paillier_mul(pubkey, cipher_min, cipher_binary, cipher_min);
+			paillier_freeciphertext(cipher_binary);
+		}
+		paillier_print("min dist : ", cipher_min);
+		
+		printf("\n== recalculate query<->data distances ===\n");
+		// 이전 iteration에서 min값으로 선택된 데이터의 거리가 secure하게 MAX로 변환되었기 때문에, 
+		// 질의-데이터 간 거리 계산을 모두 다시 수행
+		if( s != 0 )
+		{
+			recalculate_DISTforkNN_inMultithread(cipher_SBD_distance, cipher_distance);
+		}
+		
+		// 질의-데이터 거리와 min 거리와의 차를 구함 (min 데이터의 경우에만 0으로 만들기 위함)
+		DuringProcessedInTOPK_PB_inMultithread(cipher_distance, cipher_mid, cipher_min, cipher_rand, NumData);
+		cipher_V = SkNNm_sub(cipher_mid, NumData);
+		// min 데이터 추출
+		ExtractTOPKInTOPK_PB_inMultithread(data, cipher_V, cipher_result, NumData, s);
+		printf("cipher_result : ");	
+		for( j = 0 ; j < dim; j++ ){
+			gmp_printf("%Zd ", paillier_dec(0, pubkey, prvkey,cipher_result[s][j]));
+		}
+		printf("\n");		
+
+		// Data SBOR 수행
+		UPDATE_SBD_SCORE_InKNN_PB_inMultithread(cipher_SBD_distance, cipher_V, NumData);
+		cipher_min = paillier_enc(0, pubkey, pt, paillier_get_rand_devurandom);	
+	}
+	
+	// user(Bob)에게 결과 전송을 위해 random 값 삽입
+	for(i=0;i<k;i++){
+		for(j=0; j<dim; j++){
+			paillier_mul(pubkey,cipher_result[i][j],cipher_result[i][j],cipher_rand);
+		}
+	}
+
+
+	
+	return SkNNm_Bob2(cipher_result, rand, k, dim);
+}
+
+
+
 int** protocol::SkNN_PGI(paillier_ciphertext_t*** data, paillier_ciphertext_t** q, boundary* node, int k, int NumData, int NumNode)
 {
 	printf("\n=== SkNN_PGI start ===\n");

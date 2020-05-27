@@ -15,7 +15,7 @@
 using namespace std;
 
 
-char shellquery[128]; 		
+char shellquery[256]; 		
 protocol proto;
 setting setting;
 
@@ -23,6 +23,7 @@ setting setting;
 void ppdm_main(char* argv[])
 {
 	parsed_query * user_query = parsing_query(argv);
+	print_query(user_query);
 	proto.set_Param(user_query);
 	if(user_query->query == RANGE)					range_main(user_query);
 	else if(user_query->query == TOPK)				topk_main(user_query);
@@ -59,9 +60,9 @@ int range_main(parsed_query * user_query)
 		paillier_print("RR : ", q.RR[i]);
 	}
 
-	char kd_filename[128]; 		
 	boundary* node = 0;
 	
+	char kd_filename[128]; 		
 	sprintf(kd_filename, "input/kd_range/KD_d%d_m%d_L%d_h%d.txt", user_query->data_n, user_query->dim_n, user_query->bit_s, user_query->tree_level);
 	node = setting.KdInfo_read(kd_filename, user_query->dim_n, &NumNode);	
 
@@ -109,24 +110,13 @@ int range_main(parsed_query * user_query)
 		printf("\n");
 	}
 	
-	//free
-	for(i=0; i<2; i++) {
-		for(j=0; j<user_query->dim_n; j++) {
-			paillier_freeciphertext(node[i].LL[j]);	
-			paillier_freeciphertext(node[i].RR[j]);
-		}
-	}
-	
-	for(j=0; j<user_query->dim_n; j++) {
-			paillier_freeciphertext(q.LL[j]);		
-			paillier_freeciphertext(q.RR[j]);
-	}
 
-	free(node);
 	proto.protocol_free();
 
 	return 0;
 }
+
+
 int topk_main(parsed_query* user_query)
 {
 	paillier_pubkey_t* pub;
@@ -184,15 +174,11 @@ int topk_main(parsed_query* user_query)
 	printf("\n");
 
 	int NumNode = 0;
-	char kd_filename[128]; 
 	boundary* node = 0;
 
-
-	if(	user_query->tquery_t != TOPK_B )
-	{
-		sprintf(kd_filename, "input/kd_topk/KD_d%d_m%d_L%d_h%d.txt", user_query->data_n, user_query->dim_n, user_query->bit_s, user_query->tree_level);
-		node = setting.KdInfo_read(kd_filename, user_query->dim_n, &NumNode);	
-	}
+	char kd_filename[128]; 
+	sprintf(kd_filename, "input/kd_topk/KD_d%d_m%d_L%d_h%d.txt", user_query->data_n, user_query->dim_n, user_query->bit_s, user_query->tree_level);
+	node = setting.KdInfo_read(kd_filename, user_query->dim_n, &NumNode);	
 
 	char inputFilename[128]; 
 	sprintf(inputFilename, "input/topk/d%d_m%d_L%d.txt", user_query->data_n, user_query->dim_n, user_query->bit_s);
@@ -240,6 +226,8 @@ int topk_main(parsed_query* user_query)
 		printf("\n");
 	}
 
+
+
 	proto.protocol_free();
 	return 0;
 }
@@ -272,15 +260,13 @@ int knn_main(parsed_query* user_query)
 	printf("\n\n");
 
 	int NumNode = 0;
-	char kd_filename[128]; 
 	boundary* node = 0;
 
 
-	if(	user_query->kquery_t != KNN_B )
-	{
-		sprintf(kd_filename, "input/kd_knn/KD_d%d_m%d_L%d_h%d.txt", user_query->data_n, user_query->dim_n, user_query->bit_s, user_query->tree_level);
-		node = setting.KdInfo_read(kd_filename, user_query->dim_n, &NumNode);
-	}
+	char kd_filename[128]; 
+	sprintf(kd_filename, "input/kd_knn/KD_d%d_m%d_L%d_h%d.txt", user_query->data_n, user_query->dim_n, user_query->bit_s, user_query->tree_level);
+	node = setting.KdInfo_read(kd_filename, user_query->dim_n, &NumNode);
+
 
 	char inputFilename[128]; 
 	sprintf(inputFilename, "input/knn/d%d_m%d_L%d.txt", user_query->data_n, user_query->dim_n, user_query->bit_s);
@@ -300,9 +286,9 @@ int knn_main(parsed_query* user_query)
 	if(user_query->kquery_t == KNN_B)			SkNNm = proto.SkNN_B(cipher, cipher_query, user_query->k, user_query->data_n); //KNNB
 	else if(user_query->kquery_t == KNN_I) 		SkNNm = proto.SkNN_I(cipher, cipher_query, node, user_query->k, user_query->data_n, NumNode);  //KNNI
 	else if(user_query->kquery_t == KNN_GI) 	SkNNm = proto.SkNN_G(cipher, cipher_query, node, user_query->k, user_query->data_n, NumNode); //KNNGI
-	else if(user_query->kquery_t == KNN_PB) 	SkNNm = proto.SkNN_PB(cipher, cipher_query, node, user_query->k, user_query->data_n, NumNode); //KNNGI
-	else if(user_query->kquery_t == KNN_PGI) 	SkNNm = proto.SkNN_PGI(cipher, cipher_query, node, user_query->k, user_query->data_n, NumNode); //KNNGI
-	else if(user_query->kquery_t == KNN_PAI) 	SkNNm = proto.SkNN_PAI(cipher, cipher_query, node, user_query->k, user_query->data_n, NumNode); //KNNGI
+	else if(user_query->kquery_t == KNN_PB) 	SkNNm = proto.SkNN_PB(cipher, cipher_query, user_query->k, user_query->data_n); //KNNPB
+	else if(user_query->kquery_t == KNN_PGI) 	SkNNm = proto.SkNN_PGI(cipher, cipher_query, node, user_query->k, user_query->data_n, NumNode); //KNN PGI
+	else if(user_query->kquery_t == KNN_PAI) 	SkNNm = proto.SkNN_PAI(cipher, cipher_query, node, user_query->k, user_query->data_n, NumNode); //KNN PAI
 
 	endTime = std::chrono::system_clock::now();
 	duration_sec = endTime - startTime;
@@ -328,6 +314,7 @@ int knn_main(parsed_query* user_query)
 	}
 
 	proto.protocol_free();
+
 	return 0;
 }
 int classification_main(parsed_query* user_query)
@@ -359,12 +346,9 @@ int classification_main(parsed_query* user_query)
 	boundary* node = 0;
 
 
-	if(	user_query->cquery_t != CLASSIFICATION_B )
-	{
-		char kd_filename[128]; 
-		sprintf(kd_filename, "input/kd_classification/KD_d%d_m%d_L%d_h%d.txt", user_query->data_n, user_query->dim_n, user_query->bit_s, user_query->tree_level);
-		node = setting.KdInfo_read(kd_filename, user_query->dim_n, &NumNode);
-	}
+	char kd_filename[128]; 
+	sprintf(kd_filename, "input/kd_classification/KD_d%d_m%d_L%d_h%d.txt", user_query->data_n, user_query->dim_n, user_query->bit_s, user_query->tree_level);
+	node = setting.KdInfo_read(kd_filename, user_query->dim_n, &NumNode);
 
 	char inputFilename[128]; 
 	sprintf(inputFilename, "input/classification/d%d_m%d_L%d.txt", user_query->data_n, user_query->dim_n, user_query->bit_s);
@@ -435,13 +419,9 @@ int kmeans_main(parsed_query* user_query)
 	boundary* node = 0;
 
 	char kd_filename[128]; 
+	sprintf(kd_filename, "input/Grid/Grid_%d_m%d_L%d_h%d.txt", user_query->data_n, user_query->dim_n, user_query->bit_s, user_query->tree_level);
+	node = setting.KdInfo_read(kd_filename, user_query->dim_n, &NumNode);	
 
-	if(	user_query->mquery_t != KMEANS_B )
-	{
-		char kd_filename[128]; 
-		sprintf(kd_filename, "input/Grid/Grid_%d_m%d_L%d_h%d.txt", user_query->data_n, user_query->dim_n, user_query->bit_s, user_query->tree_level);
-		node = setting.KdInfo_read(kd_filename, user_query->dim_n, &NumNode);	
-	}
 
 	char inputFilename[128]; 
 	sprintf(inputFilename, "input/kmeans/d%d_m%d_L%d.txt", user_query->data_n, user_query->dim_n, user_query->bit_s);
@@ -496,22 +476,26 @@ int kmeans_main(parsed_query* user_query)
 	return 0;
 }
 
+
+/*
+	parse the user query 
+*/
 parsed_query* parsing_query(char* argv[])
 {
 	parsed_query* query = new parsed_query;
-	
+	//query setting
 	query->query = (QUERY)atoi(argv[1]);
-	cout << query->query << endl;
-
+	
+	//query method setting
 	if(query->query == RANGE)				query->rquery_t = (RANGE_TYPE)atoi(argv[2]);
 	else if(query->query == TOPK)			query->tquery_t = (TOPK_TYPE)atoi(argv[2]);
-	else if(query->query == KNN)				query->kquery_t = (KNN_TYPE)atoi(argv[2]);
+	else if(query->query == KNN)			query->kquery_t = (KNN_TYPE)atoi(argv[2]);
 	else if(query->query == CLASSIFICATION)	query->cquery_t = (CLASSIFICATION_TYPE)atoi(argv[2]);
 	else if(query->query == KMEANS)			query->mquery_t = (KMEANS_TYPE)atoi(argv[2]);
 	else if(query->query == ASSOCATION)		{}
 	else if(query->query == TEST)			{}
 
-
+	//parameter setting
 	query->tree_level = atoi(argv[3]);
 	query->thread_n = atoi(argv[4]);
 	query->data_n = atoi(argv[5]);
@@ -558,10 +542,119 @@ parsed_query* parsing_query(char* argv[])
 	else if(query->query == ASSOCATION)		{}
 	else if(query->query == TEST)			{}
 	
+	//query merge
+	for(int i = 0; argv[i] !=NULL ; i++)
+	{
+		strcat(shellquery, argv[i]);
+		strcat(shellquery, "  ");
+	}
+
 	return query;
 }
 
-void print_query()
+
+/*
+	Output the query
+*/
+void print_query(parsed_query * query)
 {
-	
+	if(query->query == RANGE)
+	{
+		switch(query->rquery_t){
+			case RANGE_B:	
+				cout << "RANGE_B" <<endl; break;
+			case RANGE_I:	
+				cout << "RANGE_I" <<endl; break;
+			case RANGE_GI:	
+				cout << "RANGE_GI" <<endl; break;
+			case RANGE_PB:	
+				cout << "RANGE_PB" <<endl; break;
+			case RANGE_PGI:	
+				cout << "RANGE_PGI" <<endl; break;
+			case RANGE_PAI:	
+				cout << "RANGE_PAI" <<endl; break;
+			default: 
+				break;
+		}
+	}
+	else if(query->query == TOPK)
+	{
+		switch(query->tquery_t){
+			case TOPK_B:	
+				cout << "TOPK_B" <<endl; break;
+			case TOPK_I:	
+				cout << "TOPK_I" <<endl; break;
+			case TOPK_GI:	
+				cout << "TOPK_GI" <<endl; break;
+			case TOPK_PB:	
+				cout << "TOPK_PB" <<endl; break;
+			case TOPK_PGI:	
+				cout << "TOPK_PGI" <<endl; break;
+			case TOPK_PAI:	
+				cout << "TOPK_PAI" <<endl; break;
+			default: 
+				break;
+		}
+	}
+	else if(query->query == KNN)			
+	{
+		switch(query->kquery_t){
+			case KNN_B:	
+				cout << "KNN_B" <<endl; break;
+			case KNN_I:	
+				cout << "KNN_I" <<endl; break;
+			case KNN_GI:	
+				cout << "KNN_GI" <<endl; break;
+			case KNN_PB:	
+				cout << "KNN_PB" <<endl; break;
+			case KNN_PGI:	
+				cout << "KNN_PGI" <<endl; break;
+			case KNN_PAI:	
+				cout << "KNN_PAI" <<endl; break;
+			default: 
+				break;
+		}
+	}
+	else if(query->query == CLASSIFICATION)	
+	{
+		switch(query->cquery_t){
+			case CLASSIFICATION_B:	
+				cout << "CLASSIFICATION_B" <<endl; break;
+			case CLASSIFICATION_I:	
+				cout << "CLASSIFICATION_I" <<endl; break;
+			case CLASSIFICATION_GI:	
+				cout << "CLASSIFICATION_GI" <<endl; break;
+			case CLASSIFICATION_PB:	
+				cout << "CLASSIFICATION_PB" <<endl; break;
+			case CLASSIFICATION_PGI:	
+				cout << "CLASSIFICATION_PGI" <<endl; break;
+			case CLASSIFICATION_PAI:	
+				cout << "CLASSIFICATION_PAI" <<endl; break;
+			default: 
+				break;
+		}
+	}	
+	else if(query->query == KMEANS)			
+	{
+		switch(query->mquery_t){
+			case KMEANS_B:	
+				cout << "KMEANS_B" <<endl; break;
+			case KMEANS_I:	
+				cout << "KMEANS_I" <<endl; break;
+			case KMEANS_GI:	
+				cout << "KMEANS_GI" <<endl; break;
+			case KMEANS_PB:	
+				cout << "KMEANS_PB" <<endl; break;
+			case KMEANS_PGI:	
+				cout << "KMEANS_PGI" <<endl; break;
+			case KMEANS_PAI:	
+				cout << "KMEANS_PAI" <<endl; break;
+			default: 
+				break;
+		}
+	}
+	else if(query->query == ASSOCATION)		{}
+	else if(query->query == TEST)			{}
+
+	cout << "TREE : " << query->tree_level << "\t THREAD : " << query->thread_n << "\t DATA : " << query->data_n << "\t DIM : " << query->dim_n << "\t BITS : " << query->bit_s << "\t KEY : " << query->key_s << endl;
 }

@@ -464,8 +464,6 @@ int** protocol::sRange_G(paillier_ciphertext_t*** data, boundary q, boundary* no
 
 	paillier_ciphertext_t** alpha = (paillier_ciphertext_t**)malloc(sizeof(paillier_ciphertext_t*)*cnt);
 	
-	cout<<"check1 !!!"<<endl;
-
 	// cand 비트 변환 수행 및 SPE호출
 	for(i=0; i<cnt; i++) {
 		startTime = clock();
@@ -480,14 +478,11 @@ int** protocol::sRange_G(paillier_ciphertext_t*** data, boundary q, boundary* no
 		}
 	}
 
-	cout<<"check2 !!!"<<endl;
 	
-	cout<<"sRangeG NumNodeGroup : "<<NumNodeGroup<<endl;
-	cout<<"sRangeG cnt : "<<cnt<<endl;
+
 	paillier_ciphertext_t*** result;
 	result = sRange_result(alpha, cand, cnt, NumNodeGroup, result_num);
 	
-	cout<<"sRange_result end"<<endl;
 
 	return FsRange_Bob(result, rand, (*result_num), dim);
 }
@@ -500,24 +495,12 @@ paillier_ciphertext_t*** protocol::sRange_result(paillier_ciphertext_t** alpha, 
 	cout<<"sRange_result FanOut : "<<FanOut<<endl;
 
 	paillier_ciphertext_t*** result = (paillier_ciphertext_t***)malloc(sizeof(paillier_ciphertext_t**)*NumNodeGroup*FanOut);
-	
-	cout<<"check sRange_result !!!"<<endl;
-
 	for(i=0; i<cnt; i++){
 		if(strcmp( paillier_plaintext_to_str( paillier_dec(0, pub, prv, alpha[i])), paillier_plaintext_to_str(plain_one)) == 0) 
 		{
-			printf("%d ", i);	//값 확인 		
-			
-			gmp_printf("%dth data -> coord : ", i);
-			for(j=0; j<dim; j++) {
-				gmp_printf("%Zd ", paillier_dec(0, pub, prv, cand[i][j]));				
-			}
-			
-			//paillier_subtract(pubkey, cand[i], cand[i], c_rand);
-		
 			result[(*result_num)]=cand[i]; //result에 삽입
 			(*result_num)++;
-		}	
+		}
 	}
 	return result;
 }

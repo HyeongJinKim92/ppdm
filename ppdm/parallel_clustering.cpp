@@ -121,7 +121,7 @@ paillier_ciphertext_t*** protocol::Parallel_Clustering_m_Grid(paillier_ciphertex
 	}
 	
 	
-	for(int i = 0 ; i < 100 ; i++)
+	for(int i = 0 ; i < 1000 ; i++)
 	{
 		printf("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!ROUND : %d !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n", i);
 		int t;
@@ -132,11 +132,11 @@ paillier_ciphertext_t*** protocol::Parallel_Clustering_m_Grid(paillier_ciphertex
 			}
 		}
 
-		////////////////////////////
 		Parallel_Compute_Cluster(NumData, cipher, formerSumCluster, NewSumCluster, NewSumCntCluster);
+		////////////////////////////
 /*
 		for(int i = 0 ; i < NumData ; i++){
-						
+
 			for( int j = 0 ; j < k ; j++){
 				Distance_center_data[i][j] = SSEDm(cipher[i], formerSumCluster[j], dim);
 				//Distance_center_data[i][j] = DP_SSED(cipher[i], formerSumCluster[j], dim);

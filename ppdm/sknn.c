@@ -1085,7 +1085,7 @@ paillier_ciphertext_t* protocol::SMSn_sub(paillier_ciphertext_t* ciper, paillier
 	return rand;
 }
 
-int ** protocol::SkNN_b(paillier_ciphertext_t*** ciper, paillier_ciphertext_t** query, int k, int row_number){
+int ** protocol::SkNN_plain(paillier_ciphertext_t*** ciper, paillier_ciphertext_t** query, int k, int row_number){
 	int i = 0, j = 0;
 	int rand = 10;
 	int * idx = (int *)malloc(sizeof(int)*k);

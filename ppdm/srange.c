@@ -60,9 +60,6 @@ paillier_ciphertext_t*** protocol::sNodeRetrievalforRange(paillier_ciphertext_t*
 
 		endTime = clock();
 		node_SRO_time += (float)(endTime-startTime)/(CLOCKS_PER_SEC);
-
-		if(strcmp( paillier_plaintext_to_str( paillier_dec(0, pub, prv, alpha[i])), paillier_plaintext_to_str(plain_one)) == 0) 
-			printf("%dth node overlaps the query region.\n", i);
 	}
 
 	printf("node SBD time: %f\n", node_SBD_time);
@@ -217,16 +214,8 @@ int** protocol::sRange_I(paillier_ciphertext_t*** data, boundary q, boundary* no
 
 	paillier_ciphertext_t** alpha = (paillier_ciphertext_t**)malloc(sizeof(paillier_ciphertext_t*)*cnt);
 
-	//float progress = 0.1;
-	// cand 비트 변환 수행 및 SPE호출
 	for(i=0; i<cnt; i++) {
-		/*
-		if(i/(float)cnt >= progress)
-		{
-			printf("%.0f%%... ", progress*100);
-			progress += 0.1;
-		}
-		*/
+
 		startTime = clock();
 
 		for(j=0; j<dim; j++) {
@@ -235,64 +224,35 @@ int** protocol::sRange_I(paillier_ciphertext_t*** data, boundary q, boundary* no
 		}
 		endTime = clock();
 		data_SSED_SBD_time += (float)(endTime-startTime)/(CLOCKS_PER_SEC);
-		//printf("data SSED & SBD time : %f\n", (float)(endTime-startTime)/(CLOCKS_PER_SEC));
 		
 		startTime = clock();
 		alpha[i]=SRO(candLL_bit,candRR_bit,ciper_qLL_bit, ciper_qRR_bit);
-		//alpha[i]=SPE(cand_bit,ciper_nodeLL_bit, ciper_nodeRR_bit);		
 		
 		endTime = clock();
 		data_SPE_time += (float)(endTime-startTime)/(CLOCKS_PER_SEC);
-		//printf("data SPE time : %f\n", (float)(endTime-startTime)/(CLOCKS_PER_SEC));
-
+		
 	}
 
-	//알파값 확인
-	/*
-	printf("SPE alpha\n");
-	for(i=0; i<cnt; i++) {
-		gmp_printf("%Zd ",paillier_dec(0, pub, prv, alpha[i]));
-	}
-	printf("\n");	
-	*/
+
 	paillier_ciphertext_t*** result = (paillier_ciphertext_t***)malloc(sizeof(paillier_ciphertext_t**)*NumNodeGroup*FanOut); //할당방법 변경해야하고
 
 	//값 확인 && If αi = 1, E(t’i)를 result에 삽입
 	for(i=0; i<cnt; i++){
 		if(strcmp( paillier_plaintext_to_str( paillier_dec(0, pub, prv, alpha[i])), paillier_plaintext_to_str(plain_one)) == 0) 
 		{
-			printf("%d ", i);	
-			/*
-			gmp_printf("%dth data -> coord : ", i);
-			for(j=0; j<dim; j++) {
-				gmp_printf("%Zd ", paillier_dec(0, pub, prv, cand[i][j]));				
-			}
-			*/
-
 			result[(*result_num)]=cand[i]; //result에 삽입
 			(*result_num)++;
 			//printf("\n");
 		}	
 	}
-	//printf("th point overlaps the query region.\n");	
-	
-	/*
-	//result 확인
-	for(i=0;i<(*result_num);i++){
-		printf("%dth result.\n", i);
-		for(j=0; j<dim; j++) {				
-				gmp_printf("%Zd ", paillier_dec(0, pubkey, prvkey, result[i][j]));				
-			}
-		printf("\n");
-	}
-	*/
+
 
 	// user(Bob)에게 결과 전송을 위해 random 값 삽입
 	for(i=0;i<(*result_num);i++){
 		//printf("%d final result : ", i);
 		for(j=0; j<dim; j++){
 			paillier_mul(pubkey,result[i][j],result[i][j],ciper_rand);
-			//gmp_printf("%Zd\t", paillier_dec(0, pubkey, prvkey, ciper_result[i][j]));
+			
 		}
 		//printf("\n");
 	}
@@ -382,93 +342,61 @@ int** protocol::sRange_B(paillier_ciphertext_t*** data, boundary q, boundary* no
 {
 	printf("\n=====now sRange_B start=====\n");
 
-	printf("NumNode : %d %d %d \n", NumNode, dim, NumData);
 	int i=0, j=0, m=0;
 	
-	time_t startTime = 0;
-	time_t endTime = 0;
-	float gap = 0.0;
 	int rand = 5;
 	int NumNodeGroup = 0;
 
 	paillier_ciphertext_t*** ciper_qLL_bit = (paillier_ciphertext_t***)malloc(sizeof(paillier_ciphertext_t**)*dim);
 	paillier_ciphertext_t*** ciper_qRR_bit = (paillier_ciphertext_t***)malloc(sizeof(paillier_ciphertext_t**)*dim);
-	paillier_ciphertext_t*** ciper_nodeLL_bit = (paillier_ciphertext_t***)malloc(sizeof(paillier_ciphertext_t**)*dim);
-	paillier_ciphertext_t*** ciper_nodeRR_bit = (paillier_ciphertext_t***)malloc(sizeof(paillier_ciphertext_t**)*dim);
 
-	paillier_ciphertext_t* ciper_rand = paillier_create_enc(rand);
+	paillier_ciphertext_t* cipher_rand = paillier_create_enc(rand);
 	
+	cout << "\n=====================SBD QUERY=====================\n" << endl;
 	// query 비트 변환 수행
-	for(i=0; i<dim; i++) {
+	for( i = 0 ; i < dim ; i++ ) {
 		ciper_qLL_bit[i] = SBD_for_SRO(q.LL[i], 0);			// query LL bound 변환
 		ciper_qRR_bit[i] = SBD_for_SRO(q.RR[i], 1);		// query RR bound 변환
 	}
 
 
 	paillier_ciphertext_t** alpha = (paillier_ciphertext_t**) malloc(sizeof(paillier_ciphertext_t*)*NumData);
-	for(i=0; i<NumData; i++){
-		alpha[i] = (paillier_ciphertext_t*) malloc(sizeof(paillier_ciphertext_t));
-		mpz_init(alpha[i]->c);
-	}
-	
-
 	paillier_ciphertext_t*** candLL_bit = (paillier_ciphertext_t***)malloc(sizeof(paillier_ciphertext_t**)*dim);
 	paillier_ciphertext_t*** candRR_bit = (paillier_ciphertext_t***)malloc(sizeof(paillier_ciphertext_t**)*dim);
 
 
+	cout << "\n=====================SBD DATA and SRO=====================\n" << endl;
 
-	for(i=0; i<NumData; i++) {
-		for(j=0; j<dim; j++) {
+	for( i = 0 ; i < NumData ; i++ ) {
+		for( j = 0 ; j < dim ; j++ ) {
 			candLL_bit[j] = SBD_for_SRO(data[i][j], 0);			// query cand 변환
 			candRR_bit[j] = SBD_for_SRO(data[i][j], 1);		
 		}		
-		alpha[i]=SRO(candLL_bit, candRR_bit, ciper_qLL_bit, ciper_qRR_bit);
+		alpha[i] = SRO(candLL_bit, candRR_bit, ciper_qLL_bit, ciper_qRR_bit);
 	}
 
-	//알파값 확인
-/*
-	printf("SPE alpha\n");
-	for(i=0; i<NumData; i++) {
-		gmp_printf("%Zd ",paillier_dec(0, pub, prv, alpha[i]));
-	}
-	printf("\n");
-*/
+
+	cout << "\n=======================EXTRACT RESULT=====================\n" << endl;
+
+
 	paillier_ciphertext_t*** result = (paillier_ciphertext_t***)malloc(sizeof(paillier_ciphertext_t**)*NumData); //할당방법 변경해야하고
 
 	//값 확인 && If αi = 1, E(t’i)를 result에 삽입
-	for(i=0; i<NumData; i++){
+	for( i = 0 ; i < NumData ; i++ ){
 		if(strcmp( paillier_plaintext_to_str( paillier_dec(0, pub, prv, alpha[i])), paillier_plaintext_to_str(plain_one)) == 0) 
 		{
-			printf("%dth point overlaps the query region.\n", i);	//값 확인 		
-			//gmp_printf("%dth data -> coord : ", i);
-			for(j=0; j<dim; j++) {
-				gmp_printf("%Zd ", paillier_dec(0, pub, prv, data[i][j]));				
-			}
-
 			result[(*result_num)]=data[i]; //result에 삽입
 			(*result_num)++;
-			printf("\n");
 		}	
 	}
 
-	cout<<"(*result_num)"<<(*result_num)<<endl;
-
-	for(i=0;i<(*result_num);i++){
-		printf("%dth result.\n", i);
-		for(j=0; j<dim; j++) {				
-				gmp_printf("%Zd ", paillier_dec(0, pubkey, prvkey, result[i][j]));				
-			}
-		printf("\n");
-	}
-	
 	// user(Bob)에게 결과 전송을 위해 random 값 삽입
-	for(i=0;i<(*result_num);i++){
-		printf("%dth result.\n", i);
-		for(j=0; j<dim; j++) {	
-				paillier_mul(pubkey,result[i][j],result[i][j],ciper_rand);
-				gmp_printf("%Zd ", paillier_dec(0, pub, prv, result[i][j]));				
-			}
-		printf("\n");
+	for( i = 0 ; i<(*result_num) ; i++ )
+	{
+		for(j=0; j<dim; j++) 
+		{	
+				paillier_mul(pubkey, result[i][j], result[i][j], cipher_rand);
+		}
 	}
 	return FsRange_Bob(result, rand, (*result_num), dim);
 }
