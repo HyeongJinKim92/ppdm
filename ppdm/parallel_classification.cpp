@@ -289,6 +289,13 @@ void protocol::SMSnMultithread3(int cnt, int s, paillier_ciphertext_t **V, paill
 
 int** protocol::Classification_PB(paillier_ciphertext_t*** data, paillier_ciphertext_t** query, paillier_ciphertext_t** Entire_set, boundary* node, int k, int NumData, int NumNode, int Entire_num)
 {
+	cout << "\n==============================  Classification_PB  START  ==============================\n" << endl;
+	if( thread_num < 1 ) 
+	{
+		cout << "THREAD NUM IS ERROR" << endl;
+		exit(1);
+	}
+
 	int n = 0, t = 0;
 	int rand = 5;
 	n = NumData;
@@ -552,6 +559,14 @@ int** protocol::Classification_PB(paillier_ciphertext_t*** data, paillier_cipher
 int** protocol::Classification_PGI(paillier_ciphertext_t*** data, paillier_ciphertext_t** query, paillier_ciphertext_t** Entire_set, boundary* node, int k, int NumData, int NumNode, int Entire_num)
 {
 	printf("\n=== Classification_PGI start ===\n");
+
+	if( thread_num < 1 ) 
+	{
+		cout << "THREAD NUM IS ERROR" << endl;
+		exit(1);
+	}
+
+
 	int rand = 5;
 	int cnt = 0;	 
 	int NumNodeGroup = 0;
@@ -832,5 +847,10 @@ int** protocol::Classification_PGI(paillier_ciphertext_t*** data, paillier_ciphe
 
 int** protocol::Classification_PAI(paillier_ciphertext_t*** data, paillier_ciphertext_t** query, paillier_ciphertext_t** Entire_set, boundary* node, int k, int NumData, int NumNode, int Entire_num)
 {
-	
+	if( thread_num < 1 ) 
+	{
+		cout << "THREAD NUM IS ERROR" << endl;
+		exit(1);
+	}
+
 }

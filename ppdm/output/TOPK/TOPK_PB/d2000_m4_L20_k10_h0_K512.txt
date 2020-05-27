@@ -1,21 +1,10 @@
-query : ./PPDM13742000420105121010101010
-total time : 1935
+query : ./PPDM  1  3  7  4  2000  4  20  10  512  10  10  10  10  10  
+total time : 849
 node_SBD : 0  (0%)
 node_SRO : 0  (0%) 	 node_expansion(verify) : 0 (0%)
 node_retrieval : 0  (0%) 	 node_retrieval(verify) : 0 (0%)
-data_SSED_SBD : 0  (0%) 	 data_SBOR : 546 (28%)
-sMINn : 1533  (79%) 	 sMINn (verify): 0 (0%)
-data_SPE(range) : 0  (0%) 
-# retrieved node : 0
-
-
-query : ./PPDM13742000420105121010101010
-total time : 1335
-node_SBD : 0  (0%)
-node_SRO : 0  (0%) 	 node_expansion(verify) : 0 (0%)
-node_retrieval : 0  (0%) 	 node_retrieval(verify) : 0 (0%)
-data_SSED_SBD : 0  (0%) 	 data_SBOR : 552 (41%)
-sMINn : 1531  (115%) 	 sMINn (verify): 0 (0%)
+data_SSED_SBD : 0  (0%) 	 data_SBOR : 0 (0%)
+sMINn : 1535  (181%) 	 sMINn (verify): 0 (0%)
 data_SPE(range) : 0  (0%) 
 # retrieved node : 0
 

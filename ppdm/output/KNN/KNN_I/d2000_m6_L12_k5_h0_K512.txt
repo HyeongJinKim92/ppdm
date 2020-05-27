@@ -1,0 +1,11 @@
+query : ./PPDM  2  1  7  0  2000  6  12  5  512  10  10  10  10  10  10  
+total time : 1200
+node_SBD : 36  (3%)
+node_SRO : 38  (3%) 	 node_expansion(verify) : 48 (4%)
+node_retrieval : 17  (1%) 	 node_retrieval(verify) : 16 (1%)
+data_SSED_SBD : 114  (9%) 	 data_SBOR : 164 (14%)
+sMINn : 7  (1%) 	 sMINn (verify): 430 (36%)
+data_SPE(range) : 0  (0%) 
+# retrieved node : 64
+
+

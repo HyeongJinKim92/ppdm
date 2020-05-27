@@ -615,6 +615,48 @@ void SBOR_inThread(int index, std::vector<int> inputIdx, paillier_ciphertext_t *
 	}
 }
 
+//COMPUTE NEW CLUSTERSUM for KMEANS_CLUSTERING_PB in thread
+
+void ComputeNEWCLUSTER_forKMEANS_PBinThread(std::vector<int> input, paillier_ciphertext_t *** data, paillier_ciphertext_t *** formerSumCluster,  paillier_ciphertext_t *** NewSumClusterinthread, paillier_ciphertext_t ** NewSumCntClusterinthread, protocol proto)
+{
+	paillier_ciphertext_t** Distance_center_data = new paillier_ciphertext_t*[proto.k];
+	paillier_ciphertext_t** idx_arr = new paillier_ciphertext_t*[proto.k];
+	paillier_ciphertext_t* tmp_data = new paillier_ciphertext_t;
+
+	for( int j = 0 ; j < proto.k ; j++){
+		Distance_center_data[j] = new paillier_ciphertext_t;
+		idx_arr[j] = new paillier_ciphertext_t;
+
+		mpz_init(Distance_center_data[j]->c);
+		mpz_init(idx_arr[j]->c);
+	}
+	mpz_init(tmp_data->c);
+
+
+	for(int i = 0 ; i < input.size() ; i++){
+		int num = input[i];
+		for( int j = 0 ; j < proto.k ; j++){
+			Distance_center_data[j] = proto.SSEDm(data[num], formerSumCluster[j], proto.dim);
+		}
+		
+		idx_arr = proto.Smin_bool(Distance_center_data, proto.k);
+		
+
+		for( int j = 0 ; j < proto.k ; j++ ){
+			paillier_mul(proto.pubkey, NewSumCntClusterinthread[j], idx_arr[j], NewSumCntClusterinthread[j]);
+			for( int e = 0 ; e < proto.dim ; e++ ){
+				tmp_data = proto.SM_p1(idx_arr[j], data[num][e]);
+				paillier_mul(proto.pubkey, NewSumClusterinthread[j][e], NewSumClusterinthread[j][e], tmp_data);
+			}
+		}
+	}
+	delete [] Distance_center_data;
+	delete [] idx_arr;
+	delete [] tmp_data;
+}
+
+
+
 
 
 void Comp_Cluster_inThread(paillier_ciphertext_t*** cipher, paillier_ciphertext_t*** former_Center, std::vector<int> inputIdx, paillier_ciphertext_t*** NewSumCluster, paillier_ciphertext_t** NewSumCntCluster, protocol proto, int i)

@@ -64,7 +64,10 @@ void classipmInThread2(int index, std::vector<int> inputIdx, paillier_ciphertext
 void SBOR_inThread(int index, std::vector<int> inputIdx, paillier_ciphertext_t **cipher_V, paillier_ciphertext_t ***cipher_SBD_distance, protocol proto);
 
 
-//CLUSTERING
+//CLUSTERING_PB
+void ComputeNEWCLUSTER_forKMEANS_PBinThread( std::vector<int> input, paillier_ciphertext_t *** data, paillier_ciphertext_t *** formerSumCluster, paillier_ciphertext_t *** NewSumCluster, paillier_ciphertext_t ** NewSumCntCluster, protocol proto);
+
+//CLUSTERING_PGI
 void Comp_Cluster_inThread(paillier_ciphertext_t*** cipher, paillier_ciphertext_t*** former_Center, std::vector<int> inputIdx, paillier_ciphertext_t*** NewSumCluster, paillier_ciphertext_t** NewSumCntCluster, protocol proto, int i);
 
 

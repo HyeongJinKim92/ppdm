@@ -8,8 +8,8 @@
 
 
 
-paillier_ciphertext_t*** protocol::Clustering_m(paillier_ciphertext_t*** ciper, int NumData, int k, int b){
-	printf("!!!!!!!!!!!!!!!!!!!!!!!!Clustering_m start!!!!!!!!!!!!!!!!!!!!!!!!\n");
+paillier_ciphertext_t*** protocol::Clustering_B(paillier_ciphertext_t*** ciper, int NumData, int k, int b){
+	printf("!!!!!!!!!!!!!!!!!!!!!!!!Clustering_B start!!!!!!!!!!!!!!!!!!!!!!!!\n");
 
 	
 	paillier_ciphertext_t*** origin_data				= (paillier_ciphertext_t***)malloc(sizeof(paillier_ciphertext_t**)*NumData);
@@ -578,7 +578,7 @@ paillier_ciphertext_t*** protocol::PreClustering(paillier_ciphertext_t*** ciper,
 		printf("\n");
 	}
 	*/
-	paillier_ciphertext_t*** Pre_Cluster = Clustering_m(Sample, Sample_Cnt, k, 100);
+	paillier_ciphertext_t*** Pre_Cluster = Clustering_B(Sample, Sample_Cnt, k, 100);
 /*
 	for(int i = 0 ; i < k ; i++ ){
 		printf("in PreClustering Sum : ");

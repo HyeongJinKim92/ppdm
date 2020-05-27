@@ -1,16 +1,5 @@
-query : 
-total time : 0
-node_SBD : 0  (-nan%)
-node_SRO : 4  (inf%) 	 node_expansion(verify) : 6 (inf%)
-node_retrieval : 17  (inf%) 	 node_retrieval(verify) : 17 (inf%)
-data_SSED_SBD : 0  (-nan%) 	 data_SBOR : 0 (-nan%)
-sMINn : 0  (inf%) 	 sMINn (verify): 0 (inf%)
-data_SPE(range) : 0  (-nan%) 
-# retrieved node : 4
-
-
-query : ./PPDM227020006125512101010101010
-total time : 214
+query : ./PPDM  2  2  7  0  2000  6  12  5  512  10  10  10  10  10  10  
+total time : 215
 node_SBD : 0  (0%)
 node_SRO : 4  (2%) 	 node_expansion(verify) : 6 (3%)
 node_retrieval : 17  (8%) 	 node_retrieval(verify) : 16 (8%)

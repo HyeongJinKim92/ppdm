@@ -331,7 +331,7 @@ class protocol
 		paillier_ciphertext_t*** sNodeRetrievalforClassificationMultiThread(paillier_ciphertext_t*** data, boundary* node, paillier_ciphertext_t** alpha,	int NumData, int NumNode, int* cnt, int* NumNodeGroup);
 
 		//Clustering 2017 02 01
-		paillier_ciphertext_t*** Clustering_m(paillier_ciphertext_t*** ciper, int NumData, int k, int b);
+		paillier_ciphertext_t*** Clustering_B(paillier_ciphertext_t*** ciper, int NumData, int k, int b);
 		paillier_ciphertext_t*** Clustering_Grid(paillier_ciphertext_t*** ciper, boundary* node, int NumNode, int NumData, int k);
 		paillier_ciphertext_t*** PreClustering(paillier_ciphertext_t*** ciper, boundary* node, int NumNode, int NumData, int k);
 		paillier_ciphertext_t*** extract_sample(paillier_ciphertext_t*** ciper, boundary* node, int NumNode, int NumData, int* Sample_Cnt);
@@ -344,10 +344,14 @@ class protocol
 		paillier_ciphertext_t*** Clustering_PGI(paillier_ciphertext_t*** ciper, boundary* node, int NumNode, int NumData, int k);
 		paillier_ciphertext_t*** Clustering_PAI(paillier_ciphertext_t*** ciper, boundary* node, int NumNode, int NumData, int k);
 
+		// parallel clustering_PB
+		void ComputeNEWCLUSTER_forKMEANS_PBinMultithread(paillier_ciphertext_t*** data, paillier_ciphertext_t*** formerSumCluster, paillier_ciphertext_t*** NewSumCluster, paillier_ciphertext_t** NewSumCntCluster);
 
 		////parallel clustering
 		paillier_ciphertext_t*** Parallel_Clustering_m_Grid(paillier_ciphertext_t*** ciper, int NumData, int k, int b, paillier_ciphertext_t*** former_Center);
-		void Parallel_Compute_Cluster(int NumData, paillier_ciphertext_t*** cipher, paillier_ciphertext_t*** former_Center, paillier_ciphertext_t*** NewSumCluster, paillier_ciphertext_t** NewSumCntCluster);
+		void ComputeNEWCLUSTER_forKMEANS_PGIinMultithread(paillier_ciphertext_t*** data, paillier_ciphertext_t*** formerSumCluster, paillier_ciphertext_t*** NewSumCluster, paillier_ciphertext_t** NewSumCntCluster);
+
+
 
 
 		//Proposed Compare

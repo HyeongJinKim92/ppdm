@@ -1,49 +1,7 @@
-query : 
-total time : 0
-node_SBD : 12  (inf%)
-node_SRO : 12  (inf%) 	 node_expansion(verify) : 0 (-nan%)
-node_retrieval : 6  (inf%) 	 node_retrieval(verify) : 0 (-nan%)
-data_SSED_SBD : 6  (inf%) 	 data_SBOR : 0 (-nan%)
-sMINn : 0  (-nan%) 	 sMINn (verify): 0 (-nan%)
-data_SPE(range) : 6  (inf%) 
-# retrieved node : 1
-0	0	
-0	0	
-0	0	
-1	0	
-0	0	
-0	0	
-1	1	
-0	1	
-0	1	
-1	1	
-
-
-query : 
-total time : 0
-node_SBD : 12  (inf%)
-node_SRO : 13  (inf%) 	 node_expansion(verify) : 0 (-nan%)
-node_retrieval : 6  (inf%) 	 node_retrieval(verify) : 0 (-nan%)
-data_SSED_SBD : 6  (inf%) 	 data_SBOR : 0 (-nan%)
-sMINn : 0  (-nan%) 	 sMINn (verify): 0 (-nan%)
-data_SPE(range) : 6  (inf%) 
-# retrieved node : 1
-0	0	
-0	0	
-0	0	
-1	0	
-0	0	
-0	0	
-1	1	
-0	1	
-0	1	
-1	1	
-
-
-query : 
+query : ./PPDM  0  1  7  0  2000  2  12  10  512  0  0  2  2  
 total time : 43
 node_SBD : 12  (28%)
-node_SRO : 13  (29%) 	 node_expansion(verify) : 0 (0%)
+node_SRO : 13  (30%) 	 node_expansion(verify) : 0 (0%)
 node_retrieval : 6  (13%) 	 node_retrieval(verify) : 0 (0%)
 data_SSED_SBD : 6  (14%) 	 data_SBOR : 0 (0%)
 sMINn : 0  (0%) 	 sMINn (verify): 0 (0%)
@@ -51,27 +9,6 @@ data_SPE(range) : 6  (15%)
 # retrieved node : 1
 0	0	
 0	0	
-0	0	
-1	0	
-0	0	
-0	0	
-1	1	
-0	1	
-0	1	
-1	1	
-
-
-query : ./PPDM01702000212105120033
-total time : 78
-node_SBD : 12  (15%)
-node_SRO : 12  (16%) 	 node_expansion(verify) : 0 (0%)
-node_retrieval : 5  (7%) 	 node_retrieval(verify) : 0 (0%)
-data_SSED_SBD : 23  (30%) 	 data_SBOR : 0 (0%)
-sMINn : 0  (0%) 	 sMINn (verify): 0 (0%)
-data_SPE(range) : 25  (32%) 
-# retrieved node : 4
-0	0	
-0	0	
 2	0	
 2	0	
 2	0	
@@ -81,16 +18,12 @@ data_SPE(range) : 25  (32%)
 1	0	
 0	0	
 0	0	
-3	1	
-3	1	
 2	1	
-3	1	
 1	1	
 2	1	
 2	1	
 0	1	
 0	1	
-3	1	
 1	1	
 2	2	
 2	2	
@@ -98,25 +31,12 @@ data_SPE(range) : 25  (32%)
 1	2	
 1	2	
 1	2	
-2	3	
-2	3	
-2	3	
-0	3	
-3	0	
-3	0	
-3	0	
-3	0	
-3	2	
-3	2	
-3	3	
-3	3	
-3	3	
 
 
-query : ./PPDM01702000212105120022
-total time : 42
+query : ./PPDM  0  1  7  0  2000  2  12  10  512  0  0  2  2  
+total time : 43
 node_SBD : 12  (28%)
-node_SRO : 12  (29%) 	 node_expansion(verify) : 0 (0%)
+node_SRO : 13  (29%) 	 node_expansion(verify) : 0 (0%)
 node_retrieval : 6  (13%) 	 node_retrieval(verify) : 0 (0%)
 data_SSED_SBD : 6  (14%) 	 data_SBOR : 0 (0%)
 sMINn : 0  (0%) 	 sMINn (verify): 0 (0%)

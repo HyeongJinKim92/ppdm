@@ -317,6 +317,8 @@ int knn_main(parsed_query* user_query)
 
 	return 0;
 }
+
+
 int classification_main(parsed_query* user_query)
 {
 	paillier_pubkey_t* pub;
@@ -440,7 +442,7 @@ int kmeans_main(parsed_query* user_query)
 
     startTime = std::chrono::system_clock::now();
 
-	if(user_query->mquery_t == KMEANS_B)			Cluster = proto.Clustering_m(cipher, user_query->data_n, user_query->k, 2);
+	if(user_query->mquery_t == KMEANS_B)			Cluster = proto.Clustering_B(cipher, user_query->data_n, user_query->k, 2);
 	else if(user_query->mquery_t == KMEANS_I) 		Cluster = proto.Clustering_Grid(cipher, node, NumNode, user_query->data_n, user_query->k);	
 	else if(user_query->mquery_t == KMEANS_GI) 		Cluster = proto.Clustering_Grid_preprocessing(cipher, node, NumNode, user_query->data_n, user_query->k);
 	else if(user_query->mquery_t == KMEANS_PB) 		Cluster = proto.Clustering_PB(cipher, node, NumNode, user_query->data_n, user_query->k);
