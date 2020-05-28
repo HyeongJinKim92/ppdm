@@ -10,6 +10,7 @@
 #include <thread>
 #include <chrono>
 #include <vector>
+#include <map>
 #include <mutex>
 #include <iostream>
 #include <math.h>
@@ -18,7 +19,6 @@
 
 #include "paillier.h"
 #include "types.h"
-
 
 /*
 #define BOOL int
@@ -58,8 +58,8 @@ class protocol
 	// generate noise (random numbers)
 
 	// encrypt noise 
-		paillier_ciphertext_t* ciper_rand1;
-		paillier_ciphertext_t* ciper_rand2;
+		paillier_ciphertext_t* cipher_rand1;
+		paillier_ciphertext_t* cipher_rand2;
 
 
 
@@ -98,8 +98,17 @@ class protocol
 		int totalNumOfRetrievedNodes;		// 제안하는 기법에서 탐색한 노드의 총 수를 의미
 
 		// time variables
+
+		std::chrono::system_clock::time_point startTime;
+		std::chrono::system_clock::time_point endTime;
+		std::chrono::duration<float> duration_sec;		
+
+		std::map<const char*, float> time_variable;
+
 		float total_time;
-		float node_SBD_time;
+		float node_Processing_time;
+		float data_Processing_time;
+		float query_Processing_time;
 		float node_SRO_time;
 		float node_expansion_time;
 		float data_extract_first_time;
@@ -127,32 +136,32 @@ class protocol
 		void set_Param(parsed_query* user_query);
 
 
-		paillier_ciphertext_t* SM_p2(paillier_ciphertext_t* ciper1, paillier_ciphertext_t* ciper2);
-		paillier_ciphertext_t* SM_p1(paillier_ciphertext_t* ciper1, paillier_ciphertext_t* ciper2);
-		paillier_ciphertext_t* SM_p1(paillier_ciphertext_t* ciper1, paillier_ciphertext_t* ciper2, int idx);
+		paillier_ciphertext_t* SM_p2(paillier_ciphertext_t* cipher1, paillier_ciphertext_t* cipher2);
+		paillier_ciphertext_t* SM_p1(paillier_ciphertext_t* cipher1, paillier_ciphertext_t* cipher2);
+		paillier_ciphertext_t* SM_p1(paillier_ciphertext_t* cipher1, paillier_ciphertext_t* cipher2, int idx);
 
-		paillier_ciphertext_t* SSED(paillier_ciphertext_t* ciper1, paillier_ciphertext_t* ciper2);
-		paillier_ciphertext_t* SSEDm(paillier_ciphertext_t** ciper1, paillier_ciphertext_t** ciper2, int col_num);
+		paillier_ciphertext_t* SSED(paillier_ciphertext_t* cipher1, paillier_ciphertext_t* cipher2);
+		paillier_ciphertext_t* SSEDm(paillier_ciphertext_t** cipher1, paillier_ciphertext_t** cipher2, int col_num);
 		
-		paillier_ciphertext_t* SBOR(paillier_ciphertext_t* ciper1, paillier_ciphertext_t* ciper2);
+		paillier_ciphertext_t* SBOR(paillier_ciphertext_t* cipher1, paillier_ciphertext_t* cipher2);
 		
-		paillier_ciphertext_t* SBXOR(paillier_ciphertext_t* ciper1, paillier_ciphertext_t* ciper2);
-		paillier_ciphertext_t* SBXOR(paillier_ciphertext_t* ciper1, paillier_ciphertext_t* ciper2, int idx);
+		paillier_ciphertext_t* SBXOR(paillier_ciphertext_t* cipher1, paillier_ciphertext_t* cipher2);
+		paillier_ciphertext_t* SBXOR(paillier_ciphertext_t* cipher1, paillier_ciphertext_t* cipher2, int idx);
 				
 
 		paillier_ciphertext_t* SBN(paillier_ciphertext_t* ciper);
 		
-		paillier_ciphertext_t** SBD(paillier_ciphertext_t* ciper1);
-		paillier_ciphertext_t*  SBD_underBob(paillier_ciphertext_t* ciper1, int round);
+		paillier_ciphertext_t** SBD(paillier_ciphertext_t* cipher1);
+		paillier_ciphertext_t*  SBD_underBob(paillier_ciphertext_t* cipher1, int round);
 		paillier_ciphertext_t*  SBD_underAlice(paillier_ciphertext_t* ciper);
-		paillier_ciphertext_t** SBD_for_SRO(paillier_ciphertext_t* ciper1, int extra);
+		paillier_ciphertext_t** SBD_for_SRO(paillier_ciphertext_t* cipher1, int extra);
 
 		paillier_ciphertext_t*  SSR(paillier_ciphertext_t* ciper);
 		paillier_ciphertext_t*  SSR_sub(paillier_ciphertext_t* ciper);
 		
-		paillier_ciphertext_t** Smin_basic1(paillier_ciphertext_t** ciper1, paillier_ciphertext_t** ciper2);
+		paillier_ciphertext_t** Smin_basic1(paillier_ciphertext_t** cipher1, paillier_ciphertext_t** cipher2);
 		paillier_ciphertext_t* Smin_basic2(paillier_ciphertext_t** ciper_R, paillier_ciphertext_t** ciper_L, paillier_ciphertext_t** ciper_M, paillier_ciphertext_t* alpha);
-		paillier_ciphertext_t* Smin_for_alpha(paillier_ciphertext_t** ciper1, paillier_ciphertext_t** ciper2);
+		paillier_ciphertext_t* Smin_for_alpha(paillier_ciphertext_t** cipher1, paillier_ciphertext_t** cipher2);
 		paillier_ciphertext_t** Smin_n(paillier_ciphertext_t*** ciper, int number);
 		paillier_ciphertext_t** Smin_bool_n(paillier_ciphertext_t*** ciper, paillier_ciphertext_t** data, int number);
 		paillier_ciphertext_t** Smin_bool(paillier_ciphertext_t** data, int number);
@@ -236,8 +245,8 @@ class protocol
 
 
 		//SSED
-		paillier_ciphertext_t* DP_SSED(paillier_ciphertext_t** ciper1, paillier_ciphertext_t** ciper2, int col_num);
-		paillier_ciphertext_t* unDP_SSED(paillier_ciphertext_t* ciper1, int col_num);
+		paillier_ciphertext_t* DP_SSED(paillier_ciphertext_t** cipher1, paillier_ciphertext_t** cipher2, int col_num);
+		paillier_ciphertext_t* unDP_SSED(paillier_ciphertext_t* cipher1, int col_num);
 		int ** SSED_test(paillier_ciphertext_t*** data, paillier_ciphertext_t** query, boundary* node, int k, int NumData, int NumNode);
 		paillier_ciphertext_t* OP_SSED(paillier_ciphertext_t** data, paillier_ciphertext_t** Cluster_Center, paillier_ciphertext_t** Center_cnt, int tmp_k, int k);
 
@@ -293,10 +302,10 @@ class protocol
 
 
 		int** STopk(paillier_ciphertext_t*** data, paillier_ciphertext_t** query, boundary* node, paillier_ciphertext_t** max_val, int NumData, int NumNode);
-		paillier_ciphertext_t* computeScore(paillier_ciphertext_t** ciper1, paillier_ciphertext_t** ciper2);
-		paillier_ciphertext_t* computeScore2(paillier_ciphertext_t** ciper1, paillier_ciphertext_t** ciper2, paillier_ciphertext_t** coeff, paillier_ciphertext_t* hint);
+		paillier_ciphertext_t* computeScore(paillier_ciphertext_t** cipher1, paillier_ciphertext_t** cipher2);
+		paillier_ciphertext_t* computeScore2(paillier_ciphertext_t** cipher1, paillier_ciphertext_t** cipher2, paillier_ciphertext_t** coeff, paillier_ciphertext_t* hint);
 		paillier_ciphertext_t** Smax_n(paillier_ciphertext_t*** ciper, int number);
-		paillier_ciphertext_t** Smax_basic1(paillier_ciphertext_t** ciper1, paillier_ciphertext_t** ciper2);
+		paillier_ciphertext_t** Smax_basic1(paillier_ciphertext_t** cipher1, paillier_ciphertext_t** cipher2);
 		paillier_ciphertext_t* Smax_basic2(paillier_ciphertext_t** ciper_R, paillier_ciphertext_t** ciper_L, paillier_ciphertext_t** ciper_M, paillier_ciphertext_t* alpha);
 		paillier_ciphertext_t** Topk_sub(paillier_ciphertext_t** ciper_n, int n);
 		int** STopk_Confirm(paillier_ciphertext_t*** data, paillier_ciphertext_t** q, boundary* node, paillier_ciphertext_t** max_val, int NumData, int NumNode);

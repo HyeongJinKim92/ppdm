@@ -9,3 +9,25 @@ data_SPE(range) : 0  (0%)
 # retrieved node : 7
 
 
+query : ./PPDM  3  1  5  0  1728  6  9  5  512  0  0  0  0  0  0  
+total time : 374
+node_SBD : 7  (2%)
+node_SRO : 7  (2%) 	 node_expansion(verify) : 10 (3%)
+node_retrieval : 16  (4%) 	 node_retrieval(verify) : 16 (4%)
+data_SSED_SBD : 33  (9%) 	 data_SBOR : 47 (12%)
+sMINn : 19  (5%) 	 sMINn (verify): 112 (30%)
+data_SPE(range) : 0  (0%) 
+# retrieved node : 7
+
+
+query : ./PPDM  3  1  5  0  1728  6  9  5  512  0  0  0  0  0  0  
+total time : 376
+node_SBD : 7  (2%)
+node_SRO : 7  (2%) 	 node_expansion(verify) : 10 (3%)
+node_retrieval : 16  (4%) 	 node_retrieval(verify) : 16 (4%)
+data_SSED_SBD : 33  (9%) 	 data_SBOR : 47 (12%)
+sMINn : 19  (5%) 	 sMINn (verify): 113 (30%)
+data_SPE(range) : 0  (0%) 
+# retrieved node : 7
+
+

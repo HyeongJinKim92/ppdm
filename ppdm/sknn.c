@@ -278,7 +278,7 @@ paillier_ciphertext_t* protocol::GSCMP_sub(paillier_ciphertext_t* ru, paillier_c
 
 paillier_ciphertext_t* protocol::SCMP(paillier_ciphertext_t** u, paillier_ciphertext_t** v)
 {
-	printf("\n===== Now SCMP starts ===== \n");
+	//printf("\n===== Now SCMP starts ===== \n");
 	
 	int i, j = 0;
 	
@@ -771,7 +771,7 @@ paillier_ciphertext_t* protocol::SCMP_for_SBD(paillier_ciphertext_t** u, paillie
 }
 
 
-paillier_ciphertext_t* protocol::DP_SSED(paillier_ciphertext_t** ciper1, paillier_ciphertext_t** ciper2, int col_num)
+paillier_ciphertext_t* protocol::DP_SSED(paillier_ciphertext_t** cipher1, paillier_ciphertext_t** cipher2, int col_num)
 {
 	paillier_plaintext_t* shift = paillier_plaintext_from_ui(0);
 	paillier_plaintext_t* value = paillier_plaintext_from_ui(0);
@@ -811,7 +811,7 @@ paillier_ciphertext_t* protocol::DP_SSED(paillier_ciphertext_t** ciper1, paillie
 		mpz_ui_pow_ui(shift->m,2,16*i);			//shift
 		//gmp_printf("shift : %Zd\n",shift);
 
-		paillier_subtract(pubkey,sub,ciper1[i],ciper2[i]); //sub
+		paillier_subtract(pubkey,sub,cipher1[i],cipher2[i]); //sub
 		//gmp_printf("sub : %Zd\n",paillier_dec(0, pubkey, prvkey, sub));
 
 		//gmp_printf("SM_p1 : %Zd\n",paillier_dec(0, pubkey, prvkey,SM_p1(sub,sub)));
@@ -837,7 +837,7 @@ paillier_ciphertext_t* protocol::DP_SSED(paillier_ciphertext_t** ciper1, paillie
 		paillier_subtract(pub,result,result,ciper_tmp );
 
 		mpz_mul_ui (rand[i]->m,rand[i]->m,2);
-		paillier_subtract(pub,ciper_tmp,ciper1[i],ciper2[i]);
+		paillier_subtract(pub,ciper_tmp,cipher1[i],cipher2[i]);
 		paillier_exp(pubkey, sub, ciper_tmp, rand[i]);
 		paillier_subtract(pub,result,result,sub);
 	}
@@ -847,10 +847,10 @@ paillier_ciphertext_t* protocol::DP_SSED(paillier_ciphertext_t** ciper1, paillie
 	return result;		
 }
 
-paillier_ciphertext_t* protocol::unDP_SSED(paillier_ciphertext_t* ciper1, int col_num){
+paillier_ciphertext_t* protocol::unDP_SSED(paillier_ciphertext_t* cipher1, int col_num){
 	paillier_plaintext_t* shift = paillier_plaintext_from_ui(0);
 	paillier_plaintext_t* tmp = paillier_plaintext_from_ui(0);
-	paillier_plaintext_t* result = paillier_dec(0, pub, prv, ciper1);
+	paillier_plaintext_t* result = paillier_dec(0, pub, prv, cipher1);
 
 	paillier_plaintext_t* test = paillier_plaintext_from_ui(0);
 	paillier_ciphertext_t* enc_test = paillier_create_enc_zero();
@@ -1118,7 +1118,7 @@ int ** protocol::SkNN_plain(paillier_ciphertext_t*** ciper, paillier_ciphertext_
 		}
 		//printf("\n");
 	}
-	node_SBD_time=0;
+	node_Processing_time=0;
 	node_SRO_time=0;
 	node_expansion_time=0;
 	data_extract_first_time=0;
@@ -1820,23 +1820,6 @@ int** protocol::SkNN_I(paillier_ciphertext_t*** data, paillier_ciphertext_t** q,
 		ciper_qRR_bit[i] = SBD_for_SRO(q[i], 1);		// query RR bound 변환
 	}
 
-	/* 
-	printf("Query LL bound\n");
-	for(i=0; i<dim; i++) {
-		for(j=0; j<size+1; j++) {
-			gmp_printf("%Zd", paillier_dec(0, pubkey, prvkey, ciper_qLL_bit[i][j]));
-		}
-		printf("\n");
-	}
-	printf("Query RR bound\n");
-	for(i=0; i<dim; i++) {	
-		for(j=0; j<size+1; j++) {
-			gmp_printf("%Zd", paillier_dec(0, pubkey, prvkey, ciper_qRR_bit[i][j]));
-		}
-		printf("\n");
-	}
-	*/
-
 	printf("\n=== Node SBD start ===\n");
 
 	startTime = clock();
@@ -1847,26 +1830,10 @@ int** protocol::SkNN_I(paillier_ciphertext_t*** data, paillier_ciphertext_t** q,
 			ciper_nodeLL_bit[i][j] = SBD_for_SRO(node[i].LL[j], 0);				// node LL bound 변환
 			ciper_nodeRR_bit[i][j] = SBD_for_SRO(node[i].RR[j], 1);	 			// node RR bound 변환
 		}
-		/*		
-		printf("%dth node LL bound\n", i);
-		for(j=0; j<dim; j++) {
-			for(m=0; m<size+1; m++) {
-				gmp_printf("%Zd", paillier_dec(0, pubkey, prvkey, ciper_nodeLL_bit[i][j][m]));
-			}
-			printf("\n");
-		}
-		printf("%dth node RR bound\n", i);
-		for(j=0; j<dim; j++) {
-			for(m=0; m<size+1; m++) {
-				gmp_printf("%Zd", paillier_dec(0, pubkey, prvkey, ciper_nodeRR_bit[i][j][m]));
-			}
-			printf("\n");
-		}
-		*/
 	}
 	endTime = clock();
-	node_SBD_time = (float)(endTime-startTime)/(CLOCKS_PER_SEC);
-	printf("node SBD time: %f\n", node_SBD_time);
+	node_Processing_time = (float)(endTime-startTime)/(CLOCKS_PER_SEC);
+	printf("node SBD time: %f\n", node_Processing_time);
 
 	float progress;
 	
@@ -1888,51 +1855,27 @@ int** protocol::SkNN_I(paillier_ciphertext_t*** data, paillier_ciphertext_t** q,
 
 			if(!verify_flag)	{	//  검증 단계에서는 수행하지 않음
 				alpha[i] = SRO(ciper_qLL_bit, ciper_qRR_bit, ciper_nodeLL_bit[i], ciper_nodeRR_bit[i]);		
-				//gmp_printf("alpha : %Zd (%d line)\n", paillier_dec(0, pubkey, prvkey, alpha[i]), __LINE__);
 			}
 			else {	// 검증 단계에서 k번째 거리보다 가까이 존재하는 노드를 찾는 과정
 				// 각 노드에서 질의와의 최단 점을 찾음
 				for(j=0; j<dim; j++) {	
 					psi[0] = SCMP(ciper_qLL_bit[j], ciper_nodeLL_bit[i][j]);		// 프사이 계산 (1이면 q의 좌표가 노드의 LL bound보다 크고, 0이면 q의 좌표가 작음)
-					//gmp_printf("psi0 : %Zd (%d line)\n", paillier_dec(0, pubkey, prvkey, psi[0]), __LINE__);
 					psi[1] = SCMP(ciper_qLL_bit[j], ciper_nodeRR_bit[i][j]);	// 프사이 계산 (1이면 q의 좌표가 노드의 UR bound보다 작고, 0이면 q의 좌표가 큼)
-					//gmp_printf("psi1 : %Zd (%d line)\n", paillier_dec(0, pubkey, prvkey, psi[1]), __LINE__);
 					psi[2] = SBXOR(psi[0], psi[1]);	// psi[2]가 1이면, 해당 차원에서의 질의 좌표가 노드의 LL bound 와 UR bound 사이에 속함을 의미
-					//gmp_printf("psi2 : %Zd (%d line)\n", paillier_dec(0, pubkey, prvkey, psi[2]), __LINE__);
-
+					
 					temp_coord1 = SM_p1(psi[2], q[j]);		// psi[2]가 1이면, 질의에서의 수선의 발이 최단거리 이므로, 질의의 좌표를 살려야 함
-					//gmp_printf("temp : %Zd (%d line)\n", paillier_dec(0, pubkey, prvkey, temp_coord1), __LINE__);
 					temp_coord2 = SM_p1(psi[0], node[i].LL[j]);		// psi[0]이 0이면, LL bound의 좌표를 살림
-					//gmp_printf("temp : %Zd (%d line)\n", paillier_dec(0, pubkey, prvkey, temp_coord2), __LINE__);
 					temp_coord3 = SM_p1(SBN(psi[0]), node[i].RR[j]);		// psi[0]이 1이면, RR bound의 좌표를 살림
-					//gmp_printf("temp : %Zd (%d line)\n", paillier_dec(0, pubkey, prvkey, temp_coord3), __LINE__);
 					paillier_mul(pubkey, temp_coord3, temp_coord2, temp_coord3);
-					//gmp_printf("temp : %Zd (%d line)\n", paillier_dec(0, pubkey, prvkey, temp_coord3), __LINE__);
-					temp_coord3 = SM_p1(SBN(psi[2]), temp_coord3);
-					//gmp_printf("temp : %Zd (%d line)\n", paillier_dec(0, pubkey, prvkey, temp_coord3), __LINE__);
-
+					temp_coord3 = SM_p1(SBN(psi[2]), temp_coord3);	
 					paillier_mul(pubkey, shortestPoint[j], temp_coord1, temp_coord3);
-					//gmp_printf("coord: %Zd (%d line)\n", paillier_dec(0, pubkey, prvkey, shortestPoint[j]), __LINE__);
 				}
-
-				/*
-				for(j=0; j<dim; j++) {	
-					gmp_printf("%Zd ", paillier_dec(0, pubkey, prvkey, shortestPoint[j]), __LINE__);
-				}
-				printf("\n");
-				*/
-				
-				//gmp_printf("--------------------------------SSEDm %Zd ", paillier_dec(0, pubkey, prvkey, SSEDm(q, shortestPoint, dim)) , __LINE__);
 				temp_nodedist_bit = SBD_for_SRO(SSEDm(q, shortestPoint, dim), 0);
 				for(j=0; j<size+1; j++) {
 					ciper_nodedist_bit[i][j] = SBOR(ciper_nodedist_bit[i][j], temp_nodedist_bit[j]);
 				}
-
 				alpha[i] = SCMP(ciper_nodedist_bit[i], kth_dist_bit);	 // 노드까지의 최단 거리를 계산해서 k번째 결과의 거리와 비교. 노드까지의 거리가 더 작으면 1 셋팅
-
-				
 				// 비트 변환된 노드 정보를 변경했던 버전 (노드까지의 거리 계산 시, size(L)의 범위가 벗어나서 변경)
-				//	alpha[i] = SCMP(SBD_for_SRO(SSEDm(q, shortestPoint, dim), 0), kth_dist_bit);	 // 노드까지의 최단 거리를 계산해서 k번째 결과의 거리와 비교. 노드까지의 거리가 더 작으면 1 셋팅
 			}
 
 
@@ -1944,37 +1887,8 @@ int** protocol::SkNN_I(paillier_ciphertext_t*** data, paillier_ciphertext_t** q,
 				for(m=0; m<size+1; m++) {
 					ciper_nodedist_bit[i][m] = alpha[i];
 				}
-
-				/*
-				// 비트 변환된 노드 정보를 변경했던 버전 (노드까지의 거리 계산 시, size(L)의 범위가 벗어나서 변경)
-				for(j=0; j<dim; j++) {
-					for(m=0; m<size+1; m++) {
-						ciper_nodeLL_bit[i][j][m] = SBOR(ciper_nodeLL_bit[i][j][m], alpha[i]);
-						ciper_nodeRR_bit[i][j][m] = SBOR(ciper_nodeRR_bit[i][j][m], alpha[i]);
-					}
-				}
-				*/
 			}
-
-
-			/*			
-			printf("%dth node LL bound\n", i);
-			for(j=0; j<dim; j++) {
-				for(m=0; m<size+1; m++) {
-					gmp_printf("%Zd", paillier_dec(0, pubkey, prvkey, ciper_nodeLL_bit[i][j][m]));
-				}
-				printf("\n");
-			}
-			printf("%dth node RR bound\n", i);
-			for(j=0; j<dim; j++) {
-				for(m=0; m<size+1; m++) {
-					gmp_printf("%Zd", paillier_dec(0, pubkey, prvkey, ciper_nodeRR_bit[i][j][m]));
-				}
-				printf("\n");
-			}
-			*/
 		}
-		printf("\n");
 
 
 		if(!verify_flag)	{
@@ -1987,14 +1901,6 @@ int** protocol::SkNN_I(paillier_ciphertext_t*** data, paillier_ciphertext_t** q,
 			node_expansion_time = (float)(endTime-startTime)/(CLOCKS_PER_SEC);
 			printf("Node expansion time : %f\n", node_expansion_time);
 		}
-
-		/*
-		printf("alpha\n");
-		for(i=0; i<NumNode; i++) {
-			gmp_printf("%Zd ", paillier_dec(0, pubkey, prvkey, alpha[i]));
-		}
-		printf("\n");
-		*/
 
 		cnt = 0;
 
@@ -2072,14 +1978,6 @@ int** protocol::SkNN_I(paillier_ciphertext_t*** data, paillier_ciphertext_t** q,
 		for( i = 0 ; i < cnt ; i++ ){
 			ciper_distance[i] = SSEDm(q, cand[i], dim);
 			ciper_SBD_distance[i] = SBD(ciper_distance[i]);
-			
-			/*
-			paillier_print("dist : ", ciper_distance[i]);	
-			for( j = 0 ; j < size ; j++ ){
-				gmp_printf("%Zd", paillier_dec(0, pubkey, prvkey, ciper_SBD_distance[i][j]));
-			}
-			printf("\n");
-			*/
 		}
 		endTime = clock();
 		data_SSED_SBD_time += (float)(endTime-startTime)/(CLOCKS_PER_SEC);
@@ -2100,13 +1998,7 @@ int** protocol::SkNN_I(paillier_ciphertext_t*** data, paillier_ciphertext_t** q,
 				sMINn_second_time += gap;
 				printf("%dth sMINn time : %f\n", s+1, gap);
 			}
-		
-			/*	
-			for( j = 0 ; j < size ; j++ ){
-				gmp_printf("%Zd", paillier_dec(0, pubkey, prvkey, ciper_Smin[j]));
-			}
-			printf("\n");	
-			*/
+
 
 			// bit로 표현된 암호화 min 거리를 암호화 정수로 변환
 			for( j = size ; j > 0 ; j-- ){
@@ -2134,11 +2026,7 @@ int** protocol::SkNN_I(paillier_ciphertext_t*** data, paillier_ciphertext_t** q,
 					ciper_dist = paillier_enc(0, pubkey, plain_zero, paillier_get_rand_devurandom);
 				}
 			}
-			/*
-			for( i = 0 ; i < cnt ; i++ ){
-				gmp_printf("distance : %Zd", ciper_distance[i]);
-			}
-			*/
+
 			
 			// 질의-데이터 거리와 min 거리와의 차를 구함 (min 데이터의 경우에만 0으로 만들기 위함)
 			for( i = 0 ; i < cnt ; i++ ){
@@ -2148,13 +2036,7 @@ int** protocol::SkNN_I(paillier_ciphertext_t*** data, paillier_ciphertext_t** q,
 			}
 
 			ciper_V = SkNNm_sub(ciper_mid, cnt);
-			
-			/*
-			for( i = 0 ; i < cnt ; i++ ){
-				printf("%d : ", i);
-				paillier_print("ciper_V : ", ciper_V[i]);
-			}
-			*/
+
 
 			// min 데이터 추출
 			for( i = 0 ; i < cnt ; i++ ){
@@ -2169,13 +2051,7 @@ int** protocol::SkNN_I(paillier_ciphertext_t*** data, paillier_ciphertext_t** q,
 					}
 				}
 			}
-/*
-			printf("ciper_result : ");		
-			for( j = 0 ; j < dim; j++ ){
-				gmp_printf("%Zd ", paillier_dec(0, pubkey, prvkey,ciper_result[s][j]));
-			}
-			printf("\n");		
-*/			
+			
 			// Data SBOR 수행
 			startTime = clock();
 			for( i = 0 ; i < cnt ; i++ ){
@@ -2194,69 +2070,6 @@ int** protocol::SkNN_I(paillier_ciphertext_t*** data, paillier_ciphertext_t** q,
 			//gmp_printf("%dth dist : %Zd\n", k, paillier_dec(0, pubkey, prvkey, kth_dist));
 
 			kth_dist_bit = SBD_for_SRO(kth_dist, 1);
-
-			
-			/*
-			// 비트 변환된 노드 정보를 변경했던 버전 (노드까지의 거리 계산 시, size(L)의 범위가 벗어나서 변경)
-			for( i = 0 ; i < NumNode; i++ ){
-				for( j = 0 ; j < dim; j++ ){
-					for( m = size ; m > 0 ; m--){
-						t = (int)pow(2, m-1);
-						ciper_binary = paillier_create_enc(t);
-						ciper_binary = SM_p1(ciper_binary, ciper_nodeLL_bit[i][j][size-m]);
-						paillier_mul(pubkey, ciper_dist, ciper_binary, ciper_dist);
-					}
-					node[i].LL[j] = ciper_dist;
-					ciper_dist = paillier_enc(0, pubkey, plain_zero, paillier_get_rand_devurandom);
-
-					for( m = size ; m > 0 ; m--){
-						t = (int)pow(2, m-1);
-						ciper_binary = paillier_create_enc(t);
-						ciper_binary = SM_p1(ciper_binary, ciper_nodeRR_bit[i][j][size-m]);
-						paillier_mul(pubkey, ciper_dist, ciper_binary, ciper_dist);
-					}
-					node[i].RR[j] = ciper_dist;
-					ciper_dist = paillier_enc(0, pubkey, plain_zero, paillier_get_rand_devurandom);
-				}
-			}
-			*/
-
-
-			/*
-			for(i=0; i<dim; i++) {
-				paillier_subtract(pubkey, temp_dist, q[i], kth_dist);	
-				ciper_qLL_bit[i] = SBD_for_SRO(temp_dist, 0);		// query LL bound 변환
-				gmp_printf("%Zd\n", paillier_dec(0, pubkey, prvkey, temp_dist));
-
-				// LL bound의 경우, 음수 값이 되는 경우를 처리 (0으로 변경)
-				temp_alpha = Smin_for_alpha(ciper_qLL_bit[i], SBD(paillier_create_enc_zero()));
-				gmp_printf("alpha : %Zd(%d line)\n", paillier_dec(0, pubkey, prvkey, temp_alpha), __LINE__);
-				for(j=0; j<size+1; j++) {
-					ciper_qLL_bit[i][j] = SM_p1(ciper_qLL_bit[i][j], temp_alpha);	
-				}
-
-				paillier_mul(pubkey, temp_dist, q[i], kth_dist);	
-				ciper_qRR_bit[i] = SBD_for_SRO(temp_dist, 1);		// query RR bound 변환
-				gmp_printf("%Zd\n", paillier_dec(0, pubkey, prvkey, temp_dist));
-			}
-		*/
-
-			/*
-			printf("Query LL bound\n");
-			for(i=0; i<dim; i++) {
-				for(j=0; j<size+1; j++) {
-					gmp_printf("%Zd", paillier_dec(0, pubkey, prvkey, ciper_qLL_bit[i][j]));
-				}
-				printf("\n");
-			}
-			printf("Query RR bound\n");
-			for(i=0; i<dim; i++) {	
-				for(j=0; j<size+1; j++) {
-					gmp_printf("%Zd", paillier_dec(0, pubkey, prvkey, ciper_qRR_bit[i][j]));
-				}
-				printf("\n");
-			}
-			*/
 		}
 
 		if(!verify_flag)	{
@@ -2764,8 +2577,8 @@ int** protocol::DP_SkNN_I(paillier_ciphertext_t*** data, paillier_ciphertext_t**
 		*/
 	}
 	endTime = clock();
-	node_SBD_time = (float)(endTime-startTime)/(CLOCKS_PER_SEC);
-	printf("node SBD time: %f\n", node_SBD_time);
+	node_Processing_time = (float)(endTime-startTime)/(CLOCKS_PER_SEC);
+	printf("node SBD time: %f\n", node_Processing_time);
 
 	float progress;
 	

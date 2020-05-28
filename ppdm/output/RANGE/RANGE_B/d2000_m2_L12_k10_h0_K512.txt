@@ -1,67 +1,4 @@
-query : 
-total time : 0
-node_SBD : 0  (-nan%)
-node_SRO : 0  (-nan%) 	 node_expansion(verify) : 0 (-nan%)
-node_retrieval : 0  (-nan%) 	 node_retrieval(verify) : 0 (-nan%)
-data_SSED_SBD : 0  (-nan%) 	 data_SBOR : 0 (-nan%)
-sMINn : 0  (-nan%) 	 sMINn (verify): 0 (-nan%)
-data_SPE(range) : 0  (-nan%) 
-# retrieved node : 0
-0	0	
-0	1	
-1	0	
-1	1	
-0	0	
-0	1	
-1	1	
-0	0	
-0	0	
-0	0	
-
-
-query : 
-total time : 0
-node_SBD : 0  (-nan%)
-node_SRO : 0  (-nan%) 	 node_expansion(verify) : 0 (-nan%)
-node_retrieval : 0  (-nan%) 	 node_retrieval(verify) : 0 (-nan%)
-data_SSED_SBD : 0  (-nan%) 	 data_SBOR : 0 (-nan%)
-sMINn : 0  (-nan%) 	 sMINn (verify): 0 (-nan%)
-data_SPE(range) : 0  (-nan%) 
-# retrieved node : 0
-0	0	
-0	1	
-1	0	
-1	1	
-0	0	
-0	1	
-1	1	
-0	0	
-0	0	
-0	0	
-
-
-query : 
-total time : 0
-node_SBD : 0  (-nan%)
-node_SRO : 0  (-nan%) 	 node_expansion(verify) : 0 (-nan%)
-node_retrieval : 0  (-nan%) 	 node_retrieval(verify) : 0 (-nan%)
-data_SSED_SBD : 0  (-nan%) 	 data_SBOR : 0 (-nan%)
-sMINn : 0  (-nan%) 	 sMINn (verify): 0 (-nan%)
-data_SPE(range) : 0  (-nan%) 
-# retrieved node : 0
-0	0	
-0	1	
-1	0	
-1	1	
-0	0	
-0	1	
-1	1	
-0	0	
-0	0	
-0	0	
-
-
-query : ./PPDM00702000212105120033
+query : ./PPDM  0  0  7  0  2000  2  12  10  512  0  0  2  2  
 total time : 761
 node_SBD : 0  (0%)
 node_SRO : 0  (0%) 	 node_expansion(verify) : 0 (0%)
@@ -72,48 +9,101 @@ data_SPE(range) : 0  (0%)
 # retrieved node : 0
 1	2	
 1	2	
-3	0	
 2	0	
-3	1	
-2	3	
-3	0	
 2	1	
 0	0	
 0	1	
-3	3	
-3	3	
-3	1	
 2	1	
 2	0	
 1	0	
 1	1	
 1	2	
-3	2	
 0	0	
 0	1	
 2	0	
 2	0	
 2	2	
 1	1	
-3	1	
-2	3	
 2	2	
-3	2	
 2	1	
-3	1	
 0	0	
 0	0	
-3	0	
 0	0	
-3	0	
 0	2	
-3	3	
-2	3	
-0	3	
 2	0	
 
 
-query : ./PPDM00702000212105120033
+query : ./PPDM  0  0  7  0  2000  2  12  10  512  0  0  2  2  
+total time : 763
+node_SBD : 0  (0%)
+node_SRO : 0  (0%) 	 node_expansion(verify) : 0 (0%)
+node_retrieval : 0  (0%) 	 node_retrieval(verify) : 0 (0%)
+data_SSED_SBD : 0  (0%) 	 data_SBOR : 0 (0%)
+sMINn : 0  (0%) 	 sMINn (verify): 0 (0%)
+data_SPE(range) : 0  (0%) 
+# retrieved node : 0
+1	2	
+1	2	
+2	0	
+2	1	
+0	0	
+0	1	
+2	1	
+2	0	
+1	0	
+1	1	
+1	2	
+0	0	
+0	1	
+2	0	
+2	0	
+2	2	
+1	1	
+2	2	
+2	1	
+0	0	
+0	0	
+0	0	
+0	2	
+2	0	
+
+
+query : ./PPDM  0  0  7  0  2000  2  12  10  512  0  0  2  2  
+total time : 765
+node_SBD : 0  (0%)
+node_SRO : 0  (0%) 	 node_expansion(verify) : 0 (0%)
+node_retrieval : 0  (0%) 	 node_retrieval(verify) : 0 (0%)
+data_SSED_SBD : 0  (0%) 	 data_SBOR : 0 (0%)
+sMINn : 0  (0%) 	 sMINn (verify): 0 (0%)
+data_SPE(range) : 0  (0%) 
+# retrieved node : 0
+1	2	
+1	2	
+2	0	
+2	1	
+0	0	
+0	1	
+2	1	
+2	0	
+1	0	
+1	1	
+1	2	
+0	0	
+0	1	
+2	0	
+2	0	
+2	2	
+1	1	
+2	2	
+2	1	
+0	0	
+0	0	
+0	0	
+0	2	
+2	0	
+
+
+query : ./PPDM  0  0  7  0  2000  2  12  10  512  0  0  2  2  
 total time : 762
 node_SBD : 0  (0%)
 node_SRO : 0  (0%) 	 node_expansion(verify) : 0 (0%)
@@ -124,49 +114,32 @@ data_SPE(range) : 0  (0%)
 # retrieved node : 0
 1	2	
 1	2	
-3	0	
 2	0	
-3	1	
-2	3	
-3	0	
 2	1	
 0	0	
 0	1	
-3	3	
-3	3	
-3	1	
 2	1	
 2	0	
 1	0	
 1	1	
 1	2	
-3	2	
 0	0	
 0	1	
 2	0	
 2	0	
 2	2	
 1	1	
-3	1	
-2	3	
 2	2	
-3	2	
 2	1	
-3	1	
 0	0	
 0	0	
-3	0	
 0	0	
-3	0	
 0	2	
-3	3	
-2	3	
-0	3	
 2	0	
 
 
-query : ./PPDM00702000212105120022
-total time : 766
+query : ./PPDM  0  0  7  0  2000  2  12  10  512  0  0  2  2  
+total time : 775
 node_SBD : 0  (0%)
 node_SRO : 0  (0%) 	 node_expansion(verify) : 0 (0%)
 node_retrieval : 0  (0%) 	 node_retrieval(verify) : 0 (0%)
@@ -174,29 +147,94 @@ data_SSED_SBD : 0  (0%) 	 data_SBOR : 0 (0%)
 sMINn : 0  (0%) 	 sMINn (verify): 0 (0%)
 data_SPE(range) : 0  (0%) 
 # retrieved node : 0
-1	2	
-1	2	
-2	0	
-2	1	
-0	0	
-0	1	
-2	1	
-2	0	
-1	0	
-1	1	
-1	2	
-0	0	
-0	1	
-2	0	
-2	0	
-2	2	
-1	1	
-2	2	
-2	1	
-0	0	
-0	0	
-0	0	
-0	2	
-2	0	
+0 = 1	0 = 2	
+1 = 1	1 = 2	
+2 = 2	2 = 0	
+3 = 2	3 = 1	
+4 = 0	4 = 0	
+5 = 0	5 = 1	
+6 = 2	6 = 1	
+7 = 2	7 = 0	
+8 = 1	8 = 0	
+9 = 1	9 = 1	
+10 = 1	10 = 2	
+11 = 0	11 = 0	
+12 = 0	12 = 1	
+13 = 2	13 = 0	
+14 = 2	14 = 0	
+15 = 2	15 = 2	
+16 = 1	16 = 1	
+17 = 2	17 = 2	
+18 = 2	18 = 1	
+19 = 0	19 = 0	
+20 = 0	20 = 0	
+21 = 0	21 = 0	
+22 = 0	22 = 2	
+23 = 2	23 = 0	
+
+
+query : ./PPDM  0  0  7  0  2000  2  12  10  512  0  0  2  2  
+total time : 760
+query_Processing_time : 0  (0%)
+node_SBD : 0  (0%)
+node_SRO : 387  (51%) 	 node_expansion(verify) : 0 (0%)
+node_retrieval : 0  (0%) 	 node_retrieval(verify) : 0 (0%)
+sMINn : 0  (0%) 	 sMINn (verify): 0 (0%)
+data_SPE(range) : 0  (0%) 
+# retrieved node : 0
+0 = 1	0 = 2	
+1 = 1	1 = 2	
+2 = 2	2 = 0	
+3 = 2	3 = 1	
+4 = 0	4 = 0	
+5 = 0	5 = 1	
+6 = 2	6 = 1	
+7 = 2	7 = 0	
+8 = 1	8 = 0	
+9 = 1	9 = 1	
+10 = 1	10 = 2	
+11 = 0	11 = 0	
+12 = 0	12 = 1	
+13 = 2	13 = 0	
+14 = 2	14 = 0	
+15 = 2	15 = 2	
+16 = 1	16 = 1	
+17 = 2	17 = 2	
+18 = 2	18 = 1	
+19 = 0	19 = 0	
+20 = 0	20 = 0	
+21 = 0	21 = 0	
+22 = 0	22 = 2	
+23 = 2	23 = 0	
+
+
+SBD_for_SRO(QUERY) 	 time : 	 0 	 (0%) 
+SBD_for_SRO(Data) 	 time : 	 372 	 (49%) 
+SRO(DATA, QUERY) 	 time : 	 388 	 (51%) 
+# retrieved node : 0
+0 = 1	0 = 2	
+1 = 1	1 = 2	
+2 = 2	2 = 0	
+3 = 2	3 = 1	
+4 = 0	4 = 0	
+5 = 0	5 = 1	
+6 = 2	6 = 1	
+7 = 2	7 = 0	
+8 = 1	8 = 0	
+9 = 1	9 = 1	
+10 = 1	10 = 2	
+11 = 0	11 = 0	
+12 = 0	12 = 1	
+13 = 2	13 = 0	
+14 = 2	14 = 0	
+15 = 2	15 = 2	
+16 = 1	16 = 1	
+17 = 2	17 = 2	
+18 = 2	18 = 1	
+19 = 0	19 = 0	
+20 = 0	20 = 0	
+21 = 0	21 = 0	
+22 = 0	22 = 2	
+23 = 2	23 = 0	
 
 

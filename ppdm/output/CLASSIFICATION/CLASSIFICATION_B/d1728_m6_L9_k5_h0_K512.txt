@@ -1,10 +1,10 @@
-query : ./PPDM30501728695512000000
-total time : 721
+query : ./PPDM  3  0  5  0  1728  6  9  5  512  0  0  0  0  0  0  
+total time : 718
 node_SBD : 0  (0%)
 node_SRO : 0  (0%) 	 node_expansion(verify) : 0 (0%)
 node_retrieval : 0  (0%) 	 node_retrieval(verify) : 0 (0%)
-data_SSED_SBD : 76  (11%) 	 data_SBOR : 107 (15%)
-sMINn : 294  (41%) 	 sMINn (verify): 0 (0%)
+data_SSED_SBD : 76  (11%) 	 data_SBOR : 106 (15%)
+sMINn : 293  (41%) 	 sMINn (verify): 0 (0%)
 data_SPE(range) : 0  (0%) 
 # retrieved node : 0
 

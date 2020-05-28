@@ -556,8 +556,8 @@ int** protocol::Classification_I(paillier_ciphertext_t*** data, paillier_ciphert
 		}
 	}
 	endTime = clock();
-	node_SBD_time = (float)(endTime-startTime)/(CLOCKS_PER_SEC);
-	printf("node SBD time: %f\n", node_SBD_time);
+	node_Processing_time = (float)(endTime-startTime)/(CLOCKS_PER_SEC);
+	printf("node SBD time: %f\n", node_Processing_time);
 	
 	while(1){
 		startTime = clock();

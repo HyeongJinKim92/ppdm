@@ -33,3 +33,108 @@ data_SPE(range) : 0  (0%)
 1	2	
 
 
+query : ./PPDM  0  4  7  4  2000  2  12  10  512  0  0  2  2  
+total time : 2
+node_SBD : 0  (0%)
+node_SRO : 0  (0%) 	 node_expansion(verify) : 0 (0%)
+node_retrieval : 0  (0%) 	 node_retrieval(verify) : 0 (0%)
+data_SSED_SBD : 0  (0%) 	 data_SBOR : 0 (0%)
+sMINn : 0  (0%) 	 sMINn (verify): 0 (0%)
+data_SPE(range) : 0  (0%) 
+# retrieved node : 1
+0	0	
+0	0	
+2	0	
+2	0	
+2	0	
+2	0	
+2	0	
+0	0	
+1	0	
+0	0	
+0	0	
+2	1	
+1	1	
+2	1	
+2	1	
+0	1	
+0	1	
+1	1	
+2	2	
+2	2	
+0	2	
+1	2	
+1	2	
+1	2	
+
+
+query : ./PPDM  0  4  7  4  2000  2  12  10  512  0  0  2  2  
+total time : 2
+node_SBD : 0  (0%)
+node_SRO : 0  (0%) 	 node_expansion(verify) : 0 (0%)
+node_retrieval : 0  (0%) 	 node_retrieval(verify) : 0 (0%)
+data_SSED_SBD : 0  (0%) 	 data_SBOR : 0 (0%)
+sMINn : 0  (0%) 	 sMINn (verify): 0 (0%)
+data_SPE(range) : 0  (0%) 
+# retrieved node : 1
+0	0	
+0	0	
+2	0	
+2	0	
+2	0	
+2	0	
+2	0	
+0	0	
+1	0	
+0	0	
+0	0	
+2	1	
+1	1	
+2	1	
+2	1	
+0	1	
+0	1	
+1	1	
+2	2	
+2	2	
+0	2	
+1	2	
+1	2	
+1	2	
+
+
+query : ./PPDM  0  4  7  4  2000  2  12  10  512  0  0  2  2  
+total time : 2
+node_SBD : 0  (0%)
+node_SRO : 0  (0%) 	 node_expansion(verify) : 0 (0%)
+node_retrieval : 0  (0%) 	 node_retrieval(verify) : 0 (0%)
+data_SSED_SBD : 0  (0%) 	 data_SBOR : 0 (0%)
+sMINn : 0  (0%) 	 sMINn (verify): 0 (0%)
+data_SPE(range) : 0  (0%) 
+# retrieved node : 1
+0	0	
+0	0	
+2	0	
+2	0	
+2	0	
+2	0	
+2	0	
+0	0	
+1	0	
+0	0	
+0	0	
+2	1	
+1	1	
+2	1	
+2	1	
+0	1	
+0	1	
+1	1	
+2	2	
+2	2	
+0	2	
+1	2	
+1	2	
+1	2	
+
+

@@ -77,19 +77,6 @@ int** protocol::sRange_PB(paillier_ciphertext_t*** data, boundary q, boundary* n
 	delete[] SRO_SBD_Thread;
 	delete[] inputIdx;
 
-
-
-/*
-	// PARALLEL PART
-	for(i=0; i<NumData; i++) {
-		for(j=0; j<dim; j++) {
-			candLL_bit[j] = SBD_for_SRO(data[i][j], 0);			// query cand º¯È¯
-			candRR_bit[j] = SBD_for_SRO(data[i][j], 1);		
-		}		
-		alpha[i] = SRO(candLL_bit, candRR_bit, ciper_qLL_bit, ciper_qRR_bit);
-	}
-	// ==============
-*/
 	cout << "\n=======================EXTRACT RESULT=====================\n" << endl;
 
 

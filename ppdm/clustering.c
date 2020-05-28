@@ -21,14 +21,7 @@ paillier_ciphertext_t*** protocol::Clustering_B(paillier_ciphertext_t*** ciper, 
 			origin_data[i][j] = ciper[i][j];
 		}
 	}
-	/*
-	for(int i = 0 ; i < NumData ; i++ ){
-		for(int j = 0 ; j < dim ; j++){
-			gmp_printf("%Zd ", paillier_dec(0, pubkey, prvkey, ciper[i][j]));
-		}
-		printf("\n");
-	}
-	*/
+
 	paillier_ciphertext_t*** Distance_center_data		= (paillier_ciphertext_t***)malloc(sizeof(paillier_ciphertext_t**)*NumData);
 	paillier_ciphertext_t** minDist						= (paillier_ciphertext_t**)malloc(sizeof(paillier_ciphertext_t*)*NumData);
 
@@ -98,46 +91,12 @@ paillier_ciphertext_t*** protocol::Clustering_B(paillier_ciphertext_t*** ciper, 
 				NewSumCluster[i][j] = paillier_create_enc(0);
 			}
 		}
-		/*
-		printf("former CNT\n");
-		for(int i = 0 ; i < k; i++){
-			gmp_printf(" %Zd ", paillier_dec(0, pubkey, prvkey, formerSumCntCluster[i]));
-		}
-		printf("\n");
 
-		printf("former Center\n");
-		for(int i = 0 ; i < k; i++){
-			for(int j = 0 ; j < dim ; j++){
-				gmp_printf(" %Zd ", paillier_dec(0, pubkey, prvkey, formerSumCluster[i][j]));
-			}
-			printf("\n");
-		}
-		printf("\n");
-		*/
-		
-		/*
-		printf("New CNT : ");
-		for(int i = 0 ; i < k; i++){
-			gmp_printf(" %Zd ", paillier_dec(0, pubkey, prvkey, NewSumCntCluster[i]));
-		}
-		printf("\n");
-
-		printf("New Center\n");
-		for(int i = 0 ; i < k; i++){
-			for(int j = 0 ; j < dim ; j++){
-				gmp_printf(" %Zd ", paillier_dec(0, pubkey, prvkey, NewSumCluster[i][j]));
-			}
-			printf("\n");
-		}
-		printf("\n");
-		*/
 		
 		for(int i = 0 ; i < NumData ; i++){
 						
 			for( int j = 0 ; j < k ; j++){
 				Distance_center_data[i][j] = SSEDm(origin_data[i], formerSumCluster[j], dim);
-				//Distance_center_data[i][j] = OP_SSED(ciper[i], formerSumCluster[j], formerSumCntCluster, i, k);
-				//gmp_printf("dist : %Zd\n", paillier_dec(0, pubkey, prvkey, Distance_center_data[i][j]));
 			}
 			
 			idx_arr = Smin_bool(Distance_center_data[i], k);
@@ -189,16 +148,7 @@ paillier_ciphertext_t*** protocol::Clustering_B(paillier_ciphertext_t*** ciper, 
 			printf("\n");
 		}
 	}
-/*
-	for(int i = 0 ; i < k ; i++ ){
-		printf("Sum : ");
-		for(int j = 0 ; j < dim ; j++){
-			gmp_printf("%Zd ", paillier_dec(0, pubkey, prvkey, NewSumCluster[i][j]));
-		}
-		printf("\t\t");
-	}
-	printf("\n");
-*/
+
 	return NewSumCluster;
 }
 

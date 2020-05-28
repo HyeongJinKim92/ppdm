@@ -357,7 +357,7 @@ paillier_ciphertext_t*** protocol::GSRO_sNodeRetrievalforRange(paillier_cipherte
 			printf("%dth node overlaps the query region.\n", i);
 	}
 
-	printf("node SBD time: %f\n", node_SBD_time);
+	printf("node SBD time: %f\n", node_Processing_time);
 	printf("SRO time : %f\n", node_SRO_time);
 
 	startTime = clock();

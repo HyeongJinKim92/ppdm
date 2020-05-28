@@ -9,3 +9,36 @@ data_SPE(range) : 0  (0%)
 # retrieved node : 4
 
 
+query : ./PPDM  1  4  7  4  2000  4  20  10  512  10  10  10  10  10  
+total time : 16
+node_SBD : 0  (0%)
+node_SRO : 0  (0%) 	 node_expansion(verify) : 0 (0%)
+node_retrieval : 12  (75%) 	 node_retrieval(verify) : 12 (75%)
+data_SSED_SBD : 0  (0%) 	 data_SBOR : 0 (0%)
+sMINn : 0  (3%) 	 sMINn (verify): 1 (8%)
+data_SPE(range) : 0  (0%) 
+# retrieved node : 4
+
+
+query : ./PPDM  1  4  7  4  2000  4  20  10  512  10  10  10  10  10  
+total time : 16
+node_SBD : 0  (0%)
+node_SRO : 0  (0%) 	 node_expansion(verify) : 0 (0%)
+node_retrieval : 12  (75%) 	 node_retrieval(verify) : 12 (75%)
+data_SSED_SBD : 0  (0%) 	 data_SBOR : 0 (0%)
+sMINn : 0  (3%) 	 sMINn (verify): 1 (8%)
+data_SPE(range) : 0  (0%) 
+# retrieved node : 4
+
+
+query : ./PPDM  1  4  7  4  2000  4  20  10  512  10  10  10  10  10  
+total time : 16
+node_SBD : 0  (0%)
+node_SRO : 0  (0%) 	 node_expansion(verify) : 0 (0%)
+node_retrieval : 12  (75%) 	 node_retrieval(verify) : 12 (75%)
+data_SSED_SBD : 0  (0%) 	 data_SBOR : 0 (0%)
+sMINn : 0  (2%) 	 sMINn (verify): 1 (8%)
+data_SPE(range) : 0  (0%) 
+# retrieved node : 4
+
+

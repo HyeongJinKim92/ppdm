@@ -328,7 +328,7 @@ int** protocol::STopk_Confirm(paillier_ciphertext_t*** data, paillier_ciphertext
 	return result_data;
 }
 
-paillier_ciphertext_t* protocol::computeScore(paillier_ciphertext_t** ciper1, paillier_ciphertext_t** ciper2)
+paillier_ciphertext_t* protocol::computeScore(paillier_ciphertext_t** cipher1, paillier_ciphertext_t** cipher2)
 {
 	// init variables
 	int i = 0;
@@ -337,7 +337,7 @@ paillier_ciphertext_t* protocol::computeScore(paillier_ciphertext_t** ciper1, pa
 
 	for( i = 0 ; i < dim; i++ )
 	{
-		tmp_score = SM_p1(ciper1[i], ciper2[i]);	
+		tmp_score = SM_p1(cipher1[i], cipher2[i]);	
 		//gmp_printf("tmp_score : %Zd\n", paillier_dec(0, pubkey, prvkey, tmp_score));
 		paillier_mul(pubkey, score, score, tmp_score);
 		//gmp_printf("score : %Zd\n", paillier_dec(0, pubkey, prvkey, score));		
@@ -349,7 +349,7 @@ paillier_ciphertext_t* protocol::computeScore(paillier_ciphertext_t** ciper1, pa
 }
 
 // 150809. added by KHI.
-paillier_ciphertext_t* protocol::computeScore2(paillier_ciphertext_t** ciper1, paillier_ciphertext_t** ciper2, paillier_ciphertext_t** coeff, paillier_ciphertext_t* hint)
+paillier_ciphertext_t* protocol::computeScore2(paillier_ciphertext_t** cipher1, paillier_ciphertext_t** cipher2, paillier_ciphertext_t** coeff, paillier_ciphertext_t* hint)
 {
 	// init variables
 	int i = 0;
@@ -358,9 +358,9 @@ paillier_ciphertext_t* protocol::computeScore2(paillier_ciphertext_t** ciper1, p
 
 	for( i = 0 ; i < dim; i++ )
 	{
-		tmp_score = SM_p1(coeff[i], ciper2[i]);	
+		tmp_score = SM_p1(coeff[i], cipher2[i]);	
 		//gmp_printf("tmp_score : %Zd\n", paillier_dec(0, pubkey, prvkey, tmp_score));
-		paillier_subtract(pubkey, tmp_score, tmp_score, SM_p1(hint, ciper2[i]));
+		paillier_subtract(pubkey, tmp_score, tmp_score, SM_p1(hint, cipher2[i]));
 		//gmp_printf("tmp_score : %Zd\n", paillier_dec(0, pubkey, prvkey, tmp_score));
 		paillier_mul(pubkey, score, score, tmp_score);
 		//gmp_printf("score : %Zd\n", paillier_dec(0, pubkey, prvkey, score));		
@@ -447,7 +447,7 @@ paillier_ciphertext_t** protocol::Smax_n(paillier_ciphertext_t*** ciper, int num
 }
 
 // 150809. added by KHI.
-paillier_ciphertext_t** protocol::Smax_basic1(paillier_ciphertext_t** ciper1, paillier_ciphertext_t** ciper2)
+paillier_ciphertext_t** protocol::Smax_basic1(paillier_ciphertext_t** cipher1, paillier_ciphertext_t** cipher2)
 {
 	int i;
 	bool func = false;
@@ -502,15 +502,15 @@ paillier_ciphertext_t** protocol::Smax_basic1(paillier_ciphertext_t** ciper1, pa
 
 	for(i=0; i<size; i++){
 		if(func){	// true :  F : u>v	
-			paillier_subtract(pubkey, ciper_W[i], ciper1[i], SM_p1(ciper1[i], ciper2[i]));	// W
-			paillier_subtract(pubkey,temp[i],ciper2[i],ciper1[i]);	
+			paillier_subtract(pubkey, ciper_W[i], cipher1[i], SM_p1(cipher1[i], cipher2[i]));	// W
+			paillier_subtract(pubkey,temp[i],cipher2[i],cipher1[i]);	
 			paillier_mul(pubkey,ciper_R[i],temp[i],ciper_Rand_value);	// Gamma
 		}else{
-			paillier_subtract(pubkey, ciper_W[i], ciper2[i], SM_p1(ciper1[i], ciper2[i]));
-			paillier_subtract(pubkey, temp[i], ciper1[i], ciper2[i]);
+			paillier_subtract(pubkey, ciper_W[i], cipher2[i], SM_p1(cipher1[i], cipher2[i]));
+			paillier_subtract(pubkey, temp[i], cipher1[i], cipher2[i]);
 			paillier_mul(pubkey, ciper_R[i], temp[i], ciper_Rand_value);
 		}
-		ciper_G[i]=SBXOR(ciper1[i],ciper2[i]);
+		ciper_G[i]=SBXOR(cipher1[i],cipher2[i]);
 
 		if(i==0){
 			paillier_exp(pubkey,ciper_H[i], ciper_zero, Rand_value);
@@ -536,9 +536,9 @@ paillier_ciphertext_t** protocol::Smax_basic1(paillier_ciphertext_t** ciper1, pa
 		paillier_exp(pubkey,tmp,alpha,Rand_value);
 		paillier_subtract(pubkey, ciper_lambda[i], ciper_M[i], tmp);
 		if(func){
-			paillier_mul(pubkey,ciper_min[i],ciper1[i],ciper_lambda[i]);			
+			paillier_mul(pubkey,ciper_min[i],cipher1[i],ciper_lambda[i]);			
 		}else{
-			paillier_mul(pubkey,ciper_min[i],ciper2[i],ciper_lambda[i]);			
+			paillier_mul(pubkey,ciper_min[i],cipher2[i],ciper_lambda[i]);			
 		}
 	}
 /*
@@ -729,8 +729,8 @@ int** protocol::STopk_I(paillier_ciphertext_t*** data, paillier_ciphertext_t** q
 		}
 	}
 	endTime = clock();
-	node_SBD_time += (float)(endTime-startTime)/(CLOCKS_PER_SEC);
-	printf("node SBD time: %f\n", node_SBD_time);
+	node_Processing_time += (float)(endTime-startTime)/(CLOCKS_PER_SEC);
+	printf("node SBD time: %f\n", node_Processing_time);
 	
 	for(i=0; i<dim; i++) {	
 		temp_q[i] = SM_p1(max_val[i], psi[i]);	
@@ -2061,7 +2061,7 @@ int protocol::MAXn(paillier_ciphertext_t** ciper, int cnt){
 	return MAXn_result_idx;
 }
 /*
-paillier_ciphertext_t* protocol::DP_computeScore(paillier_ciphertext_t** ciper1, paillier_ciphertext_t** ciper2, int col_num)
+paillier_ciphertext_t* protocol::DP_computeScore(paillier_ciphertext_t** cipher1, paillier_ciphertext_t** cipher2, int col_num)
 {
 		
 	paillier_plaintext_t* shift = paillier_plaintext_from_ui(0);
@@ -2102,7 +2102,7 @@ paillier_ciphertext_t* protocol::DP_computeScore(paillier_ciphertext_t** ciper1,
 		mpz_ui_pow_ui(shift->m,2,16*i);			//shift
 		//gmp_printf("shift : %Zd\n",shift);
 
-		paillier_exp(pubkey,mul,ciper1[i],ciper2[i]); 
+		paillier_exp(pubkey,mul,cipher1[i],cipher2[i]); 
 		gmp_printf("mul : %Zd\n",paillier_dec(0, pubkey, prvkey, mul));
 
 				
@@ -2127,7 +2127,7 @@ paillier_ciphertext_t* protocol::DP_computeScore(paillier_ciphertext_t** ciper1,
 		paillier_subtract(pub,result,result,ciper_tmp );
 
 		mpz_mul_ui (rand[i]->m,rand[i]->m,2);
-		paillier_subtract(pub,ciper_tmp,ciper1[i],ciper2[i]);
+		paillier_subtract(pub,ciper_tmp,cipher1[i],cipher2[i]);
 		paillier_exp(pubkey, sub, ciper_tmp, rand[i]);
 		paillier_subtract(pub,result,result,sub);
 	}
@@ -2138,12 +2138,12 @@ paillier_ciphertext_t* protocol::DP_computeScore(paillier_ciphertext_t** ciper1,
 
 }
 
-paillier_ciphertext_t* protocol::unDP_computeScore(paillier_ciphertext_t* ciper1, int col_num){
+paillier_ciphertext_t* protocol::unDP_computeScore(paillier_ciphertext_t* cipher1, int col_num){
 	paillier_ciphertext_t** result_array=(paillier_ciphertext_t**)malloc(sizeof(paillier_ciphertext_t*)*col_num);
 
 	paillier_plaintext_t* shift = paillier_plaintext_from_ui(0);
 	paillier_plaintext_t* tmp = paillier_plaintext_from_ui(0);
-	paillier_plaintext_t* result = paillier_dec(0, pub, prv, ciper1);
+	paillier_plaintext_t* result = paillier_dec(0, pub, prv, cipher1);
 
 	paillier_plaintext_t* test = paillier_plaintext_from_ui(0);
 	paillier_ciphertext_t* enc_test = paillier_create_enc_zero();

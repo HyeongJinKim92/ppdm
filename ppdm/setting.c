@@ -5,6 +5,7 @@
 #include <time.h>
 #include <sstream>
 #include <fstream>
+#include <map>
 
 #include "protocol.h"
 #include "setting.h"
@@ -147,6 +148,48 @@ void setting::TimeResult_write_ciper(float time,paillier_ciphertext_t*** result,
 	fclose(fp_output);	
 }
 
+void setting::TimeResult_write_map(char* query, int** result, int result_num, char* app, protocol proto)
+{
+	//protocol proto;
+	FILE *fp_output;
+	char file_name[128]; 
+	sprintf(file_name, "output/%s/d%d_m%d_L%d_k%d_h%d_K%d.txt", app, proto.NumData, proto.dim, proto.size, proto.k, proto.tree_level, proto.modul); 
+	fp_output=fopen(file_name,"a");
+
+	for(auto it = proto.time_variable.begin() ; it != proto.time_variable.end() ; it++ ){
+		cout <<  it->first << " " << "time : " << it->second << " "<< (it->second/proto.total_time)*100 << endl;
+	}
+
+	fprintf(fp_output,"query : %s\n", query);
+	fprintf(fp_output,"total time : %.0f\n", proto.total_time);
+	for(auto it = proto.time_variable.begin() ; it != proto.time_variable.end() ; it++ ){
+		fprintf(fp_output,"%s \t time : \t %f \t (%f%%) \n", it->first, it->second, (it->second/proto.total_time)*100);
+	}
+/*
+	fprintf(fp_output,"query : %s\n", query);
+	fprintf(fp_output,"total time : %.0f\n", proto.total_time);
+	fprintf(fp_output,"query_Processing_time : %.0f  (%.0f%%)\n", proto.query_Processing_time, (proto.query_Processing_time/proto.total_time)*100);
+	fprintf(fp_output,"node_SBD : %.0f  (%.0f%%)\n", proto.node_Processing_time, (proto.node_Processing_time/proto.total_time)*100);
+	fprintf(fp_output,"node_SRO : %.0f  (%.0f%%) \t node_expansion(verify) : %.0f (%.0f%%)\n", proto.node_SRO_time, (proto.node_SRO_time/proto.total_time)*100, proto.node_expansion_time, (proto.node_expansion_time/proto.total_time)*100);
+	fprintf(fp_output,"node_retrieval : %.0f  (%.0f%%) \t node_retrieval(verify) : %.0f (%.0f%%)\n",proto.data_extract_first_time, (proto.data_extract_first_time/proto.total_time)*100, proto.data_extract_second_time, (proto.data_extract_second_time/proto.total_time)*100);
+	printf("data_Processing : %.0f (%.0f%%) \t data_SSED_SBD : %.0f  (%.0f%%) \t data_SBOR : %.0f (%.0f%%)\n", proto.data_Processing_time, (proto.data_Processing_time/proto.total_time)*100, proto.data_SSED_SBD_time, (proto.data_SSED_SBD_time/proto.total_time)*100, proto.data_SBOR_time, (proto.data_SBOR_time/proto.total_time)*100);
+	fprintf(fp_output,"sMINn : %.0f  (%.0f%%) \t sMINn (verify): %.0f (%.0f%%)\n", proto.sMINn_first_time, (proto.sMINn_first_time/proto.total_time)*100, proto.sMINn_second_time, (proto.sMINn_second_time/proto.total_time)*100);
+	fprintf(fp_output,"data_SPE(range) : %.0f  (%.0f%%) \n", proto.data_SPE_time, (proto.data_SPE_time/proto.total_time)*100);
+*/
+	fprintf(fp_output,"# retrieved node : %d\n", proto.totalNumOfRetrievedNodes); // 탐색한 총 노드의 개수 기록
+
+	//result file write
+	for(int i=0;i<result_num;i++){
+		fprintf(fp_output,"Result(%d) :\t", i);
+		for(int j=0; j<proto.dim; j++) {				
+				fprintf(fp_output,"%d\t", result[i][j]);
+			}
+		fprintf(fp_output,"\n");
+	}	
+	fprintf(fp_output,"\n\n");
+	fclose(fp_output);	
+}
+
 
 void setting::TimeResult_write_int(char* query, int** result, int result_num, char* app, protocol proto){
 	//protocol proto;
@@ -155,31 +198,32 @@ void setting::TimeResult_write_int(char* query, int** result, int result_num, ch
 	sprintf(file_name, "output/%s/d%d_m%d_L%d_k%d_h%d_K%d.txt", app, proto.NumData, proto.dim, proto.size, proto.k, proto.tree_level, proto.modul); 
 	fp_output=fopen(file_name,"a");
 
-	printf("node_SBD : %.0f  (%.0f%%)\n", proto.node_SBD_time, (proto.node_SBD_time/proto.total_time)*100);
+	printf("query_Processing_time : %.0f  (%.0f%%)\n", proto.query_Processing_time, (proto.query_Processing_time/proto.total_time)*100);
+	printf("node_SBD : %.0f  (%.0f%%)\n", proto.node_Processing_time, (proto.node_Processing_time/proto.total_time)*100);
 	printf("node_SRO : %.0f  (%.0f%%) \t node_expansion(verify) : %.0f (%.0f%%)\n", proto.node_SRO_time, (proto.node_SRO_time/proto.total_time)*100, proto.node_expansion_time, (proto.node_expansion_time/proto.total_time)*100);
 	printf("node_retrieval : %.0f  (%.0f%%) \t node_retrieval(verify) : %.0f (%.0f%%)\n", proto.data_extract_first_time, (proto.data_extract_first_time/proto.total_time)*100, proto.data_extract_second_time, (proto.data_extract_second_time/proto.total_time)*100);
-	printf("data_SSED_SBD : %.0f  (%.0f%%) \t data_SBOR : %.0f (%.0f%%)\n", proto.data_SSED_SBD_time, (proto.data_SSED_SBD_time/proto.total_time)*100, proto.data_SBOR_time, (proto.data_SBOR_time/proto.total_time)*100);
+
+	printf("data_Processing : %.0f (%.0f%%) \t data_SSED_SBD : %.0f  (%.0f%%) \t data_SBOR : %.0f (%.0f%%)\n", proto.data_Processing_time, (proto.data_Processing_time/proto.total_time)*100, proto.data_SSED_SBD_time, (proto.data_SSED_SBD_time/proto.total_time)*100, proto.data_SBOR_time, (proto.data_SBOR_time/proto.total_time)*100);
 	printf("sMINn : %.0f  (%.0f%%) \t sMINn (verify): %.0f (%.0f%%)\n", proto.sMINn_first_time, (proto.sMINn_first_time/proto.total_time)*100, proto.sMINn_second_time, (proto.sMINn_second_time/proto.total_time)*100);
 	printf("data_SPE(range) : %.0f  (%.0f%%) \n", proto.data_SPE_time, (proto.data_SPE_time/proto.total_time)*100);
 
 
 	fprintf(fp_output,"query : %s\n", query);
 	fprintf(fp_output,"total time : %.0f\n", proto.total_time);
-	fprintf(fp_output,"node_SBD : %.0f  (%.0f%%)\n", proto.node_SBD_time, (proto.node_SBD_time/proto.total_time)*100);
+	fprintf(fp_output,"query_Processing_time : %.0f  (%.0f%%)\n", proto.query_Processing_time, (proto.query_Processing_time/proto.total_time)*100);
+	fprintf(fp_output,"node_SBD : %.0f  (%.0f%%)\n", proto.node_Processing_time, (proto.node_Processing_time/proto.total_time)*100);
 	fprintf(fp_output,"node_SRO : %.0f  (%.0f%%) \t node_expansion(verify) : %.0f (%.0f%%)\n", proto.node_SRO_time, (proto.node_SRO_time/proto.total_time)*100, proto.node_expansion_time, (proto.node_expansion_time/proto.total_time)*100);
 	fprintf(fp_output,"node_retrieval : %.0f  (%.0f%%) \t node_retrieval(verify) : %.0f (%.0f%%)\n",proto.data_extract_first_time, (proto.data_extract_first_time/proto.total_time)*100, proto.data_extract_second_time, (proto.data_extract_second_time/proto.total_time)*100);
-	fprintf(fp_output,"data_SSED_SBD : %.0f  (%.0f%%) \t data_SBOR : %.0f (%.0f%%)\n", proto.data_SSED_SBD_time, (proto.data_SSED_SBD_time/proto.total_time)*100, proto.data_SBOR_time, (proto.data_SBOR_time/proto.total_time)*100);
+	printf("data_Processing : %.0f (%.0f%%) \t data_SSED_SBD : %.0f  (%.0f%%) \t data_SBOR : %.0f (%.0f%%)\n", proto.data_Processing_time, (proto.data_Processing_time/proto.total_time)*100, proto.data_SSED_SBD_time, (proto.data_SSED_SBD_time/proto.total_time)*100, proto.data_SBOR_time, (proto.data_SBOR_time/proto.total_time)*100);
 	fprintf(fp_output,"sMINn : %.0f  (%.0f%%) \t sMINn (verify): %.0f (%.0f%%)\n", proto.sMINn_first_time, (proto.sMINn_first_time/proto.total_time)*100, proto.sMINn_second_time, (proto.sMINn_second_time/proto.total_time)*100);
 	fprintf(fp_output,"data_SPE(range) : %.0f  (%.0f%%) \n", proto.data_SPE_time, (proto.data_SPE_time/proto.total_time)*100);
 
 	fprintf(fp_output,"# retrieved node : %d\n", proto.totalNumOfRetrievedNodes); // 탐색한 총 노드의 개수 기록
 
-	//printf("result num : %d\n",result_num);
-
 	//result file write
 	for(int i=0;i<result_num;i++){
 		for(int j=0; j<proto.dim; j++) {				
-				fprintf(fp_output,"%d\t", result[i][j]);
+				fprintf(fp_output,"%d = %d\t", i, result[i][j]);
 			}
 		fprintf(fp_output,"\n");
 	}	
@@ -194,7 +238,7 @@ void setting::TimeResult_write_int_forRange(float time,int** result,int k,int re
 	sprintf(file_name, "output/%s/d%d_m%d_L%d_k%d_h%d_M%d.txt",app ,NumData,dim,bitsize,k,tree_level, KEYSize); 
 	fp_output=fopen(file_name,"a");
 
-	printf("node_SBD : %.0f  (%.0f%%)\n", proto.node_SBD_time, (proto.node_SBD_time/proto.total_time)*100);
+	printf("node_SBD : %.0f  (%.0f%%)\n", proto.node_Processing_time, (proto.node_Processing_time/proto.total_time)*100);
 	printf("node_SRO : %.0f  (%.0f%%) \t node_expansion(verify) : %.0f (%.0f%%)\n", proto.node_SRO_time, (proto.node_SRO_time/proto.total_time)*100, proto.node_expansion_time, (proto.node_expansion_time/proto.total_time)*100);
 	printf("node_retrieval : %.0f  (%.0f%%) \t node_retrieval(verify) : %.0f (%.0f%%)\n", proto.data_extract_first_time, (proto.data_extract_first_time/proto.total_time)*100, proto.data_extract_second_time, (proto.data_extract_second_time/proto.total_time)*100);
 	printf("data_SSED_SBD : %.0f  (%.0f%%) \t data_SBOR : %.0f (%.0f%%)\n", proto.data_SSED_SBD_time, (proto.data_SSED_SBD_time/proto.total_time)*100, proto.data_SBOR_time, (proto.data_SBOR_time/proto.total_time)*100);
@@ -203,7 +247,7 @@ void setting::TimeResult_write_int_forRange(float time,int** result,int k,int re
 
 
 	fprintf(fp_output,"total time : %.0f\n", proto.total_time);
-	fprintf(fp_output,"node_SBD : %.0f  (%.0f%%)\n", proto.node_SBD_time, (proto.node_SBD_time/proto.total_time)*100);
+	fprintf(fp_output,"node_SBD : %.0f  (%.0f%%)\n", proto.node_Processing_time, (proto.node_Processing_time/proto.total_time)*100);
 	fprintf(fp_output,"node_SRO : %.0f  (%.0f%%) \t node_expansion(verify) : %.0f (%.0f%%)\n", proto.node_SRO_time, (proto.node_SRO_time/proto.total_time)*100, proto.node_expansion_time, (proto.node_expansion_time/proto.total_time)*100);
 	fprintf(fp_output,"node_retrieval : %.0f  (%.0f%%) \t node_retrieval(verify) : %.0f (%.0f%%)\n",proto.data_extract_first_time, (proto.data_extract_first_time/proto.total_time)*100, proto.data_extract_second_time, (proto.data_extract_second_time/proto.total_time)*100);
 	fprintf(fp_output,"data_SSED_SBD : %.0f  (%.0f%%) \t data_SBOR : %.0f (%.0f%%)\n", proto.data_SSED_SBD_time, (proto.data_SSED_SBD_time/proto.total_time)*100, proto.data_SBOR_time, (proto.data_SBOR_time/proto.total_time)*100);

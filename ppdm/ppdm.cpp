@@ -37,7 +37,6 @@ int range_main(parsed_query * user_query)
 
 	paillier_pubkey_t* pub;
 	paillier_prvkey_t* prv;
-	int i=0, j=0;
 
 	paillier_keygen(user_query->key_s, &pub,&prv, paillier_get_rand_devurandom);
 
@@ -95,21 +94,20 @@ int range_main(parsed_query * user_query)
 	std::cout << "RANGE TIME : " << proto.total_time << " sec" << std::endl; 
 
 
-	if(user_query->rquery_t == RANGE_B)			setting.TimeResult_write_int(shellquery, result, result_num, "RANGE/RANGE_B", proto); //rangeB
+	if(user_query->rquery_t == RANGE_B)			setting.TimeResult_write_map(shellquery, result, result_num, "RANGE/RANGE_B", proto); //rangeB
 	else if(user_query->rquery_t == RANGE_I) 	setting.TimeResult_write_int(shellquery, result, result_num, "RANGE/RANGE_I", proto);  //rangeI
 	else if(user_query->rquery_t == RANGE_GI) 	setting.TimeResult_write_int(shellquery, result, result_num, "RANGE/RANGE_GI", proto); //rangeGI
 	else if(user_query->rquery_t == RANGE_PB) 	setting.TimeResult_write_int(shellquery, result, result_num, "RANGE/RANGE_PB", proto); //rangePB
 	else if(user_query->rquery_t == RANGE_PGI) 	setting.TimeResult_write_int(shellquery, result, result_num, "RANGE/RANGE_PGI", proto); //rangePAI
 	else if(user_query->rquery_t == RANGE_PAI) 	setting.TimeResult_write_int(shellquery, result, result_num, "RANGE/RANGE_PAI", proto); //rangePAI
 
-	for( i = 0 ; i < result_num ; i++ ){
+	for( int i = 0 ; i < result_num ; i++ ){
 		printf("%d result : ", (i+1) );
-		for ( j = 0 ; j < user_query->dim_n ; j++ ){
+		for ( int j = 0 ; j < user_query->dim_n ; j++ ){
 			printf("%d \t", result[i][j]);
 		}
 		printf("\n");
-	}
-	
+	}	
 
 	proto.protocol_free();
 
@@ -431,8 +429,6 @@ int kmeans_main(parsed_query* user_query)
 
 
 	paillier_ciphertext_t*** Cluster;
-	int result_num=0;
-
 
 
 
@@ -467,12 +463,12 @@ int kmeans_main(parsed_query* user_query)
 		printf("\n");
 	}
 
-	if(user_query->mquery_t == KMEANS_B)			setting.TimeResult_write_int(shellquery, cluseter, result_num, "KMEANS/KMEANS_B", proto); 
-	else if(user_query->mquery_t == KMEANS_I) 		setting.TimeResult_write_int(shellquery, cluseter, result_num, "KMEANS/KMEANS_I", proto); 
-	else if(user_query->mquery_t == KMEANS_GI) 		setting.TimeResult_write_int(shellquery, cluseter, result_num, "KMEANS/KMEANS_GI", proto);
-	else if(user_query->mquery_t == KMEANS_PB) 		setting.TimeResult_write_int(shellquery, cluseter, result_num, "KMEANS/KMEANS_PB", proto); 
-	else if(user_query->mquery_t == KMEANS_PGI) 	setting.TimeResult_write_int(shellquery, cluseter, result_num, "KMEANS/KMEANS_PGI", proto);
-	else if(user_query->mquery_t == KMEANS_PAI) 	setting.TimeResult_write_int(shellquery, cluseter, result_num, "KMEANS/KMEANS_PAI", proto);
+	if(user_query->mquery_t == KMEANS_B)			setting.TimeResult_write_int(shellquery, cluseter, user_query->k, "KMEANS/KMEANS_B", proto); 
+	else if(user_query->mquery_t == KMEANS_I) 		setting.TimeResult_write_int(shellquery, cluseter, user_query->k, "KMEANS/KMEANS_I", proto); 
+	else if(user_query->mquery_t == KMEANS_GI) 		setting.TimeResult_write_int(shellquery, cluseter, user_query->k, "KMEANS/KMEANS_GI", proto);
+	else if(user_query->mquery_t == KMEANS_PB) 		setting.TimeResult_write_int(shellquery, cluseter, user_query->k, "KMEANS/KMEANS_PB", proto); 
+	else if(user_query->mquery_t == KMEANS_PGI) 	setting.TimeResult_write_int(shellquery, cluseter, user_query->k, "KMEANS/KMEANS_PGI", proto);
+	else if(user_query->mquery_t == KMEANS_PAI) 	setting.TimeResult_write_int(shellquery, cluseter, user_query->k, "KMEANS/KMEANS_PAI", proto);
 
 	proto.protocol_free();
 	return 0;
