@@ -250,10 +250,6 @@ int** protocol::STopk_PB(paillier_ciphertext_t*** data, paillier_ciphertext_t** 
 	int j = 0;
 	int rand = 5;
 	
-	time_t startTime = 0;
-	time_t endTime = 0;
-	float gap = 0.0;
-
 	paillier_ciphertext_t * hint = paillier_create_enc_zero();
 
 	paillier_plaintext_t * pt = paillier_plaintext_from_ui(0);
@@ -273,13 +269,13 @@ int** protocol::STopk_PB(paillier_ciphertext_t*** data, paillier_ciphertext_t** 
 	paillier_ciphertext_t*** cipher_result = (paillier_ciphertext_t***)malloc(sizeof(paillier_ciphertext_t**)*k);
 
 	for( i = 0 ; i < size; i++ ){
-		cipher_Smin[i] = ciper_zero;
+		cipher_Smin[i] = cipher_zero;
 	}
 
 	for( i = 0 ; i < NumData ; i++ ){
-		cipher_distance[i] 	= ciper_zero;
+		cipher_distance[i] 	= cipher_zero;
 		cipher_SBD_distance[i] = (paillier_ciphertext_t**)malloc(sizeof(paillier_ciphertext_t*)*size);
-		cipher_V[i]	= ciper_zero;
+		cipher_V[i]	= cipher_zero;
 	}
 
 	for( i = 0 ; i < k ; i++ ){
@@ -292,7 +288,12 @@ int** protocol::STopk_PB(paillier_ciphertext_t*** data, paillier_ciphertext_t** 
 
 	printf("\n=== PARALLEL Data compute & SBD start ===\n");
 ///////////////////////////////////////////////
+	startTime = std::chrono::system_clock::now(); // startTime check	
 	TOPK_CS_SBD_inMultithread(data, q, cipher_SBD_distance, cipher_distance);
+	endTime = std::chrono::system_clock::now(); // endTime check
+	duration_sec = endTime - startTime;  // calculate duration 
+	time_variable["sTopk_PB_SBD"] = time_variable.find("sTopk_PB_SBD")->second + duration_sec.count();
+
 ///////////////////////////////////////////////
 
 
@@ -300,16 +301,17 @@ int** protocol::STopk_PB(paillier_ciphertext_t*** data, paillier_ciphertext_t** 
 	for( s = 0 ; s < k ; s++ )
 	{
 		printf("\n%dth sMAX start \n", s+1);
-		startTime = clock();
+
 //////////////////////////////////////////////
+		startTime = std::chrono::system_clock::now(); // startTime check	
 		cipher_Smin = Smax_n_Multithread(cipher_SBD_distance, NumData); // bit로 표현된 암호화 min 거리 추출 parallel
+		endTime = std::chrono::system_clock::now(); // endTime check
+		duration_sec = endTime - startTime;  // calculate duration 
+		time_variable["sTopk_PB_SMAXN"] = time_variable.find("sTopk_PB_SMAXN")->second + duration_sec.count();
+
 //////////////////////////////////////////////
 
-		endTime = clock();
-		gap = (float)(endTime-startTime)/(CLOCKS_PER_SEC);
-		sMINn_first_time += gap;
-		printf("%dth sMAX time : %f\n", s+1, gap);
-		
+		startTime = std::chrono::system_clock::now(); // startTime check		
 		// bit로 표현된 암호화 max 거리를 암호화 정수로 변환
 		for( j = size ; j > 0 ; j-- ){
 			t = (int)pow(2, j-1);
@@ -327,20 +329,39 @@ int** protocol::STopk_PB(paillier_ciphertext_t*** data, paillier_ciphertext_t** 
 		if( s != 0 ){
 			recalculate_SCORE_inMultithread(cipher_SBD_distance, cipher_distance, NumData);
 		}
+		endTime = std::chrono::system_clock::now(); // endTime check
+		duration_sec = endTime - startTime;  // calculate duration 
+		time_variable["sTopk_PB_Recompute_Score"] = time_variable.find("sTopk_PB_Recompute_Score")->second + duration_sec.count();
+
 /////////////////////////////////////////////end
 		// 질의-데이터 거리와 min 거리와의 차를 구함 (min 데이터의 경우에만 0으로 만들기 위함)
 /////////////////////////////////////////////start
+		startTime = std::chrono::system_clock::now(); // startTime check		
 		DuringProcessedInTOPK_PB_inMultithread(cipher_distance, cipher_mid, cipher_min, cipher_rand, NumData);
+		endTime = std::chrono::system_clock::now(); // endTime check
+		duration_sec = endTime - startTime;  // calculate duration 
+		time_variable["sTopk_PB_subtract"] = time_variable.find("sTopk_PB_subtract")->second + duration_sec.count();
+
 /////////////////////////////////////////////end
 		cipher_V = Topk_sub(cipher_mid, NumData);
 
 		// min 데이터 추출
 /////////////////////////////////////////////start
+		startTime = std::chrono::system_clock::now(); // startTime check		
 		ExtractTOPKInTOPK_PB_inMultithread(data, cipher_V, cipher_result, NumData, s);
+		endTime = std::chrono::system_clock::now(); // endTime check
+		duration_sec = endTime - startTime;  // calculate duration 
+		time_variable["sTopk_PB_extract_topk"] = time_variable.find("sTopk_PB_extract_topk")->second + duration_sec.count();
+
 /////////////////////////////////////////////end
 
 /////////////////////////////////////////////start
+		startTime = std::chrono::system_clock::now(); // startTime check		
 		UPDATE_SBD_SCORE_InTOPK_PB_inMultithread(cipher_SBD_distance, cipher_V, NumData);
+		endTime = std::chrono::system_clock::now(); // endTime check
+		duration_sec = endTime - startTime;  // calculate duration 
+		time_variable["sTopk_PB_update_score"] = time_variable.find("sTopk_PB_update_score")->second + duration_sec.count();
+
 /////////////////////////////////////////////end
 		cipher_min = paillier_enc(0, pubkey, pt, paillier_get_rand_devurandom);	
 	}
@@ -363,7 +384,7 @@ int** protocol::STopk_PGI(paillier_ciphertext_t*** data, paillier_ciphertext_t**
 	int NumNodeGroup = 0;
 	Print = false;
 	bool verify_flag = false;
-	time_t startTime = 0;	time_t endTime = 0;	float gap = 0.0;
+
 
 	if( thread_num < 1 ) 
 	{
@@ -414,98 +435,57 @@ int** protocol::STopk_PGI(paillier_ciphertext_t*** data, paillier_ciphertext_t**
 		mpz_init(alpha[i]->c);
 	}
 	
-	
+	startTime = std::chrono::system_clock::now(); // startTime check	
 	hint = q[dim];
-	if(Print)
-	{
-		gmp_printf("hint : %Zd  /  %Zd\n", paillier_dec(0, pubkey, prvkey, hint),paillier_dec(0, pubkey, prvkey, q[dim]));
-	}
+
 	for( i = 0 ; i < dim ; i++ )
 	{
 		paillier_mul(pubkey, coeff[i], q[i], hint);
-		if(Print)
-		{
-			cout <<"q[i] + hint : "<<endl;
-			gmp_printf(" %Zd ", paillier_dec(0, pubkey, prvkey, coeff[i]));
-			gmp_printf("max val : %Zd \n", paillier_dec(0, pub, prv, max_val[i]));
-		}
 	}
 	for( i = 0 ; i < dim ; i++ )
 	{
 		psi[i] = GSCMP(hint, coeff[i]);
-		if(Print)
-		{
-			gmp_printf("psi : %Zd", paillier_dec(0, pubkey, prvkey, psi[i]));
-			if ( strcmp( paillier_plaintext_to_str( paillier_dec(0, pubkey, prvkey, psi[i]) ), paillier_plaintext_to_str(plain_one)) == 0 )
-			{
-				cout << " Q["<< i <<"] > 0 " <<endl; 
-			}else{
-				cout << " Q["<< i <<"] < 0 " <<endl; 
-			}
-		}
 	}
-
 	for( i = 0 ; i < dim ; i++ )
 	{	
 		Q[i] = SM_p1(max_val[i], psi[i]);
 	}
-	if(Print)
-	{
-		printf("===query for node searching===\n");
-		cout << "Max_val\n";
-		for( i = 0 ; i < dim ; i++ )
-		{
-			gmp_printf("%Zd\t", paillier_dec(0, pubkey, prvkey, max_val[i]));
-		}cout<<endl;
-		cout << "Q : "<<endl;
-		for( i = 0 ; i < dim ; i++ ) 
-		{
-			gmp_printf("%Zd\t", paillier_dec(0, pubkey, prvkey, Q[i]));
-		}
-		cout<<endl;
-	}
+	endTime = std::chrono::system_clock::now(); // endTime check
+	duration_sec = endTime - startTime;  // calculate duration 
+	time_variable["sTopk_PGI_QUERY"] = time_variable.find("sTopk_PGI_QUERY")->second + duration_sec.count();
 
+
+	startTime = std::chrono::system_clock::now(); // startTime check	
 	Parallel_GSRO_Topk(Q, Q, alpha, node, NumNode, &cnt, &NumNodeGroup, true);
+	endTime = std::chrono::system_clock::now(); // endTime check
+	duration_sec = endTime - startTime;  // calculate duration 
+	time_variable["sTopk_PGI_GSRO"] = time_variable.find("sTopk_PGI_GSRO")->second + duration_sec.count();
 
 	while(1)
 	{
 		cnt = 0;
 		if(!verify_flag)
 		{	
-			startTime = clock();
-
+			startTime = std::chrono::system_clock::now(); // startTime check	
 			cand = Parallel_GSRO_sNodeRetrievalforTopk(data, node, alpha, NumData, NumNode, &cnt, &NumNodeGroup);
-
 			totalNumOfRetrievedNodes += NumNodeGroup;
-			endTime = clock();
-			data_extract_first_time += (float)(endTime-startTime)/(CLOCKS_PER_SEC);
-			printf("Node Retrieval time : %f\n", data_extract_first_time);
-			
-			if(Print)
-			{
-				cout << "cnt : " <<cnt <<endl;
-				cout << "######cand######"<<endl;
-				for( i = 0 ; i < cnt ; i++ )
-				{
-					cout << i+1 <<" : ";
-					for( j = 0 ; j < dim ; j++ )
-					{
-						gmp_printf(" %Zd ", paillier_dec(0, pubkey, prvkey, cand[i][j]));
-					}
-					cout<<endl;
-				}
-			}
+			cout << "NumNodeGroup : " << NumNodeGroup << endl;
+			endTime = std::chrono::system_clock::now(); // endTime check
+			duration_sec = endTime - startTime;  // calculate duration 
+			time_variable["sTopk_PGI_filtering"] = time_variable.find("sTopk_PGI_filtering")->second + duration_sec.count();
 		}
 		else
 		{
-			startTime = clock();
 ///////////////////////////////////////////////////////////////
+			startTime = std::chrono::system_clock::now(); // startTime check	
 			temp_cand = Parallel_GSRO_sNodeRetrievalforTopk(data, node, alpha, NumData, NumNode, &cnt, &NumNodeGroup);
 ///////////////////////////////////////////////////////////////
 			totalNumOfRetrievedNodes += NumNodeGroup;
-			endTime = clock();
-			data_extract_second_time += (float)(endTime-startTime)/(CLOCKS_PER_SEC);
-			printf("Node expansion time : %f\n", data_extract_second_time);
+			cout << "Expand NumNodeGroup : " << NumNodeGroup << endl;
+			endTime = std::chrono::system_clock::now(); // endTime check
+			duration_sec = endTime - startTime;  // calculate duration 
+			time_variable["sTopk_PGI_expand"] = time_variable.find("sTopk_PGI_expand")->second + duration_sec.count();
+
 			printf("cnt : %d \n", cnt);
 			if(cnt == 0) {	// 검증을 위해 추가 탐색이 필요한 노드가 없는 경우를 처리함
 				break;
@@ -530,17 +510,6 @@ int** protocol::STopk_PGI(paillier_ciphertext_t*** data, paillier_ciphertext_t**
 				}
 			}
 			cnt = cnt + k;
-			if(Print)
-			{
-				cout << "######ciper_result + TEMP_cand######"<<endl;
-				for( i = 0 ; i < cnt ; i ++){
-					cout << i+1 <<" : ";
-					for( j = 0 ; j < dim ; j++){
-						gmp_printf(" %Zd ", paillier_dec(0, pubkey, prvkey, cand[i][j]));
-					}
-					cout<<endl;
-				}
-			}
 		}
 		int MAX_idx = 0;
 		paillier_ciphertext_t*	MAX				= (paillier_ciphertext_t*)malloc(sizeof(paillier_ciphertext_t));
@@ -568,33 +537,44 @@ int** protocol::STopk_PGI(paillier_ciphertext_t*** data, paillier_ciphertext_t**
 			}
 		}
 
+		startTime = std::chrono::system_clock::now(); // startTime check	
 		ComputeScoreinMultithread(cand, q, SCORE, &cnt, true);
+		endTime = std::chrono::system_clock::now(); // endTime check
+		duration_sec = endTime - startTime;  // calculate duration 
+		time_variable["sTopk_PGI_Score"] = time_variable.find("sTopk_PGI_Score")->second + duration_sec.count();
 
 		for( s = 0 ; s < k ; s++ )
 		{
 			cout << s+1<<"dth MAXn_Topk start"<<endl;
-			startTime = clock();
+			startTime = std::chrono::system_clock::now(); // startTime check	
 			MAX_idx = MAXn(SCORE, cnt);
 			MAX = SCORE[MAX_idx];
-			if(Print)
-			{
-				gmp_printf("MAX VALUE : %Zd\n",  paillier_dec(0, pubkey, prvkey, MAX));	
-			}
-			endTime = clock();
 			if(!verify_flag) {
-				sMINn_first_time += (float)(endTime-startTime)/(CLOCKS_PER_SEC);
-				printf("ComputeScore & SBD time : %f\n", sMINn_first_time);
+				endTime = std::chrono::system_clock::now(); // endTime check
+				duration_sec = endTime - startTime;  // calculate duration 
+				time_variable["sTopk_PGI_MANn"] = time_variable.find("sTopk_PGI_MANn")->second + duration_sec.count();
 			}
 			else {
-				sMINn_second_time += (float)(endTime-startTime)/(CLOCKS_PER_SEC);
-				printf("ComputeScore & SBD time : %f\n", sMINn_second_time);
+				endTime = std::chrono::system_clock::now(); // endTime check
+				duration_sec = endTime - startTime;  // calculate duration 
+				time_variable["sTopk_PGI_second_MANn"] = time_variable.find("sTopk_PGI_second_MANn")->second + duration_sec.count();
 			}
 ///////////////////////////////////////////////////////////////////
+			startTime = std::chrono::system_clock::now(); // startTime check	
 			MAXnMultithread2(cnt, SCORE_MINUS_MAX, SCORE, MAX, C_RAND);
+			endTime = std::chrono::system_clock::now(); // endTime check
+			duration_sec = endTime - startTime;  // calculate duration 
+			time_variable["sTopk_PGI_subtract"] = time_variable.find("sTopk_PGI_subtract")->second + duration_sec.count();
+
 ///////////////////////////////////////////////////////////////////
 			V = Topk_sub(SCORE_MINUS_MAX, cnt);
 ///////////////////////////////////////////////////////////////////
+			startTime = std::chrono::system_clock::now(); // startTime check	
 			MAXnMultithread3(cnt, s, V, V2, SCORE, cand, MIN, RESULT);
+			endTime = std::chrono::system_clock::now(); // endTime check
+			duration_sec = endTime - startTime;  // calculate duration 
+			time_variable["sTopk_PGI_topkandupdate"] = time_variable.find("sTopk_PGI_topkandupdate")->second + duration_sec.count();
+
 ///////////////////////////////////////////////////////////////////
 		}
 		if(Print)
@@ -612,12 +592,12 @@ int** protocol::STopk_PGI(paillier_ciphertext_t*** data, paillier_ciphertext_t**
 		}
 		if(!verify_flag)
 		{	
-			startTime = clock();
 			if(cnt < k)	 // 노드의 fanout이 k보다 적은 경우를 처리함
 				kth_score = computeScore(q, RESULT[cnt-1]);
 			else	// k개가 찾아졌다면, k번째 데이터의 score를 계산
 				kth_score = computeScore(q, RESULT[k-1]);
 
+			startTime = std::chrono::system_clock::now(); // startTime check	
 			int threadNum = thread_num;
 			if(threadNum > NumNode)
 			{
@@ -642,6 +622,9 @@ int** protocol::STopk_PGI(paillier_ciphertext_t*** data, paillier_ciphertext_t**
 			}
 			delete[] GSCMPforTopk_Thread;
 			delete[] inputIdx;
+			endTime = std::chrono::system_clock::now(); // endTime check
+			duration_sec = endTime - startTime;  // calculate duration 
+			time_variable["sTopk_PGI_check_expand"] = time_variable.find("sTopk_PGI_check_expand")->second + duration_sec.count();
 		}
 		if(!verify_flag)
 		{
@@ -652,14 +635,12 @@ int** protocol::STopk_PGI(paillier_ciphertext_t*** data, paillier_ciphertext_t**
 	for( i = 0 ; i < k ; i++ )
 	{
 		printf("%d final result : ", i);
-		gmp_printf(" %Zd : ", paillier_dec(0, pubkey, prvkey, computeScore(q, RESULT[i])));
+		gmp_printf(" %Zd \n", paillier_dec(0, pubkey, prvkey, computeScore(q, RESULT[i])));
 	
 		for( j = 0 ; j < dim ; j++ )
 		{
-	//		gmp_printf("%Zd\t", paillier_dec(0, pubkey, prvkey, RESULT[i][j]));
 			paillier_mul(pubkey, RESULT[i][j], RESULT[i][j], C_RAND);
 		}
-		printf("\n");
 	}
 	cout << "End Line" <<endl;
 	return SkNNm_Bob2(RESULT, rand, k, dim);
@@ -783,7 +764,7 @@ void protocol::Parallel_GSRO_Topk(paillier_ciphertext_t** cipher_qLL, paillier_c
 	std::thread *GSROThread = new std::thread[NumThread];
 	for(int i = 0; i < NumThread; i++)
 	{
-		GSROThread[i] = std::thread(DP_GSRO_MultithreadforTopk, std::ref(cipher_qLL), std::ref(cipher_qLL), std::ref(NumNodeInput[i]), std::ref(node), std::ref(alpha), std::ref(*this), true);
+		GSROThread[i] = std::thread(GSRO_MultithreadforTopk, std::ref(cipher_qLL), std::ref(cipher_qLL), std::ref(NumNodeInput[i]), std::ref(node), std::ref(alpha), std::ref(*this), true);
 	}
 	for(int i = 0; i < NumThread; i++)
 	{

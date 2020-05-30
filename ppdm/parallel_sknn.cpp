@@ -145,13 +145,13 @@ int** protocol::SkNN_PB(paillier_ciphertext_t*** data, paillier_ciphertext_t** q
 	paillier_ciphertext_t*** cipher_result = (paillier_ciphertext_t***)malloc(sizeof(paillier_ciphertext_t**)*k);
 
 	for( i = 0 ; i < size; i++ ){
-		cipher_Smin[i] = ciper_zero;
+		cipher_Smin[i] = cipher_zero;
 	}
 
 	for( i = 0 ; i < NumData ; i++ ){
-		cipher_distance[i] 	= ciper_zero;
+		cipher_distance[i] 	= cipher_zero;
 		cipher_SBD_distance[i] = (paillier_ciphertext_t**)malloc(sizeof(paillier_ciphertext_t*)*size);
-		cipher_V[i]	= ciper_zero;
+		cipher_V[i]	= cipher_zero;
 	}
 
 	for( i = 0 ; i < k ; i++ ){
@@ -412,7 +412,7 @@ int** protocol::SkNN_PGI(paillier_ciphertext_t*** data, paillier_ciphertext_t** 
 		
 		if(!verify_flag)
 		{	
-			K_DIST = DP_SSED(q, Result[k-1], dim); 
+			K_DIST = SSEDm(q, Result[k-1], dim); 
 		}
 
 		if(!verify_flag)
@@ -459,7 +459,7 @@ void protocol::Parallel_GSRO_kNN(paillier_ciphertext_t** cipher_qLL, paillier_ci
 	std::thread *GSROThread = new std::thread[NumThread];
 	for(int i = 0; i < NumThread; i++)
 	{
-		GSROThread[i] = std::thread(DP_GSRO_Multithread, std::ref(cipher_qLL), std::ref(cipher_qLL), std::ref(NumNodeInput[i]), std::ref(node), std::ref(alpha), std::ref(*this), true);
+		GSROThread[i] = std::thread(GSRO_Multithread, std::ref(cipher_qLL), std::ref(cipher_qLL), std::ref(NumNodeInput[i]), std::ref(node), std::ref(alpha), std::ref(*this), true);
 	}
 	for(int i = 0; i < NumThread; i++)
 	{

@@ -32,15 +32,15 @@ int** protocol::sRange_PB(paillier_ciphertext_t*** data, boundary q, boundary* n
 	int rand = 5;
 	int NumNodeGroup = 0;
 
-	paillier_ciphertext_t*** ciper_qLL_bit = (paillier_ciphertext_t***)malloc(sizeof(paillier_ciphertext_t**)*dim);
-	paillier_ciphertext_t*** ciper_qRR_bit = (paillier_ciphertext_t***)malloc(sizeof(paillier_ciphertext_t**)*dim);
+	paillier_ciphertext_t*** cipher_qLL_bit = (paillier_ciphertext_t***)malloc(sizeof(paillier_ciphertext_t**)*dim);
+	paillier_ciphertext_t*** cipher_qRR_bit = (paillier_ciphertext_t***)malloc(sizeof(paillier_ciphertext_t**)*dim);
 
-	paillier_ciphertext_t* ciper_rand = paillier_create_enc(rand);
+	paillier_ciphertext_t* cipher_rand = paillier_create_enc(rand);
 	
 	cout << "\n=====================SBD QUERY=====================\n" << endl;
 	for(i=0; i<dim; i++) {
-		ciper_qLL_bit[i] = SBD_for_SRO(q.LL[i], 0);		// query LL bound 변환
-		ciper_qRR_bit[i] = SBD_for_SRO(q.RR[i], 1);		// query RR bound 변환
+		cipher_qLL_bit[i] = SBD_for_SRO(q.LL[i], 0);		// query LL bound 변환
+		cipher_qRR_bit[i] = SBD_for_SRO(q.RR[i], 1);		// query RR bound 변환
 	}
 
 
@@ -66,7 +66,7 @@ int** protocol::sRange_PB(paillier_ciphertext_t*** data, boundary q, boundary* n
 	std::thread *SRO_SBD_Thread = new std::thread[threadNum];
 	for(int i = 0; i < threadNum; i++)
 	{
-		SRO_SBD_Thread[i] = std::thread(SRO_SBD_inThread, std::ref(inputIdx[i]), std::ref(ciper_qLL_bit), std::ref(ciper_qRR_bit), std::ref(data), std::ref(alpha), std::ref(*this));
+		SRO_SBD_Thread[i] = std::thread(SRO_SBD_inThread, std::ref(inputIdx[i]), std::ref(cipher_qLL_bit), std::ref(cipher_qRR_bit), std::ref(data), std::ref(alpha), std::ref(*this));
 	}
 
 	for(int i = 0; i < threadNum; i++)
@@ -77,6 +77,19 @@ int** protocol::sRange_PB(paillier_ciphertext_t*** data, boundary q, boundary* n
 	delete[] SRO_SBD_Thread;
 	delete[] inputIdx;
 
+
+
+/*
+	// PARALLEL PART
+	for(i=0; i<NumData; i++) {
+		for(j=0; j<dim; j++) {
+			candLL_bit[j] = SBD_for_SRO(data[i][j], 0);			// query cand 변환
+			candRR_bit[j] = SBD_for_SRO(data[i][j], 1);		
+		}		
+		alpha[i] = SRO(candLL_bit, candRR_bit, cipher_qLL_bit, cipher_qRR_bit);
+	}
+	// ==============
+*/
 	cout << "\n=======================EXTRACT RESULT=====================\n" << endl;
 
 
@@ -97,7 +110,7 @@ int** protocol::sRange_PB(paillier_ciphertext_t*** data, boundary q, boundary* n
 	{
 		for(j=0; j<dim; j++) 
 		{	
-				paillier_mul(pubkey,result[i][j],result[i][j],ciper_rand);
+				paillier_mul(pubkey,result[i][j],result[i][j],cipher_rand);
 		}
 	}
 	return FsRange_Bob(result, rand, (*result_num), dim);
@@ -212,7 +225,7 @@ paillier_ciphertext_t*** protocol::Parallel_GSRO_sNodeRetrievalforRange(paillier
 	std::thread *GSROThread = new std::thread[NumThread];
 	for(int i = 0; i < NumThread; i++)
 	{
-		GSROThread[i] = std::thread(DP_GSRO_Multithread, std::ref(cipher_qLL), std::ref(cipher_qRR), std::ref(NumNodeInput[i]), std::ref(node), std::ref(alpha), std::ref(*this), type);
+		GSROThread[i] = std::thread(GSRO_Multithread, std::ref(cipher_qLL), std::ref(cipher_qRR), std::ref(NumNodeInput[i]), std::ref(node), std::ref(alpha), std::ref(*this), type);
 	}
 
 	for(int i = 0; i < NumThread; i++)
@@ -285,8 +298,87 @@ paillier_ciphertext_t*** protocol::Parallel_GSRO_sNodeRetrievalforRange(paillier
 
 	return cand;
 }
+paillier_ciphertext_t* protocol::GSRO_inThread(paillier_ciphertext_t** qLL, paillier_ciphertext_t** qRR,	paillier_ciphertext_t** nodeLL,	paillier_ciphertext_t** nodeRR, int idx)
+{
+		//cout << "\nGSRO start" <<endl;
+	int i = 0;
+	int random = 0;
+	int cnt = 0 ;
+	int * Flag_array = (int *)malloc(sizeof(int)*(dim*2));
+	int * iR1_array = (int *)malloc(sizeof(int)*(dim*2));
+	int * iR2_array = (int *)malloc(sizeof(int)*(dim*2));
+	paillier_ciphertext_t** F1_array = (paillier_ciphertext_t**)malloc(sizeof(paillier_ciphertext_t*)*(dim*2));
+	paillier_ciphertext_t** F2_array = (paillier_ciphertext_t**)malloc(sizeof(paillier_ciphertext_t*)*(dim*2));
 
-paillier_ciphertext_t* protocol::DP_GSRO_inThread(paillier_ciphertext_t** qLL, paillier_ciphertext_t** qRR,	paillier_ciphertext_t** nodeLL,	paillier_ciphertext_t** nodeRR, int idx)
+	paillier_ciphertext_t** R1_array = (paillier_ciphertext_t**)malloc(sizeof(paillier_ciphertext_t*)*(dim*2));
+	paillier_ciphertext_t** R2_array = (paillier_ciphertext_t**)malloc(sizeof(paillier_ciphertext_t*)*(dim*2));
+	
+	for( i = 0 ; i < dim*2 ; i++ )
+	{
+		F1_array[i] = (paillier_ciphertext_t*)malloc(sizeof(paillier_ciphertext_t));
+		F2_array[i] = (paillier_ciphertext_t*)malloc(sizeof(paillier_ciphertext_t));
+		R1_array[i] = (paillier_ciphertext_t*)malloc(sizeof(paillier_ciphertext_t));
+		R2_array[i] = (paillier_ciphertext_t*)malloc(sizeof(paillier_ciphertext_t));
+		mpz_init(F1_array[i]->c);
+		mpz_init(F2_array[i]->c);
+		mpz_init(R1_array[i]->c);
+		mpz_init(R2_array[i]->c);
+		iR1_array[i] = 0;
+		iR2_array[i] = 0;
+		R1_array[i] = paillier_create_enc(iR1_array[i]);
+		R2_array[i] = paillier_create_enc(iR2_array[i]);
+		//	gmp_printf("%d : %Zd\t", i, F1_array[i]);		gmp_printf("%Zd\t", F2_array[i]);		gmp_printf("%Zd\t", R1_array[i]);		gmp_printf("%Zd\t", R2_array[i]);		cout << endl;
+	}
+	srand((unsigned int)time(NULL));
+	for( i = 0 ; i < dim ; i ++ )
+	{
+		//random = rand()%2;
+		//gmp_printf("%d : %Zd\t", random, paillier_dec(0, pub, prv, qLL[i]));		gmp_printf("%Zd\t", paillier_dec(0, pub, prv, nodeRR[i]));		cout << endl;
+		if (random==0)
+		{
+			Flag_array[i] = 0;
+			paillier_mul(pub, F1_array[i], qLL[cnt], R1_array[i]);
+			paillier_mul(pub, F2_array[i], nodeRR[cnt++], R2_array[i]);
+		}
+		else
+		{
+			Flag_array[i] = 1;
+			paillier_mul(pub, F1_array[i], nodeRR[cnt], R2_array[i]);
+			paillier_mul(pub, F2_array[i], qLL[cnt++], R1_array[i]);
+		}
+	}
+
+	for( i = dim, cnt = 0 ; i < dim*2 ; i++ )
+	{
+		//random = rand()%2;
+		//gmp_printf("%d : %Zd\t", random, paillier_dec(0, pub, prv, qRR[cnt]));		gmp_printf("%Zd\t", paillier_dec(0, pub, prv, nodeLL[cnt]));		cout << endl;
+		if( random == 0 )
+		{
+			Flag_array[i] = 0;
+			paillier_mul(pub, F1_array[i], nodeLL[cnt], R1_array[i]);
+			paillier_mul(pub, F2_array[i], qRR[cnt++], R2_array[i]);
+		}
+		else
+		{
+			Flag_array[i] = 1;
+			paillier_mul(pub, F1_array[i], qRR[cnt], R2_array[i]);
+			paillier_mul(pub, F2_array[i], nodeLL[cnt++], R1_array[i]);
+		}
+	}
+
+	mtx.lock();
+	F1_array = GSRO_sub(F1_array, F2_array, iR1_array, iR2_array);
+	mtx.unlock();
+
+	for( i = 0 ; i < dim*2 ; i ++){
+		F1_array[0] = SM_p1(F1_array[0], F1_array[i]);
+	}
+
+	return F1_array[0];
+}
+
+/*
+paillier_ciphertext_t* protocol::GSRO_inThread(paillier_ciphertext_t** qLL, paillier_ciphertext_t** qRR,	paillier_ciphertext_t** nodeLL,	paillier_ciphertext_t** nodeRR, int idx)
 {
 	int *Flag_array = new int[dim * 2];
 	int *R1 = new int[dim * 2];
@@ -310,8 +402,8 @@ paillier_ciphertext_t* protocol::DP_GSRO_inThread(paillier_ciphertext_t** qLL, p
 	
 	paillier_ciphertext_t *c1_array;
 	paillier_ciphertext_t *c2_array;
-	paillier_ciphertext_t *ciper_tmp = new paillier_ciphertext_t;
-	mpz_init(ciper_tmp->c);
+	paillier_ciphertext_t *cipher_tmp = new paillier_ciphertext_t;
+	mpz_init(cipher_tmp->c);
 
 	paillier_ciphertext_t **temp_qLL = new paillier_ciphertext_t *[dim];
 	paillier_ciphertext_t **temp_qRR = new paillier_ciphertext_t *[dim];
@@ -365,10 +457,10 @@ paillier_ciphertext_t* protocol::DP_GSRO_inThread(paillier_ciphertext_t** qLL, p
 	// 2qRR+1 2nodeRR+1
 	for(int i = 0; i < dim; i++){
 		paillier_exp(pubkey, temp_nodeRR[i], nodeRR[i], shift); 
-		paillier_mul(pubkey, temp_nodeRR[i], temp_nodeRR[i], ciper_one); 
+		paillier_mul(pubkey, temp_nodeRR[i], temp_nodeRR[i], cipher_one); 
 		
 		paillier_exp(pubkey, temp_qRR[i], qRR[i], shift);
-		paillier_mul(pubkey, temp_qRR[i], temp_qRR[i], ciper_one); 
+		paillier_mul(pubkey, temp_qRR[i], temp_qRR[i], cipher_one); 
 	}
 
 	// add to Array QueryLL, nodeRR value
@@ -379,18 +471,18 @@ paillier_ciphertext_t* protocol::DP_GSRO_inThread(paillier_ciphertext_t** qLL, p
 		if (random == 0)
 		{
 			Flag_array[i] = 0;
-			paillier_exp(pubkey, ciper_tmp, temp_qLL[cnt], shift); //multi
-			paillier_mul(pubkey, c1_array, c1_array, ciper_tmp); //E_add
-			paillier_exp(pubkey, ciper_tmp, temp_nodeRR[cnt++], shift); //multi
-			paillier_mul(pubkey, c2_array, c2_array, ciper_tmp); //E_add			
+			paillier_exp(pubkey, cipher_tmp, temp_qLL[cnt], shift); //multi
+			paillier_mul(pubkey, c1_array, c1_array, cipher_tmp); //E_add
+			paillier_exp(pubkey, cipher_tmp, temp_nodeRR[cnt++], shift); //multi
+			paillier_mul(pubkey, c2_array, c2_array, cipher_tmp); //E_add			
 		}
 		else
 		{
 			Flag_array[i] = 1;
-			paillier_exp(pubkey, ciper_tmp, temp_nodeRR[cnt], shift); //multi
-			paillier_mul(pubkey, c1_array, c1_array, ciper_tmp); //E_add
-			paillier_exp(pubkey, ciper_tmp, temp_qLL[cnt++], shift); //multi
-			paillier_mul(pubkey, c2_array, c2_array, ciper_tmp); //E_add
+			paillier_exp(pubkey, cipher_tmp, temp_nodeRR[cnt], shift); //multi
+			paillier_mul(pubkey, c1_array, c1_array, cipher_tmp); //E_add
+			paillier_exp(pubkey, cipher_tmp, temp_qLL[cnt++], shift); //multi
+			paillier_mul(pubkey, c2_array, c2_array, cipher_tmp); //E_add
 		}
 	}
 	// add to Array QueryRR, nodeLL value	
@@ -401,23 +493,23 @@ paillier_ciphertext_t* protocol::DP_GSRO_inThread(paillier_ciphertext_t** qLL, p
 		if(random == 0)
 		{
 			Flag_array[i] = 0;
-			paillier_exp(pubkey, ciper_tmp, temp_nodeLL[cnt], shift); //multi
-			paillier_mul(pubkey, c1_array, c1_array, ciper_tmp); //E_add
-			paillier_exp(pubkey, ciper_tmp, temp_qRR[cnt++], shift); //multi
-			paillier_mul(pubkey, c2_array, c2_array, ciper_tmp); //E_add			
+			paillier_exp(pubkey, cipher_tmp, temp_nodeLL[cnt], shift); //multi
+			paillier_mul(pubkey, c1_array, c1_array, cipher_tmp); //E_add
+			paillier_exp(pubkey, cipher_tmp, temp_qRR[cnt++], shift); //multi
+			paillier_mul(pubkey, c2_array, c2_array, cipher_tmp); //E_add			
 		}
 		else
 		{
 			Flag_array[i] = 1;
-			paillier_exp(pubkey, ciper_tmp, temp_qRR[cnt], shift); //multi
-			paillier_mul(pubkey, c1_array, c1_array, ciper_tmp); //E_add
-			paillier_exp(pubkey, ciper_tmp, temp_nodeLL[cnt++], shift); //multi
-			paillier_mul(pubkey, c2_array, c2_array, ciper_tmp); //E_add			
+			paillier_exp(pubkey, cipher_tmp, temp_qRR[cnt], shift); //multi
+			paillier_mul(pubkey, c1_array, c1_array, cipher_tmp); //E_add
+			paillier_exp(pubkey, cipher_tmp, temp_nodeLL[cnt++], shift); //multi
+			paillier_mul(pubkey, c2_array, c2_array, cipher_tmp); //E_add			
 		}
 	}
 
 	mtx.lock();
-	F2_array = unDP_GSRO(c1_array, c2_array, R1, R2);
+	F2_array = unGSRO(c1_array, c2_array, R1, R2);
 	mtx.unlock();
 	
 	for(int i = 0; i < dim * 2; i++)
@@ -439,7 +531,7 @@ paillier_ciphertext_t* protocol::DP_GSRO_inThread(paillier_ciphertext_t** qLL, p
 	delete p1_array;
 	delete p2_array;
 	delete tmp;
-	delete ciper_tmp;
+	delete cipher_tmp;
 	for(int i = 0; i < dim * 2; i++)
 	{
 		delete[] R1_array[i];
@@ -465,7 +557,7 @@ paillier_ciphertext_t* protocol::DP_GSRO_inThread(paillier_ciphertext_t** qLL, p
 	//mtx.unlock();
 	return F1_array[0];
 }
-
+*/
 
 paillier_ciphertext_t*** protocol::Parallel_GSRO_inMultithread(int cnt, paillier_ciphertext_t*** cand, boundary q, paillier_ciphertext_t** alpha, paillier_ciphertext_t* cipher_rand)
 {
@@ -487,12 +579,12 @@ paillier_ciphertext_t*** protocol::Parallel_GSRO_inMultithread(int cnt, paillier
 	{
 		if (query == RANGE)
 		{
-			GSROThread[i] = std::thread(DP_GSRO_dataquery_Multithread, std::ref(cand), std::ref(q), std::ref(NumNodeInput[i]), std::ref(alpha), std::ref(*this), i, std::ref(cipher_rand));
+			GSROThread[i] = std::thread(GSRO_dataquery_Multithread, std::ref(cand), std::ref(q), std::ref(NumNodeInput[i]), std::ref(alpha), std::ref(*this), i, std::ref(cipher_rand));
 		}
 		else if (query != RANGE)
 		{
 			cout << "THIE QUERY IS NOT RANGE" << endl;
-			//GSROThread[i] = std::thread(DP_GSRO_Multithread, std::ref(q), std::ref(q), std::ref(NumNodeInput[i]), std::ref(node), std::ref(alpha), std::ref(*this), i);
+			//GSROThread[i] = std::thread(GSRO_Multithread, std::ref(q), std::ref(q), std::ref(NumNodeInput[i]), std::ref(node), std::ref(alpha), std::ref(*this), i);
 		}		
 	}
 

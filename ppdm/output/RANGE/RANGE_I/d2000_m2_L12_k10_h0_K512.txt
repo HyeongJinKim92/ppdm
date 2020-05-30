@@ -1,245 +1,167 @@
-query : ./PPDM  0  1  7  0  2000  2  12  10  512  0  0  2  2  
-total time : 43
-node_SBD : 12  (28%)
-node_SRO : 13  (30%) 	 node_expansion(verify) : 0 (0%)
-node_retrieval : 6  (13%) 	 node_retrieval(verify) : 0 (0%)
-data_SSED_SBD : 6  (14%) 	 data_SBOR : 0 (0%)
-sMINn : 0  (0%) 	 sMINn (verify): 0 (0%)
-data_SPE(range) : 6  (15%) 
-# retrieved node : 1
-0	0	
-0	0	
-2	0	
-2	0	
-2	0	
-2	0	
-2	0	
-0	0	
-1	0	
-0	0	
-0	0	
-2	1	
-1	1	
-2	1	
-2	1	
-0	1	
-0	1	
-1	1	
-2	2	
-2	2	
-0	2	
-1	2	
-1	2	
-1	2	
-
-
-query : ./PPDM  0  1  7  0  2000  2  12  10  512  0  0  2  2  
-total time : 43
-node_SBD : 12  (28%)
-node_SRO : 13  (29%) 	 node_expansion(verify) : 0 (0%)
-node_retrieval : 6  (13%) 	 node_retrieval(verify) : 0 (0%)
-data_SSED_SBD : 6  (14%) 	 data_SBOR : 0 (0%)
-sMINn : 0  (0%) 	 sMINn (verify): 0 (0%)
-data_SPE(range) : 6  (15%) 
-# retrieved node : 1
-0	0	
-0	0	
-2	0	
-2	0	
-2	0	
-2	0	
-2	0	
-0	0	
-1	0	
-0	0	
-0	0	
-2	1	
-1	1	
-2	1	
-2	1	
-0	1	
-0	1	
-1	1	
-2	2	
-2	2	
-0	2	
-1	2	
-1	2	
-1	2	
-
-
-query : ./PPDM  0  1  7  0  2000  2  12  10  512  0  0  2  2  
-total time : 43
-node_SBD : 12  (28%)
-node_SRO : 13  (29%) 	 node_expansion(verify) : 0 (0%)
-node_retrieval : 6  (13%) 	 node_retrieval(verify) : 0 (0%)
-data_SSED_SBD : 6  (14%) 	 data_SBOR : 0 (0%)
-sMINn : 0  (0%) 	 sMINn (verify): 0 (0%)
-data_SPE(range) : 6  (15%) 
-# retrieved node : 1
-0	0	
-0	0	
-2	0	
-2	0	
-2	0	
-2	0	
-2	0	
-0	0	
-1	0	
-0	0	
-0	0	
-2	1	
-1	1	
-2	1	
-2	1	
-0	1	
-0	1	
-1	1	
-2	2	
-2	2	
-0	2	
-1	2	
-1	2	
-1	2	
-
-
-query : ./PPDM  0  1  7  0  2000  2  12  10  512  0  0  2  2  
-total time : 43
-node_SBD : 12  (28%)
-node_SRO : 13  (29%) 	 node_expansion(verify) : 0 (0%)
-node_retrieval : 6  (13%) 	 node_retrieval(verify) : 0 (0%)
-data_SSED_SBD : 6  (14%) 	 data_SBOR : 0 (0%)
-sMINn : 0  (0%) 	 sMINn (verify): 0 (0%)
-data_SPE(range) : 6  (15%) 
-# retrieved node : 1
-0	0	
-0	0	
-2	0	
-2	0	
-2	0	
-2	0	
-2	0	
-0	0	
-1	0	
-0	0	
-0	0	
-2	1	
-1	1	
-2	1	
-2	1	
-0	1	
-0	1	
-1	1	
-2	2	
-2	2	
-0	2	
-1	2	
-1	2	
-1	2	
-
-
-query : ./PPDM  0  1  7  0  2000  2  12  10  512  0  0  2  2  
-total time : 43
-node_SBD : 12  (28%)
-node_SRO : 13  (29%) 	 node_expansion(verify) : 0 (0%)
-node_retrieval : 6  (13%) 	 node_retrieval(verify) : 0 (0%)
-data_SSED_SBD : 6  (14%) 	 data_SBOR : 0 (0%)
-sMINn : 0  (0%) 	 sMINn (verify): 0 (0%)
-data_SPE(range) : 6  (15%) 
-# retrieved node : 1
-0	0	
-0	0	
-2	0	
-2	0	
-2	0	
-2	0	
-2	0	
-0	0	
-1	0	
-0	0	
-0	0	
-2	1	
-1	1	
-2	1	
-2	1	
-0	1	
-0	1	
-1	1	
-2	2	
-2	2	
-0	2	
-1	2	
-1	2	
-1	2	
-
-
-query : ./PPDM  0  1  7  0  2000  2  12  10  512  0  0  2  2  
+query : ./PPDM  0  1  7  0  2000  2  12  10  512  2  2  2  2  
 total time : 42
-node_SBD : 12  (28%)
-node_SRO : 12  (29%) 	 node_expansion(verify) : 0 (0%)
-node_retrieval : 6  (13%) 	 node_retrieval(verify) : 0 (0%)
-data_SSED_SBD : 6  (14%) 	 data_SBOR : 0 (0%)
-sMINn : 0  (0%) 	 sMINn (verify): 0 (0%)
-data_SPE(range) : 6  (15%) 
+sRange_I_SBD_for_SRO(node) 	 time : 	 11.867837 	 (28.010431%) 
+sRange_I_SRO(node, query) 	 time : 	 11.867837 	 (28.010431%) 
+sRange_I_extract_data 	 time : 	 5.528650 	 (13.048702%) 
+sRange_I_SBD_for_SRO(filtered_data) 	 time : 	 5.971325 	 (14.093502%) 
+sRange_I_SRO(filtered_data, query) 	 time : 	 18.787899 	 (44.343140%) 
 # retrieved node : 1
-0	0	
-0	0	
-2	0	
-2	0	
-2	0	
-2	0	
-2	0	
-0	0	
-1	0	
-0	0	
-0	0	
-2	1	
-1	1	
-2	1	
-2	1	
-0	1	
-0	1	
-1	1	
-2	2	
-2	2	
-0	2	
-1	2	
-1	2	
-1	2	
+Result(0) :	2	2	
+Result(1) :	2	2	
+
+
+query : ./PPDM  0  1  7  0  2000  2  12  10  512  2  2  2  2  
+total time : 43
+sRange_I_SBD_for_SRO(node) 	 time : 	 11.908477 	 (27.972925%) 
+sRange_I_SRO(node, query) 	 time : 	 12.510737 	 (29.387632%) 
+sRange_I_extract_data 	 time : 	 5.560978 	 (13.062697%) 
+sRange_I_SBD_for_SRO(filtered_data) 	 time : 	 6.002337 	 (14.099446%) 
+sRange_I_SRO(filtered_data, query) 	 time : 	 18.884914 	 (44.360527%) 
+# retrieved node : 1
+Result(0) :	2	2	
+Result(1) :	2	2	
+
+
+query : ./PPDM  0  1  7  0  2000  2  12  10  512  2  2  2  2  
+total time : 43
+sRange_I_SBD_for_SRO(node) 				 11.930111 (28.025967 %) 
+sRange_I_SRO(node, query) 				 12.499157 (29.362759 %) 
+sRange_I_extract_data 				 5.554213 (13.047841 %) 
+sRange_I_SBD_for_SRO(filtered_data) 				 6.006592 (14.110560 %) 
+sRange_I_SRO(filtered_data, query) 				 18.862537 (44.311478 %) 
+# retrieved node : 1
+Result(0) :	2	2	
+Result(1) :	2	2	
+
+
+query : ./PPDM  0  1  7  0  2000  2  12  10  512  2  2  2  2  
+total time : 43
+sRange_I_SBD_for_SRO(node) 				 11.922050 (28.016449 %) 
+sRange_I_SRO(node, query) 				 12.504910 (29.386150 %) 
+sRange_I_extract_data 				 5.558823 (13.063063 %) 
+sRange_I_SBD_for_SRO(filtered_data) 				 5.988233 (14.072164 %) 
+sRange_I_SRO(filtered_data, query) 				 18.870451 (44.344978 %) 
+# retrieved node : 1
+Result(0) :	2	2	
+Result(1) :	2	2	
+
+
+query : ./PPDM  0  1  7  0  2000  2  12  10  512  2  2  2  2  
+total time : 42
+sRange_I_SBD_for_SRO(node) 				 24.336723 (57.380444 %) 
+sRange_I_extract_data 				 5.539858 (13.061723 %) 
+sRange_I_SBD_for_SRO(filtered_data) 				 5.976496 (14.091214 %) 
+sRange_I_SRO(filtered_data, query) 				 6.346461 (14.963510 %) 
+# retrieved node : 1
+Result(0) :	2	2	
+Result(1) :	2	2	
+
+
+query : ./PPDM  0  1  7  0  2000  2  12  10  512  2  2  2  2  
+total time : 42
+sRange_I_SBD_for_SRO(node) 				 24.365395 (57.389332 %) 
+sRange_I_extract_data 				 5.541505 (13.052252 %) 
+sRange_I_SBD_for_SRO(query) 				 0.188042 (0.442908 %) 
+sRange_I_SBD and SRO(filtered_data, query) 				 12.335476 (29.054514 %) 
+# retrieved node : 1
+Result(0) :	2	2	
+Result(1) :	2	2	
+
+
+query : ./PPDM  0  1  7  0  2000  2  12  10  512  2  2  2  2  
+total time : 42
+sRange_I_SBD_for_SRO(node) 				 24.342669 (57.379223 %) 
+sRange_I_extract_data 				 5.541079 (13.061132 %) 
+sRange_I_SBD_for_SRO(query) 				 0.187695 (0.442425 %) 
+sRange_I_SBD and SRO(filtered_data, query) 				 12.326726 (29.055893 %) 
+# retrieved node : 1
+Result(0) :	2	2	
+Result(1) :	2	2	
+
+
+query : ./PPDM  0  1  7  0  2000  2  12  10  512  2  2  2  2  
+total time : 43
+sRange_I_SBD_for_SRO(node) 
+24.533743 (57.382953 %) 
+sRange_I_extract_data 
+5.583347 (13.059113 %) 
+sRange_I_SBD_for_SRO(query) 
+0.189433 (0.443072 %) 
+sRange_I_SBD and SRO(filtered_data, query) 
+12.421623 (29.053432 %) 
+# retrieved node : 1
+Result(0) :	2	2	
+Result(1) :	2	2	
 
 
 query : ./PPDM  0  1  7  0  2000  2  12  10  512  0  0  2  2  
 total time : 43
-node_SBD : 0  (0%)
-node_SRO : 0  (0%) 	 node_expansion(verify) : 0 (0%)
-node_retrieval : 0  (0%) 	 node_retrieval(verify) : 0 (0%)
-data_SSED_SBD : 0  (0%) 	 data_SBOR : 0 (0%)
-sMINn : 0  (0%) 	 sMINn (verify): 0 (0%)
-data_SPE(range) : 0  (0%) 
+sRange_I_SBD_for_SRO(node) 
+24.462473 (57.307542 %) 
+sRange_I_extract_data 
+5.572193 (13.053819 %) 
+sRange_I_SBD_for_SRO(query) 
+0.188590 (0.441805 %) 
+sRange_I_SBD and SRO(filtered_data, query) 
+12.425614 (29.109133 %) 
 # retrieved node : 1
-0 = 0	0 = 0	
-1 = 0	1 = 0	
-2 = 2	2 = 0	
-3 = 2	3 = 0	
-4 = 2	4 = 0	
-5 = 2	5 = 0	
-6 = 2	6 = 0	
-7 = 0	7 = 0	
-8 = 1	8 = 0	
-9 = 0	9 = 0	
-10 = 0	10 = 0	
-11 = 2	11 = 1	
-12 = 1	12 = 1	
-13 = 2	13 = 1	
-14 = 2	14 = 1	
-15 = 0	15 = 1	
-16 = 0	16 = 1	
-17 = 1	17 = 1	
-18 = 2	18 = 2	
-19 = 2	19 = 2	
-20 = 0	20 = 2	
-21 = 1	21 = 2	
-22 = 1	22 = 2	
-23 = 1	23 = 2	
+Result(0) :	0	0	
+Result(1) :	0	0	
+Result(2) :	2	0	
+Result(3) :	2	0	
+Result(4) :	2	0	
+Result(5) :	2	0	
+Result(6) :	2	0	
+Result(7) :	0	0	
+Result(8) :	1	0	
+Result(9) :	0	0	
+Result(10) :	0	0	
+Result(11) :	2	1	
+Result(12) :	1	1	
+Result(13) :	2	1	
+Result(14) :	2	1	
+Result(15) :	0	1	
+Result(16) :	0	1	
+Result(17) :	1	1	
+Result(18) :	2	2	
+Result(19) :	2	2	
+Result(20) :	0	2	
+Result(21) :	1	2	
+Result(22) :	1	2	
+Result(23) :	1	2	
+
+
+time : 2020-05-30-19-55-57
+query : RANGE_I TREE_LEVEL : 7 THREAD : 0 DATA : 2000 DIMENSION : 2 BITS : 12 k : 10 KEY : 512  QUERY : 0 0 2 2 
+total time : 43
+sRange_I_SBD_for_SRO(node) 					 24.460787 (57.307193 %) 
+sRange_I_extract_data 					 5.572578 (13.055541 %) 
+sRange_I_SBD_for_SRO(query) 					 0.188542 (0.441721 %) 
+sRange_I_SBD and SRO(filtered_data, query) 					 12.424315 (29.107919 %) 
+# retrieved node : 1
+Result(0) :	0	0	
+Result(1) :	0	0	
+Result(2) :	2	0	
+Result(3) :	2	0	
+Result(4) :	2	0	
+Result(5) :	2	0	
+Result(6) :	2	0	
+Result(7) :	0	0	
+Result(8) :	1	0	
+Result(9) :	0	0	
+Result(10) :	0	0	
+Result(11) :	2	1	
+Result(12) :	1	1	
+Result(13) :	2	1	
+Result(14) :	2	1	
+Result(15) :	0	1	
+Result(16) :	0	1	
+Result(17) :	1	1	
+Result(18) :	2	2	
+Result(19) :	2	2	
+Result(20) :	0	2	
+Result(21) :	1	2	
+Result(22) :	1	2	
+Result(23) :	1	2	
 
 

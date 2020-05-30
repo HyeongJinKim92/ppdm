@@ -8,7 +8,7 @@
 
 
 
-paillier_ciphertext_t*** protocol::Clustering_B(paillier_ciphertext_t*** ciper, int NumData, int k, int b){
+paillier_ciphertext_t*** protocol::Clustering_B(paillier_ciphertext_t*** cipher, int NumData, int k, int b){
 	printf("!!!!!!!!!!!!!!!!!!!!!!!!Clustering_B start!!!!!!!!!!!!!!!!!!!!!!!!\n");
 
 	
@@ -18,10 +18,17 @@ paillier_ciphertext_t*** protocol::Clustering_B(paillier_ciphertext_t*** ciper, 
 		for(int j = 0 ; j < dim ; j++){
 			origin_data[i][j] = (paillier_ciphertext_t*)malloc(sizeof(paillier_ciphertext_t));
 			mpz_init(origin_data[i][j]->c);
-			origin_data[i][j] = ciper[i][j];
+			origin_data[i][j] = cipher[i][j];
 		}
 	}
-
+	/*
+	for(int i = 0 ; i < NumData ; i++ ){
+		for(int j = 0 ; j < dim ; j++){
+			gmp_printf("%Zd ", paillier_dec(0, pubkey, prvkey, cipher[i][j]));
+		}
+		printf("\n");
+	}
+	*/
 	paillier_ciphertext_t*** Distance_center_data		= (paillier_ciphertext_t***)malloc(sizeof(paillier_ciphertext_t**)*NumData);
 	paillier_ciphertext_t** minDist						= (paillier_ciphertext_t**)malloc(sizeof(paillier_ciphertext_t*)*NumData);
 
@@ -91,12 +98,46 @@ paillier_ciphertext_t*** protocol::Clustering_B(paillier_ciphertext_t*** ciper, 
 				NewSumCluster[i][j] = paillier_create_enc(0);
 			}
 		}
+		/*
+		printf("former CNT\n");
+		for(int i = 0 ; i < k; i++){
+			gmp_printf(" %Zd ", paillier_dec(0, pubkey, prvkey, formerSumCntCluster[i]));
+		}
+		printf("\n");
 
+		printf("former Center\n");
+		for(int i = 0 ; i < k; i++){
+			for(int j = 0 ; j < dim ; j++){
+				gmp_printf(" %Zd ", paillier_dec(0, pubkey, prvkey, formerSumCluster[i][j]));
+			}
+			printf("\n");
+		}
+		printf("\n");
+		*/
+		
+		/*
+		printf("New CNT : ");
+		for(int i = 0 ; i < k; i++){
+			gmp_printf(" %Zd ", paillier_dec(0, pubkey, prvkey, NewSumCntCluster[i]));
+		}
+		printf("\n");
+
+		printf("New Center\n");
+		for(int i = 0 ; i < k; i++){
+			for(int j = 0 ; j < dim ; j++){
+				gmp_printf(" %Zd ", paillier_dec(0, pubkey, prvkey, NewSumCluster[i][j]));
+			}
+			printf("\n");
+		}
+		printf("\n");
+		*/
 		
 		for(int i = 0 ; i < NumData ; i++){
 						
 			for( int j = 0 ; j < k ; j++){
 				Distance_center_data[i][j] = SSEDm(origin_data[i], formerSumCluster[j], dim);
+				//Distance_center_data[i][j] = OP_SSED(cipher[i], formerSumCluster[j], formerSumCntCluster, i, k);
+				//gmp_printf("dist : %Zd\n", paillier_dec(0, pubkey, prvkey, Distance_center_data[i][j]));
 			}
 			
 			idx_arr = Smin_bool(Distance_center_data[i], k);
@@ -148,7 +189,16 @@ paillier_ciphertext_t*** protocol::Clustering_B(paillier_ciphertext_t*** ciper, 
 			printf("\n");
 		}
 	}
-
+/*
+	for(int i = 0 ; i < k ; i++ ){
+		printf("Sum : ");
+		for(int j = 0 ; j < dim ; j++){
+			gmp_printf("%Zd ", paillier_dec(0, pubkey, prvkey, NewSumCluster[i][j]));
+		}
+		printf("\t\t");
+	}
+	printf("\n");
+*/
 	return NewSumCluster;
 }
 
@@ -260,7 +310,7 @@ paillier_plaintext_t* protocol::SETC(paillier_ciphertext_t*** former, paillier_c
 	return paillier_dec(0, pubkey, prvkey, SC(L,R));
 }
 
-paillier_ciphertext_t*** protocol::Clustering_Grid(paillier_ciphertext_t*** ciper, boundary* node, int NumNode, int NumData, int k){
+paillier_ciphertext_t*** protocol::Clustering_Grid(paillier_ciphertext_t*** cipher, boundary* node, int NumNode, int NumData, int k){
 	printf("!!!!!!!!!!!!!!!!!!!!!!Start Clustering_Grid!!!!!!!!!!!!!!!!!!!!!!\n");
 	
 	paillier_ciphertext_t*** origin_data				= (paillier_ciphertext_t***)malloc(sizeof(paillier_ciphertext_t**)*NumData);
@@ -269,12 +319,12 @@ paillier_ciphertext_t*** protocol::Clustering_Grid(paillier_ciphertext_t*** cipe
 		for(int j = 0 ; j < dim ; j++){
 			origin_data[i][j] = (paillier_ciphertext_t*)malloc(sizeof(paillier_ciphertext_t));
 			mpz_init(origin_data[i][j]->c);
-			origin_data[i][j] = ciper[i][j];
+			origin_data[i][j] = cipher[i][j];
 		}
 	}
 
 	
-	paillier_ciphertext_t*** formercenter				= PreClustering(ciper, node, NumNode, NumData, k);
+	paillier_ciphertext_t*** formercenter				= PreClustering(cipher, node, NumNode, NumData, k);
 	
 
 	paillier_ciphertext_t** formercenter_cnt			= (paillier_ciphertext_t**)malloc(sizeof(paillier_ciphertext_t*)*k);
@@ -343,7 +393,7 @@ paillier_ciphertext_t*** protocol::Clustering_Grid(paillier_ciphertext_t*** cipe
 
 		for(int i = 0 ; i < k ; i++){
 			for(int j = 0 ; j < NumNode ; j++){
-				GSRO_alpha[j][i] = DP_GSRO(formercenter[i], formercenter[i], node[j].LL, node[j].RR);
+				GSRO_alpha[j][i] = GSRO(formercenter[i], formercenter[i], node[j].LL, node[j].RR);
 				paillier_mul(pubkey, Sum_GSRO_alpha[j], Sum_GSRO_alpha[j], GSRO_alpha[j][i]);	
 			}
 		}
@@ -508,7 +558,7 @@ paillier_ciphertext_t*** protocol::Clustering_Grid(paillier_ciphertext_t*** cipe
 	return newcenter;
 }
 
-paillier_ciphertext_t*** protocol::PreClustering(paillier_ciphertext_t*** ciper, boundary* node, int NumNode, int NumData, int k){
+paillier_ciphertext_t*** protocol::PreClustering(paillier_ciphertext_t*** cipher, boundary* node, int NumNode, int NumData, int k){
 	printf("Start PreClustering\n");
 	/*
 	for(int i = 0 ; i < NumNode ; i++){
@@ -517,7 +567,7 @@ paillier_ciphertext_t*** protocol::PreClustering(paillier_ciphertext_t*** ciper,
 	*/
 	int Sample_Cnt = 0;
 
-	paillier_ciphertext_t*** Sample = extract_sample(ciper, node, NumNode, NumData, &Sample_Cnt);
+	paillier_ciphertext_t*** Sample = extract_sample(cipher, node, NumNode, NumData, &Sample_Cnt);
 	/*
 	printf("Sample_Cnt : %d\n", Sample_Cnt);
 	printf("Sample Data\n");
@@ -544,7 +594,7 @@ paillier_ciphertext_t*** protocol::PreClustering(paillier_ciphertext_t*** ciper,
 }
 
 
-paillier_ciphertext_t*** protocol::extract_sample(paillier_ciphertext_t*** ciper, boundary* node, int NumNode, int NumData, int* Sample_Cnt){
+paillier_ciphertext_t*** protocol::extract_sample(paillier_ciphertext_t*** cipher, boundary* node, int NumNode, int NumData, int* Sample_Cnt){
 	printf("Start extract_sample\n");
 	int partition = 10;
 	int* NodeCnt = (int*)malloc(sizeof(int)*NumNode);
@@ -573,7 +623,7 @@ paillier_ciphertext_t*** protocol::extract_sample(paillier_ciphertext_t*** ciper
 		while( NodeCnt[i] > 0 ){
 			//gmp_printf("%d ", node[i].indata_id[data_idx]);
 			for(int j = 0 ; j < dim ; j++ ){
-				Sample[Sample_idx][j] = ciper[node[i].indata_id[data_idx]][j];
+				Sample[Sample_idx][j] = cipher[node[i].indata_id[data_idx]][j];
 			}
 			data_idx++;
 			Sample_idx++;
@@ -596,7 +646,7 @@ paillier_ciphertext_t*** protocol::extract_sample(paillier_ciphertext_t*** ciper
 	return Sample;
 }
 
-paillier_ciphertext_t*** protocol::Clustering_m_Grid(paillier_ciphertext_t*** ciper, int NumData, int k, int b, paillier_ciphertext_t*** former_Center){
+paillier_ciphertext_t*** protocol::Clustering_m_Grid(paillier_ciphertext_t*** cipher, int NumData, int k, int b, paillier_ciphertext_t*** former_Center){
 	printf("Clustering_m_Grid start\n");
 	
 	paillier_ciphertext_t*** origin_data				= (paillier_ciphertext_t***)malloc(sizeof(paillier_ciphertext_t**)*NumData);
@@ -605,7 +655,7 @@ paillier_ciphertext_t*** protocol::Clustering_m_Grid(paillier_ciphertext_t*** ci
 		for(int j = 0 ; j < dim ; j++){
 			origin_data[i][j] = (paillier_ciphertext_t*)malloc(sizeof(paillier_ciphertext_t));
 			mpz_init(origin_data[i][j]->c);
-			origin_data[i][j] = ciper[i][j];
+			origin_data[i][j] = cipher[i][j];
 		}
 	}
 	paillier_ciphertext_t*** Distance_center_data		= (paillier_ciphertext_t***)malloc(sizeof(paillier_ciphertext_t**)*NumData);
@@ -722,9 +772,9 @@ paillier_ciphertext_t*** protocol::Clustering_m_Grid(paillier_ciphertext_t*** ci
 		for(int i = 0 ; i < NumData ; i++){
 						
 			for( int j = 0 ; j < k ; j++){
-				Distance_center_data[i][j] = SSEDm(ciper[i], formerSumCluster[j], dim);
-				//Distance_center_data[i][j] = DP_SSED(ciper[i], formerSumCluster[j], dim);
-				//Distance_center_data[i][j] = OP_SSED(ciper[i], formerSumCluster[j], formerSumCntCluster, i, k);
+				Distance_center_data[i][j] = SSEDm(cipher[i], formerSumCluster[j], dim);
+				//Distance_center_data[i][j] = SSEDm(cipher[i], formerSumCluster[j], dim);
+				//Distance_center_data[i][j] = OP_SSED(cipher[i], formerSumCluster[j], formerSumCntCluster, i, k);
 				//gmp_printf("dist : %Zd\n", paillier_dec(0, pubkey, prvkey, Distance_center_data[i][j]));
 			}
 			
@@ -878,11 +928,11 @@ paillier_ciphertext_t* protocol::boundary_dist(boundary node, paillier_ciphertex
 }
 
 
-paillier_ciphertext_t*** protocol::Clustering_Grid_preprocessing(paillier_ciphertext_t*** ciper, boundary* node, int NumNode, int NumData, int k){
+paillier_ciphertext_t*** protocol::Clustering_Grid_preprocessing(paillier_ciphertext_t*** cipher, boundary* node, int NumNode, int NumData, int k){
 	printf("Start Clustering_Grid_preprocessing\n");
 	int i = 0, j = 0, m = 0;
 											
-	paillier_ciphertext_t*** formerCenter = PreClustering(ciper, node, NumNode, NumData, k);
+	paillier_ciphertext_t*** formerCenter = PreClustering(cipher, node, NumNode, NumData, k);
 	
 
 	for( i = 0 ; i < k ; i++ ){
@@ -892,7 +942,7 @@ paillier_ciphertext_t*** protocol::Clustering_Grid_preprocessing(paillier_cipher
 		printf("\n");
 	}
 
-	paillier_ciphertext_t*** NewCluster = Clustering_m_Grid(ciper, NumData, k, 100, formerCenter);
+	paillier_ciphertext_t*** NewCluster = Clustering_m_Grid(cipher, NumData, k, 100, formerCenter);
 	
 
 	printf("End Clustering_Grid\n");

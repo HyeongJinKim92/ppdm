@@ -1,0 +1,12 @@
+time : 2020-05-31-02-42-07
+query : KNN_I TREE_LEVEL : 7 THREAD : 0 DATA : 2000 DIMENSION : 6 BITS : 22 k : 5 KEY : 512  QUERY : 10 10 10 10 10 10 
+total time : 458
+# retrieved node : 7
+
+
+time : 2020-05-31-02-48-40
+query : KNN_I TREE_LEVEL : 7 THREAD : 0 DATA : 2000 DIMENSION : 6 BITS : 22 k : 5 KEY : 512  QUERY : 108 23 37 177 33 7 
+total time : 364
+# retrieved node : 4
+
+

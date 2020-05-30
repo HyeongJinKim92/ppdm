@@ -1,44 +1,165 @@
-query : ./PPDM  1  4  7  4  2000  4  20  10  512  10  10  10  10  10  
-total time : 16
-node_SBD : 0  (0%)
-node_SRO : 0  (0%) 	 node_expansion(verify) : 0 (0%)
-node_retrieval : 12  (74%) 	 node_retrieval(verify) : 12 (74%)
-data_SSED_SBD : 0  (0%) 	 data_SBOR : 0 (0%)
-sMINn : 0  (2%) 	 sMINn (verify): 1 (8%)
-data_SPE(range) : 0  (0%) 
+query : ./PPDM  1  4  7  10  2000  4  20  10  512  10  10  10  10  10  
+total time : 17
+sTopk_PGI_QUERY 
+0.018850 (0.111278 %) 
+sTopk_PGI_GSRO 
+1.032559 (6.095444 %) 
+sTopk_PGI_filtering 
+3.361704 (19.844956 %) 
+sTopk_PGI_expand 
+3.263431 (19.264828 %) 
+sTopk_PGI_Score 
+0.236615 (1.396795 %) 
+sTopk_PGI_MANn 
+0.565462 (3.338057 %) 
+sTopk_PGI_second_MANn 
+1.676083 (9.894326 %) 
+sTopk_PGI_subtract 
+0.681102 (4.020709 %) 
+sTopk_PGI_topkandupdate 
+3.846087 (22.704387 %) 
+sTopk_PGI_check_expand 
+0.365575 (2.158080 %) 
 # retrieved node : 4
+Result(0) :	477	427	506	501	
+Result(1) :	435	471	472	510	
+Result(2) :	488	437	490	456	
+Result(3) :	349	506	501	507	
+Result(4) :	449	491	472	431	
+Result(5) :	470	491	491	388	
+Result(6) :	463	457	493	425	
+Result(7) :	446	478	482	420	
+Result(8) :	489	468	473	395	
+Result(9) :	498	492	310	505	
 
 
-query : ./PPDM  1  4  7  4  2000  4  20  10  512  10  10  10  10  10  
-total time : 16
-node_SBD : 0  (0%)
-node_SRO : 0  (0%) 	 node_expansion(verify) : 0 (0%)
-node_retrieval : 12  (75%) 	 node_retrieval(verify) : 12 (75%)
-data_SSED_SBD : 0  (0%) 	 data_SBOR : 0 (0%)
-sMINn : 0  (3%) 	 sMINn (verify): 1 (8%)
-data_SPE(range) : 0  (0%) 
+time : 2020-05-29-21-35-45
+query : TOPK_PGI TREE_LEVEL : 7 THREAD : 10 DATA : 2000 DIMENSION : 4 BITS : 20 k : 10 KEY : 512  QUERY : 10 10 10 10 10 
+total time : 17
+sTopk_PGI_QUERY 					 0.018943 (0.111161 %) 
+sTopk_PGI_GSRO 					 1.017111 (5.968461 %) 
+sTopk_PGI_filtering 					 3.453728 (20.266667 %) 
+sTopk_PGI_expand 					 3.281332 (19.255036 %) 
+sTopk_PGI_Score 					 0.241988 (1.420001 %) 
+sTopk_PGI_MANn 					 0.501295 (2.941626 %) 
+sTopk_PGI_second_MANn 					 1.625104 (9.536200 %) 
+sTopk_PGI_subtract 					 0.685909 (4.024952 %) 
+sTopk_PGI_topkandupdate 					 3.949008 (23.172997 %) 
+sTopk_PGI_check_expand 					 0.363947 (2.135659 %) 
 # retrieved node : 4
+Result(0) :	477	427	506	501	
+Result(1) :	435	471	472	510	
+Result(2) :	488	437	490	456	
+Result(3) :	349	506	501	507	
+Result(4) :	449	491	472	431	
+Result(5) :	470	491	491	388	
+Result(6) :	463	457	493	425	
+Result(7) :	446	478	482	420	
+Result(8) :	489	468	473	395	
+Result(9) :	498	492	310	505	
 
 
-query : ./PPDM  1  4  7  4  2000  4  20  10  512  10  10  10  10  10  
+time : 2020-05-30-21-45-09
+query : TOPK_PGI TREE_LEVEL : 7 THREAD : 4 DATA : 2000 DIMENSION : 4 BITS : 20 k : 10 KEY : 512  QUERY : 10 10 10 10 10 
 total time : 16
-node_SBD : 0  (0%)
-node_SRO : 0  (0%) 	 node_expansion(verify) : 0 (0%)
-node_retrieval : 12  (75%) 	 node_retrieval(verify) : 12 (75%)
-data_SSED_SBD : 0  (0%) 	 data_SBOR : 0 (0%)
-sMINn : 0  (3%) 	 sMINn (verify): 1 (8%)
-data_SPE(range) : 0  (0%) 
+sTopk_PGI_QUERY 					 0.018853 (0.120436 %) 
+sTopk_PGI_GSRO 					 1.018634 (6.507183 %) 
+sTopk_PGI_filtering 					 2.968649 (18.964162 %) 
+sTopk_PGI_expand 					 2.966944 (18.953269 %) 
+sTopk_PGI_Score 					 0.234573 (1.498483 %) 
+sTopk_PGI_MANn 					 0.568257 (3.630107 %) 
+sTopk_PGI_second_MANn 					 1.598048 (10.208561 %) 
+sTopk_PGI_subtract 					 0.648215 (4.140893 %) 
+sTopk_PGI_topkandupdate 					 3.383617 (21.615038 %) 
+sTopk_PGI_check_expand 					 0.361694 (2.310554 %) 
 # retrieved node : 4
+Result(0) :	477	427	506	501	
+Result(1) :	435	471	472	510	
+Result(2) :	488	437	490	456	
+Result(3) :	349	506	501	507	
+Result(4) :	449	491	472	431	
+Result(5) :	470	491	491	388	
+Result(6) :	463	457	493	425	
+Result(7) :	446	478	482	420	
+Result(8) :	489	468	473	395	
+Result(9) :	498	492	310	505	
 
 
-query : ./PPDM  1  4  7  4  2000  4  20  10  512  10  10  10  10  10  
+time : 2020-05-30-22-35-03
+query : TOPK_PGI TREE_LEVEL : 7 THREAD : 4 DATA : 2000 DIMENSION : 4 BITS : 20 k : 10 KEY : 512  QUERY : 10 10 10 10 10 
 total time : 16
-node_SBD : 0  (0%)
-node_SRO : 0  (0%) 	 node_expansion(verify) : 0 (0%)
-node_retrieval : 12  (75%) 	 node_retrieval(verify) : 12 (75%)
-data_SSED_SBD : 0  (0%) 	 data_SBOR : 0 (0%)
-sMINn : 0  (2%) 	 sMINn (verify): 1 (8%)
-data_SPE(range) : 0  (0%) 
+sTopk_PGI_QUERY 					 0.018874 (0.119491 %) 
+sTopk_PGI_GSRO 					 1.053293 (6.668493 %) 
+sTopk_PGI_filtering 					 2.978450 (18.856842 %) 
+sTopk_PGI_expand 					 2.977338 (18.849801 %) 
+sTopk_PGI_Score 					 0.233430 (1.477867 %) 
+sTopk_PGI_MANn 					 0.552919 (3.500578 %) 
+sTopk_PGI_second_MANn 					 1.603423 (10.151417 %) 
+sTopk_PGI_subtract 					 0.698727 (4.423706 %) 
+sTopk_PGI_topkandupdate 					 3.425578 (21.687649 %) 
+sTopk_PGI_check_expand 					 0.355849 (2.252910 %) 
 # retrieved node : 4
+Result(0) :	477	427	506	501	
+Result(1) :	435	471	472	510	
+Result(2) :	488	437	490	456	
+Result(3) :	349	506	501	507	
+Result(4) :	449	491	472	431	
+Result(5) :	470	491	491	388	
+Result(6) :	463	457	493	425	
+Result(7) :	446	478	482	420	
+Result(8) :	489	468	473	395	
+Result(9) :	498	492	310	505	
+
+
+time : 2020-05-31-01-59-50
+query : TOPK_PGI TREE_LEVEL : 7 THREAD : 4 DATA : 2000 DIMENSION : 4 BITS : 20 k : 10 KEY : 512  QUERY : 10 10 10 10 10 
+total time : 16
+sTopk_PGI_QUERY 					 0.018823 (0.117354 %) 
+sTopk_PGI_GSRO 					 1.273589 (7.940397 %) 
+sTopk_PGI_filtering 					 2.977818 (18.565690 %) 
+sTopk_PGI_expand 					 2.971907 (18.528843 %) 
+sTopk_PGI_Score 					 0.234761 (1.463653 %) 
+sTopk_PGI_MANn 					 0.568197 (3.542516 %) 
+sTopk_PGI_second_MANn 					 1.672554 (10.427812 %) 
+sTopk_PGI_subtract 					 0.670941 (4.183090 %) 
+sTopk_PGI_topkandupdate 					 3.400930 (21.203651 %) 
+sTopk_PGI_check_expand 					 0.358390 (2.234441 %) 
+# retrieved node : 4
+Result(0) :	477	427	506	501	
+Result(1) :	435	471	472	510	
+Result(2) :	488	437	490	456	
+Result(3) :	349	506	501	507	
+Result(4) :	449	491	472	431	
+Result(5) :	470	491	491	388	
+Result(6) :	463	457	493	425	
+Result(7) :	446	478	482	420	
+Result(8) :	489	468	473	395	
+Result(9) :	498	492	310	505	
+
+
+time : 2020-05-31-02-03-34
+query : TOPK_PGI TREE_LEVEL : 7 THREAD : 4 DATA : 2000 DIMENSION : 4 BITS : 20 k : 10 KEY : 512  QUERY : 10 10 10 10 10 
+total time : 16
+sTopk_PGI_QUERY 					 0.018893 (0.118649 %) 
+sTopk_PGI_GSRO 					 1.230312 (7.726579 %) 
+sTopk_PGI_filtering 					 2.963980 (18.614327 %) 
+sTopk_PGI_expand 					 2.960274 (18.591053 %) 
+sTopk_PGI_Score 					 0.232565 (1.460550 %) 
+sTopk_PGI_MANn 					 0.567069 (3.561297 %) 
+sTopk_PGI_second_MANn 					 1.623943 (10.198657 %) 
+sTopk_PGI_subtract 					 0.697067 (4.377704 %) 
+sTopk_PGI_topkandupdate 					 3.381917 (21.239049 %) 
+sTopk_PGI_check_expand 					 0.357133 (2.242858 %) 
+# retrieved node : 4
+Result(0) :	477	427	506	501	
+Result(1) :	435	471	472	510	
+Result(2) :	488	437	490	456	
+Result(3) :	349	506	501	507	
+Result(4) :	449	491	472	431	
+Result(5) :	470	491	491	388	
+Result(6) :	463	457	493	425	
+Result(7) :	446	478	482	420	
+Result(8) :	489	468	473	395	
+Result(9) :	498	492	310	505	
 
 

@@ -309,41 +309,41 @@ int** protocol::Classification_PB(paillier_ciphertext_t*** data, paillier_cipher
 
 	paillier_plaintext_t * pt = paillier_plaintext_from_ui(0);
 
-	paillier_ciphertext_t* ciper_binary;
-	paillier_ciphertext_t* ciper_min	= paillier_create_enc_zero();
-	paillier_ciphertext_t* ciper_dist	= paillier_create_enc_zero();
-	paillier_ciphertext_t* ciper_rand	= paillier_create_enc(rand);
+	paillier_ciphertext_t* cipher_binary;
+	paillier_ciphertext_t* cipher_min	= paillier_create_enc_zero();
+	paillier_ciphertext_t* cipher_dist	= paillier_create_enc_zero();
+	paillier_ciphertext_t* cipher_rand	= paillier_create_enc(rand);
 	paillier_ciphertext_t* temp_dist = paillier_create_enc_zero();
 
-	paillier_ciphertext_t** ciper_distance = (paillier_ciphertext_t**)malloc(sizeof(paillier_ciphertext_t*)*n);
-	paillier_ciphertext_t*** ciper_SBD_distance = (paillier_ciphertext_t***)malloc(sizeof(paillier_ciphertext_t**)*n);
-	paillier_ciphertext_t** ciper_mid = (paillier_ciphertext_t**)malloc(sizeof(paillier_ciphertext_t*)*n);
-	paillier_ciphertext_t** ciper_Smin = (paillier_ciphertext_t**)malloc(sizeof(paillier_ciphertext_t*)*n);
-	paillier_ciphertext_t** ciper_V=(paillier_ciphertext_t**)malloc(sizeof(paillier_ciphertext_t*)*n);
-	paillier_ciphertext_t*** ciper_V2 = (paillier_ciphertext_t***)malloc(sizeof(paillier_ciphertext_t**)*n);
+	paillier_ciphertext_t** cipher_distance = (paillier_ciphertext_t**)malloc(sizeof(paillier_ciphertext_t*)*n);
+	paillier_ciphertext_t*** cipher_SBD_distance = (paillier_ciphertext_t***)malloc(sizeof(paillier_ciphertext_t**)*n);
+	paillier_ciphertext_t** cipher_mid = (paillier_ciphertext_t**)malloc(sizeof(paillier_ciphertext_t*)*n);
+	paillier_ciphertext_t** cipher_Smin = (paillier_ciphertext_t**)malloc(sizeof(paillier_ciphertext_t*)*n);
+	paillier_ciphertext_t** cipher_V=(paillier_ciphertext_t**)malloc(sizeof(paillier_ciphertext_t*)*n);
+	paillier_ciphertext_t*** cipher_V2 = (paillier_ciphertext_t***)malloc(sizeof(paillier_ciphertext_t**)*n);
 
-	paillier_ciphertext_t*** ciper_rabel_result = (paillier_ciphertext_t***)malloc(sizeof(paillier_ciphertext_t**)*k);
+	paillier_ciphertext_t*** cipher_rabel_result = (paillier_ciphertext_t***)malloc(sizeof(paillier_ciphertext_t**)*k);
 	for(int i = 0 ; i < size; i++ ){
-		ciper_Smin[i] = ciper_zero;
+		cipher_Smin[i] = cipher_zero;
 	}
 
 	for(int i = 0 ; i < n ; i++ ){
-		ciper_distance[i] 	= ciper_zero;
-		ciper_SBD_distance[i] = (paillier_ciphertext_t**)malloc(sizeof(paillier_ciphertext_t*)*size);
-		ciper_V[i]	= ciper_zero;
-		ciper_V2[i] = (paillier_ciphertext_t**)malloc(sizeof(paillier_ciphertext_t*)*(dim+1));
+		cipher_distance[i] 	= cipher_zero;
+		cipher_SBD_distance[i] = (paillier_ciphertext_t**)malloc(sizeof(paillier_ciphertext_t*)*size);
+		cipher_V[i]	= cipher_zero;
+		cipher_V2[i] = (paillier_ciphertext_t**)malloc(sizeof(paillier_ciphertext_t*)*(dim+1));
 	}
 
 	for(int i = 0 ; i < k ; i++ ){
-		ciper_rabel_result[i] = (paillier_ciphertext_t**)malloc(sizeof(paillier_ciphertext_t*)*(dim+1));
+		cipher_rabel_result[i] = (paillier_ciphertext_t**)malloc(sizeof(paillier_ciphertext_t*)*(dim+1));
 		for(int j = 0 ; j < dim+1 ; j++)
 		{
 			if (j == 0)
 			{
-				ciper_V2[i][j] = (paillier_ciphertext_t*)malloc(sizeof(paillier_ciphertext_t));
-				mpz_init(ciper_V2[i][j]->c);
+				cipher_V2[i][j] = (paillier_ciphertext_t*)malloc(sizeof(paillier_ciphertext_t));
+				mpz_init(cipher_V2[i][j]->c);
 			}
-			ciper_rabel_result[i][j] = paillier_create_enc_zero();
+			cipher_rabel_result[i][j] = paillier_create_enc_zero();
 		}
 	}
 
@@ -373,7 +373,7 @@ int** protocol::Classification_PB(paillier_ciphertext_t*** data, paillier_cipher
 	for(int i = 0; i < threadNum; i++)
 	{
 		SSED_SBD_thread[i] = std::thread(SSED_SBD_inThread, i, std::ref(inputIdx[i]), std::ref(query), std::ref(data), dim,
-			std::ref(ciper_distance), std::ref(ciper_SBD_distance), std::ref(*this));
+			std::ref(cipher_distance), std::ref(cipher_SBD_distance), std::ref(*this));
 	}
 
 	for(int i = 0; i < threadNum; i++)
@@ -394,7 +394,7 @@ int** protocol::Classification_PB(paillier_ciphertext_t*** data, paillier_cipher
 	{
 		start = std::chrono::system_clock::now();
 
-		ciper_Smin = Smin_n_Multithread(ciper_SBD_distance, n);
+		cipher_Smin = Smin_n_Multithread(cipher_SBD_distance, n);
 		end = std::chrono::system_clock::now();
 		std::chrono::duration<float> gaptime = end - start;
 		gap = gaptime.count();
@@ -404,13 +404,13 @@ int** protocol::Classification_PB(paillier_ciphertext_t*** data, paillier_cipher
 		for(int j = size; j > 0; j--)
 		{
 			t = (int)pow(2, j-1);
-			ciper_binary = paillier_create_enc(t);
-			ciper_binary = SM_p1(ciper_binary, ciper_Smin[size-j], 0);
-			paillier_mul(pubkey, ciper_min, ciper_binary, ciper_min);
-			paillier_freeciphertext(ciper_binary);
+			cipher_binary = paillier_create_enc(t);
+			cipher_binary = SM_p1(cipher_binary, cipher_Smin[size-j], 0);
+			paillier_mul(pubkey, cipher_min, cipher_binary, cipher_min);
+			paillier_freeciphertext(cipher_binary);
 
 		}
-		paillier_print("min dist : ", ciper_min);
+		paillier_print("min dist : ", cipher_min);
 		
 		
 		if(s != 0)
@@ -432,7 +432,7 @@ int** protocol::Classification_PB(paillier_ciphertext_t*** data, paillier_cipher
 			std::thread *calcdistanceThread = new std::thread[threadNum];
 			for(int i = 0; i < threadNum; i++)
 			{
-				calcdistanceThread[i] = std::thread(caldistanceInThread, i, std::ref(inputIdx[i]), std::ref(ciper_SBD_distance), std::ref(ciper_distance),
+				calcdistanceThread[i] = std::thread(caldistanceInThread, i, std::ref(inputIdx[i]), std::ref(cipher_SBD_distance), std::ref(cipher_distance),
 					std::ref(*this));
 			}
 
@@ -464,8 +464,8 @@ int** protocol::Classification_PB(paillier_ciphertext_t*** data, paillier_cipher
 
 		for(int i = 0; i < threadNum; i++)
 		{
-			classipmThread[i] = std::thread(classipmInThread1, i, std::ref(inputIdx[i]), std::ref(ciper_distance), std::ref(ciper_min), std::ref(ciper_rand),
-				std::ref(ciper_mid), std::ref(*this));
+			classipmThread[i] = std::thread(classipmInThread1, i, std::ref(inputIdx[i]), std::ref(cipher_distance), std::ref(cipher_min), std::ref(cipher_rand),
+				std::ref(cipher_mid), std::ref(*this));
 		}
 
 		for(int i = 0; i < threadNum; i++)
@@ -477,7 +477,7 @@ int** protocol::Classification_PB(paillier_ciphertext_t*** data, paillier_cipher
 		delete[] inputIdx;
 		
 
-		ciper_V = SkNNm_sub(ciper_mid, n);
+		cipher_V = SkNNm_sub(cipher_mid, n);
 
 
 
@@ -486,14 +486,14 @@ int** protocol::Classification_PB(paillier_ciphertext_t*** data, paillier_cipher
 		{
 			for (int j = 0 ; j < dim+1 ; j++)
 			{
-				ciper_V2[i][j] = SM_p1(ciper_V[i], data[i][j], 0);
-				//paillier_print("ciper_V2 : ", ciper_V2[i]);
-				paillier_mul(pubkey, ciper_rabel_result[s][j], ciper_V2[i][j], ciper_rabel_result[s][j]);
+				cipher_V2[i][j] = SM_p1(cipher_V[i], data[i][j], 0);
+				//paillier_print("cipher_V2 : ", cipher_V2[i]);
+				paillier_mul(pubkey, cipher_rabel_result[s][j], cipher_V2[i][j], cipher_rabel_result[s][j]);
 			}
 		}
 
-		printf("ciper_rabel_result : ");	
-		gmp_printf("%Zd ", paillier_dec(0, pubkey, prvkey, ciper_rabel_result[s][dim]));
+		printf("cipher_rabel_result : ");	
+		gmp_printf("%Zd ", paillier_dec(0, pubkey, prvkey, cipher_rabel_result[s][dim]));
 		
 		
 		start = std::chrono::system_clock::now();
@@ -514,7 +514,7 @@ int** protocol::Classification_PB(paillier_ciphertext_t*** data, paillier_cipher
 
 		for(int i = 0; i < threadNum; i++)
 		{
-			classipmThread[i] = std::thread(SBOR_inThread, i, std::ref(inputIdx[i]), std::ref(ciper_V), std::ref(ciper_SBD_distance), std::ref(*this));
+			classipmThread[i] = std::thread(SBOR_inThread, i, std::ref(inputIdx[i]), std::ref(cipher_V), std::ref(cipher_SBD_distance), std::ref(*this));
 		}
 
 		for(int i = 0; i < threadNum; i++)
@@ -530,20 +530,20 @@ int** protocol::Classification_PB(paillier_ciphertext_t*** data, paillier_cipher
 		std::chrono::duration<float> SBOR_time = end - start;
 		data_SBOR_time += SBOR_time.count();
 
-		ciper_min = paillier_enc(0, pubkey, pt, paillier_get_rand_devurandom);	
+		cipher_min = paillier_enc(0, pubkey, pt, paillier_get_rand_devurandom);	
 	}
 
 
 
-	paillier_ciphertext_t **ciper_rabel = new paillier_ciphertext_t*[k];
+	paillier_ciphertext_t **cipher_rabel = new paillier_ciphertext_t*[k];
 	
 	paillier_plaintext_t* A = (paillier_plaintext_t*)malloc(sizeof(paillier_plaintext_t));
 	int** sknn = (int**)malloc(sizeof(int*)*k);
 	for(int i = 0 ; i < k ; i++ ){
 		sknn[i] = (int*)malloc(sizeof(int)*(dim+1));
-		ciper_rabel[i] = ciper_rabel_result[i][dim];
+		cipher_rabel[i] = cipher_rabel_result[i][dim];
 		for(int j = 0 ; j < dim+1 ; j++ ){
-			A = paillier_dec(0, pubkey, prvkey, ciper_rabel_result[i][j]);
+			A = paillier_dec(0, pubkey, prvkey, cipher_rabel_result[i][j]);
 			sknn[i][j] = mpz_get_ui(A->m);
 			printf("%d ", sknn[i][j]);
 		}
@@ -551,7 +551,7 @@ int** protocol::Classification_PB(paillier_ciphertext_t*** data, paillier_cipher
 	}
 
 	paillier_freeciphertext(temp_dist);	
-	SCMC(Entire_set, ciper_rabel, Entire_num, k);
+	SCMC(Entire_set, cipher_rabel, Entire_num, k);
 	return sknn;
 }	
 
@@ -634,7 +634,7 @@ int** protocol::Classification_PGI(paillier_ciphertext_t*** data, paillier_ciphe
 				std::thread *GSROThread = new std::thread[NumThread];
 				for(int i = 0; i < NumThread; i++)
 				{
-					GSROThread[i] = std::thread(DP_GSRO_Multithread, std::ref(query), std::ref(query), std::ref(NumNodeInput[i]),
+					GSROThread[i] = std::thread(GSRO_Multithread, std::ref(query), std::ref(query), std::ref(NumNodeInput[i]),
 						std::ref(node), std::ref(alpha), std::ref(*this), i);
 				}
 
@@ -818,7 +818,7 @@ int** protocol::Classification_PGI(paillier_ciphertext_t*** data, paillier_ciphe
 		}
 		if(!verify_flag)
 		{	
-			K_DIST = DP_SSED(query, Result[k-1], dim); 
+			K_DIST = SSEDm(query, Result[k-1], dim); 
 		}
 
 		if(!verify_flag)

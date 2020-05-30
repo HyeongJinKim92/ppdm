@@ -31,3 +31,15 @@ data_SPE(range) : 0  (0%)
 # retrieved node : 7
 
 
+time : 2020-05-31-03-10-08
+query : CLASSIFICATION_I TREE_LEVEL : 5 THREAD : 0 DATA : 1728 DIMENSION : 6 BITS : 9 k : 5 KEY : 512  QUERY : 0 0 0 0 0 0 
+total time : 377
+# retrieved node : 7
+
+
+time : 2020-05-31-03-30-25
+query : CLASSIFICATION_I TREE_LEVEL : 5 THREAD : 0 DATA : 1728 DIMENSION : 6 BITS : 9 k : 5 KEY : 512  QUERY : 0 0 0 0 0 0 
+total time : 375
+# retrieved node : 7
+
+

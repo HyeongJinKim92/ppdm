@@ -95,11 +95,11 @@ int range_main(parsed_query * user_query)
 
 
 	if(user_query->rquery_t == RANGE_B)			setting.TimeResult_write_map(shellquery, result, result_num, "RANGE/RANGE_B", proto); //rangeB
-	else if(user_query->rquery_t == RANGE_I) 	setting.TimeResult_write_int(shellquery, result, result_num, "RANGE/RANGE_I", proto);  //rangeI
-	else if(user_query->rquery_t == RANGE_GI) 	setting.TimeResult_write_int(shellquery, result, result_num, "RANGE/RANGE_GI", proto); //rangeGI
-	else if(user_query->rquery_t == RANGE_PB) 	setting.TimeResult_write_int(shellquery, result, result_num, "RANGE/RANGE_PB", proto); //rangePB
-	else if(user_query->rquery_t == RANGE_PGI) 	setting.TimeResult_write_int(shellquery, result, result_num, "RANGE/RANGE_PGI", proto); //rangePAI
-	else if(user_query->rquery_t == RANGE_PAI) 	setting.TimeResult_write_int(shellquery, result, result_num, "RANGE/RANGE_PAI", proto); //rangePAI
+	else if(user_query->rquery_t == RANGE_I) 	setting.TimeResult_write_map(shellquery, result, result_num, "RANGE/RANGE_I", proto);  //rangeI
+	else if(user_query->rquery_t == RANGE_GI) 	setting.TimeResult_write_map(shellquery, result, result_num, "RANGE/RANGE_GI", proto); //rangeGI
+	else if(user_query->rquery_t == RANGE_PB) 	setting.TimeResult_write_map(shellquery, result, result_num, "RANGE/RANGE_PB", proto); //rangePB
+	else if(user_query->rquery_t == RANGE_PGI) 	setting.TimeResult_write_map(shellquery, result, result_num, "RANGE/RANGE_PGI", proto); //rangePAI
+	else if(user_query->rquery_t == RANGE_PAI) 	setting.TimeResult_write_map(shellquery, result, result_num, "RANGE/RANGE_PAI", proto); //rangePAI
 
 	for( int i = 0 ; i < result_num ; i++ ){
 		printf("%d result : ", (i+1) );
@@ -131,6 +131,25 @@ int topk_main(parsed_query* user_query)
 	paillier_ciphertext_t** max_val = (paillier_ciphertext_t**)malloc(sizeof(paillier_ciphertext_t*)*user_query->dim_n); 
 
 	paillier_ciphertext_t* cipher_zero = paillier_create_enc(0);
+	/*
+	cout << "G_CMP : " <<proto.G_CMP(10, 0, 10, 0) << endl;
+	cout << "G_CMP : " <<proto.G_CMP(10, 3, 10, 3) << endl;
+	cout << "G_CMP : " <<proto.G_CMP(10, 3, 10, 4) << endl;
+	cout << "G_CMP : " <<proto.G_CMP(10, 4, 10, 3) << endl;
+	cout << "G_CMP : " <<proto.G_CMP(10, 99, 100, 3) << endl;
+
+	cout << "G_CMP : " <<proto.G_CMP(1, 1, 1, 0) << endl;
+	cout << "G_CMP : " <<proto.G_CMP(1, 0, 1, 1) << endl;
+
+	cout << "G_CMP : " <<proto.G_CMP(1, 0, 2, 0) << endl;
+	cout << "G_CMP : " <<proto.G_CMP(1, 1, 2, 0) << endl;
+	cout << "G_CMP : " <<proto.G_CMP(1, 0, 2, 1) << endl;
+
+
+	cout << "G_CMP : " <<proto.G_CMP(2, 0, 1, 0) << endl;
+	cout << "G_CMP : " <<proto.G_CMP(2, 1, 1, 0) << endl;
+	cout << "G_CMP : " <<proto.G_CMP(2, 0, 1, 1) << endl;
+	*/
 
 	int MAX_VAL = 0;
 	MAX_VAL = sqrt(pow(2, user_query->bit_s)/user_query->dim_n);
@@ -205,16 +224,16 @@ int topk_main(parsed_query* user_query)
 	endTime = std::chrono::system_clock::now();
 	duration_sec = endTime - startTime;
 	proto.total_time = duration_sec.count();
-	std::cout << "RANGE TIME : " << proto.total_time << " sec" << std::endl; 
+	std::cout << "topk TIME : " << proto.total_time << " sec" << std::endl; 
 
 
 
-	if(user_query->tquery_t == TOPK_B)			setting.TimeResult_write_int(shellquery, topk, result_num, "TOPK/TOPK_B", proto); //TOPKB
-	else if(user_query->tquery_t == TOPK_I) 	setting.TimeResult_write_int(shellquery, topk, result_num, "TOPK/TOPK_I", proto);  //TOPKI
-	else if(user_query->tquery_t == TOPK_GI) 	setting.TimeResult_write_int(shellquery, topk, result_num, "TOPK/TOPK_GI", proto); //TOPKGI
-	else if(user_query->tquery_t == TOPK_PB) 	setting.TimeResult_write_int(shellquery, topk, result_num, "TOPK/TOPK_PB", proto); //TOPKPGI
-	else if(user_query->tquery_t == TOPK_PGI) 	setting.TimeResult_write_int(shellquery, topk, result_num, "TOPK/TOPK_PGI", proto); //TOPKPAI
-	else if(user_query->tquery_t == TOPK_PAI) 	setting.TimeResult_write_int(shellquery, topk, result_num, "TOPK/TOPK_PAI", proto); //TOPKPAI
+	if(user_query->tquery_t == TOPK_B)			setting.TimeResult_write_map(shellquery, topk, user_query->k, "TOPK/TOPK_B", proto); //TOPKB
+	else if(user_query->tquery_t == TOPK_I) 	setting.TimeResult_write_map(shellquery, topk, user_query->k, "TOPK/TOPK_I", proto);  //TOPKI
+	else if(user_query->tquery_t == TOPK_GI) 	setting.TimeResult_write_map(shellquery, topk, user_query->k, "TOPK/TOPK_GI", proto); //TOPKGI
+	else if(user_query->tquery_t == TOPK_PB) 	setting.TimeResult_write_map(shellquery, topk, user_query->k, "TOPK/TOPK_PB", proto); //TOPKPGI
+	else if(user_query->tquery_t == TOPK_PGI) 	setting.TimeResult_write_map(shellquery, topk, user_query->k, "TOPK/TOPK_PGI", proto); //TOPKPAI
+	else if(user_query->tquery_t == TOPK_PAI) 	setting.TimeResult_write_map(shellquery, topk, user_query->k, "TOPK/TOPK_PAI", proto); //TOPKPAI
 
 	for( i = 0 ; i < user_query->k ; i++ ){
 		printf("%d result : ", (i+1));
@@ -296,12 +315,12 @@ int knn_main(parsed_query* user_query)
 
 
 
-	if(user_query->kquery_t == KNN_B)			setting.TimeResult_write_int(shellquery, SkNNm, result_num, "KNN/KNN_B", proto); //KNNB
-	else if(user_query->kquery_t == KNN_I) 		setting.TimeResult_write_int(shellquery, SkNNm, result_num, "KNN/KNN_I", proto);  //KNNI
-	else if(user_query->kquery_t == KNN_GI) 	setting.TimeResult_write_int(shellquery, SkNNm, result_num, "KNN/KNN_GI", proto); //KNNGI
-	else if(user_query->kquery_t == KNN_PB) 	setting.TimeResult_write_int(shellquery, SkNNm, result_num, "KNN/KNN_PB", proto); //KNNPGI
-	else if(user_query->kquery_t == KNN_PGI) 	setting.TimeResult_write_int(shellquery, SkNNm, result_num, "KNN/KNN_PGI", proto); //KNNPAI
-	else if(user_query->kquery_t == KNN_PAI) 	setting.TimeResult_write_int(shellquery, SkNNm, result_num, "KNN/KNN_PAI", proto); //KNNPAI
+	if(user_query->kquery_t == KNN_B)			setting.TimeResult_write_map(shellquery, SkNNm, result_num, "KNN/KNN_B", proto); //KNNB
+	else if(user_query->kquery_t == KNN_I) 		setting.TimeResult_write_map(shellquery, SkNNm, result_num, "KNN/KNN_I", proto);  //KNNI
+	else if(user_query->kquery_t == KNN_GI) 	setting.TimeResult_write_map(shellquery, SkNNm, result_num, "KNN/KNN_GI", proto); //KNNGI
+	else if(user_query->kquery_t == KNN_PB) 	setting.TimeResult_write_map(shellquery, SkNNm, result_num, "KNN/KNN_PB", proto); //KNNPGI
+	else if(user_query->kquery_t == KNN_PGI) 	setting.TimeResult_write_map(shellquery, SkNNm, result_num, "KNN/KNN_PGI", proto); //KNNPAI
+	else if(user_query->kquery_t == KNN_PAI) 	setting.TimeResult_write_map(shellquery, SkNNm, result_num, "KNN/KNN_PAI", proto); //KNNPAI
 
 	for( i = 0 ; i < user_query->k ; i++ ){
 		printf("%d result : ", (i+1) );
@@ -390,12 +409,12 @@ int classification_main(parsed_query* user_query)
 
 
 
-	if(user_query->cquery_t == CLASSIFICATION_B)			setting.TimeResult_write_int(shellquery, classification, result_num, "CLASSIFICATION/CLASSIFICATION_B", proto); 
-	else if(user_query->cquery_t == CLASSIFICATION_I) 		setting.TimeResult_write_int(shellquery, classification, result_num, "CLASSIFICATION/CLASSIFICATION_I", proto); 
-	else if(user_query->cquery_t == CLASSIFICATION_GI) 		setting.TimeResult_write_int(shellquery, classification, result_num, "CLASSIFICATION/CLASSIFICATION_GI", proto);
-	else if(user_query->cquery_t == CLASSIFICATION_PB) 		setting.TimeResult_write_int(shellquery, classification, result_num, "CLASSIFICATION/CLASSIFICATION_PB", proto); 
-	else if(user_query->cquery_t == CLASSIFICATION_PGI) 	setting.TimeResult_write_int(shellquery, classification, result_num, "CLASSIFICATION/CLASSIFICATION_PGI", proto);
-	else if(user_query->cquery_t == CLASSIFICATION_PAI) 	setting.TimeResult_write_int(shellquery, classification, result_num, "CLASSIFICATION/CLASSIFICATION_PAI", proto);
+	if(user_query->cquery_t == CLASSIFICATION_B)			setting.TimeResult_write_map(shellquery, classification, result_num, "CLASSIFICATION/CLASSIFICATION_B", proto); 
+	else if(user_query->cquery_t == CLASSIFICATION_I) 		setting.TimeResult_write_map(shellquery, classification, result_num, "CLASSIFICATION/CLASSIFICATION_I", proto); 
+	else if(user_query->cquery_t == CLASSIFICATION_GI) 		setting.TimeResult_write_map(shellquery, classification, result_num, "CLASSIFICATION/CLASSIFICATION_GI", proto);
+	else if(user_query->cquery_t == CLASSIFICATION_PB) 		setting.TimeResult_write_map(shellquery, classification, result_num, "CLASSIFICATION/CLASSIFICATION_PB", proto); 
+	else if(user_query->cquery_t == CLASSIFICATION_PGI) 	setting.TimeResult_write_map(shellquery, classification, result_num, "CLASSIFICATION/CLASSIFICATION_PGI", proto);
+	else if(user_query->cquery_t == CLASSIFICATION_PAI) 	setting.TimeResult_write_map(shellquery, classification, result_num, "CLASSIFICATION/CLASSIFICATION_PAI", proto);
 
 	proto.protocol_free();
 	return 0;
@@ -463,12 +482,12 @@ int kmeans_main(parsed_query* user_query)
 		printf("\n");
 	}
 
-	if(user_query->mquery_t == KMEANS_B)			setting.TimeResult_write_int(shellquery, cluseter, user_query->k, "KMEANS/KMEANS_B", proto); 
-	else if(user_query->mquery_t == KMEANS_I) 		setting.TimeResult_write_int(shellquery, cluseter, user_query->k, "KMEANS/KMEANS_I", proto); 
-	else if(user_query->mquery_t == KMEANS_GI) 		setting.TimeResult_write_int(shellquery, cluseter, user_query->k, "KMEANS/KMEANS_GI", proto);
-	else if(user_query->mquery_t == KMEANS_PB) 		setting.TimeResult_write_int(shellquery, cluseter, user_query->k, "KMEANS/KMEANS_PB", proto); 
-	else if(user_query->mquery_t == KMEANS_PGI) 	setting.TimeResult_write_int(shellquery, cluseter, user_query->k, "KMEANS/KMEANS_PGI", proto);
-	else if(user_query->mquery_t == KMEANS_PAI) 	setting.TimeResult_write_int(shellquery, cluseter, user_query->k, "KMEANS/KMEANS_PAI", proto);
+	if(user_query->mquery_t == KMEANS_B)			setting.TimeResult_write_map(shellquery, cluseter, user_query->k, "KMEANS/KMEANS_B", proto); 
+	else if(user_query->mquery_t == KMEANS_I) 		setting.TimeResult_write_map(shellquery, cluseter, user_query->k, "KMEANS/KMEANS_I", proto); 
+	else if(user_query->mquery_t == KMEANS_GI) 		setting.TimeResult_write_map(shellquery, cluseter, user_query->k, "KMEANS/KMEANS_GI", proto);
+	else if(user_query->mquery_t == KMEANS_PB) 		setting.TimeResult_write_map(shellquery, cluseter, user_query->k, "KMEANS/KMEANS_PB", proto); 
+	else if(user_query->mquery_t == KMEANS_PGI) 	setting.TimeResult_write_map(shellquery, cluseter, user_query->k, "KMEANS/KMEANS_PGI", proto);
+	else if(user_query->mquery_t == KMEANS_PAI) 	setting.TimeResult_write_map(shellquery, cluseter, user_query->k, "KMEANS/KMEANS_PAI", proto);
 
 	proto.protocol_free();
 	return 0;
@@ -541,10 +560,160 @@ parsed_query* parsing_query(char* argv[])
 	else if(query->query == TEST)			{}
 	
 	//query merge
-	for(int i = 0; argv[i] !=NULL ; i++)
+	if(query->query == RANGE)
+	{	
+		switch(query->rquery_t)
+		{
+			case RANGE_B:
+				strcat(shellquery, "RANGE_B");
+				break;
+			case RANGE_I:
+				strcat(shellquery, "RANGE_I");
+				break;
+			case RANGE_GI:
+				strcat(shellquery, "RANGE_GI");
+				break;
+			case RANGE_PB:
+				strcat(shellquery, "RANGE_PB");
+				break;
+			case RANGE_PGI:
+				strcat(shellquery, "RANGE_PGI");
+				break;
+			case RANGE_PAI:
+				strcat(shellquery, "RANGE_PAI");
+				break;
+			default:
+				break;
+		}
+	}
+	else if(query->query == TOPK)
 	{
-		strcat(shellquery, argv[i]);
-		strcat(shellquery, "  ");
+		switch(query->tquery_t)
+		{
+			case TOPK_B:
+				strcat(shellquery, "TOPK_B");
+				break;
+			case TOPK_I:
+				strcat(shellquery, "TOPK_I");
+				break;
+			case TOPK_GI:
+				strcat(shellquery, "TOPK_GI");
+				break;
+			case TOPK_PB:
+				strcat(shellquery, "TOPK_PB");
+				break;
+			case TOPK_PGI:
+				strcat(shellquery, "TOPK_PGI");
+				break;
+			case TOPK_PAI:
+				strcat(shellquery, "TOPK_PAI");
+				break;
+			default:
+				break;
+		}
+	}
+	else if(query->query == KNN)
+	{
+		switch(query->kquery_t)
+		{
+			case KNN_B:
+				strcat(shellquery, "KNN_B");
+				break;
+			case KNN_I:
+				strcat(shellquery, "KNN_I");
+				break;
+			case KNN_GI:
+				strcat(shellquery, "KNN_GI");
+				break;
+			case KNN_PB:
+				strcat(shellquery, "KNN_PB");
+				break;
+			case KNN_PGI:
+				strcat(shellquery, "KNN_PGI");
+				break;
+			case KNN_PAI:
+				strcat(shellquery, "KNN_PAI");
+				break;
+			default:
+				break;
+		}
+	}
+	else if(query->query == CLASSIFICATION)
+	{
+		switch(query->cquery_t)
+		{
+			case CLASSIFICATION_B:
+				strcat(shellquery, "CLASSIFICATION_B");
+				break;
+			case CLASSIFICATION_I:
+				strcat(shellquery, "CLASSIFICATION_I");
+				break;
+			case CLASSIFICATION_GI:
+				strcat(shellquery, "CLASSIFICATION_GI");
+				break;
+			case CLASSIFICATION_PB:
+				strcat(shellquery, "CLASSIFICATION_PB");
+				break;
+			case CLASSIFICATION_PGI:
+				strcat(shellquery, "CLASSIFICATION_PGI");
+				break;
+			case CLASSIFICATION_PAI:
+				strcat(shellquery, "CLASSIFICATION_PAI");
+				break;
+			default:
+				break;
+		}
+	}
+	else if(query->query == KMEANS)			
+	{
+		switch(query->mquery_t)
+		{
+			case KMEANS_B:
+				strcat(shellquery, "KMEANS_B");
+				break;
+			case KMEANS_I:
+				strcat(shellquery, "KMEANS_I");
+				break;
+			case KMEANS_GI:
+				strcat(shellquery, "KMEANS_GI");
+				break;
+			case KMEANS_PB:
+				strcat(shellquery, "KMEANS_PB");
+				break;
+			case KMEANS_PGI:
+				strcat(shellquery, "KMEANS_PGI");
+				break;
+			case KMEANS_PAI:
+				strcat(shellquery, "KMEANS_PAI");
+				break;
+			default:
+				break;
+		}
+	}
+
+	strcat(shellquery, " TREE_LEVEL : ");
+	strcat(shellquery, argv[3]);
+	strcat(shellquery, " THREAD : ");
+	strcat(shellquery, argv[4]);
+	strcat(shellquery, " DATA : ");
+	strcat(shellquery, argv[5]);
+	strcat(shellquery, " DIMENSION : ");
+	strcat(shellquery, argv[6]);
+	strcat(shellquery, " BITS : ");
+	strcat(shellquery, argv[7]);
+	strcat(shellquery, " k : ");
+	strcat(shellquery, argv[8]);
+	strcat(shellquery, " KEY : ");
+	strcat(shellquery, argv[9]);
+
+
+	strcat(shellquery, "  QUERY : ");
+	int i = 0;
+	while(argv[10+i] != NULL)
+	{	
+		strcat(shellquery, argv[10+i]);
+		strcat(shellquery, " ");
+		i++;
 	}
 
 	return query;

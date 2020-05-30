@@ -9,3 +9,25 @@ data_SPE(range) : 0  (0%)
 # retrieved node : 0
 
 
+time : 2020-05-30-21-24-35
+query : TOPK_B TREE_LEVEL : 7 THREAD : 0 DATA : 2000 DIMENSION : 4 BITS : 20 k : 10 KEY : 512  QUERY : 10 10 10 10 10 
+total time : 3149
+sTopk_B_SBD(CS(score)) 					 167.922572 (5.333232 %) 
+sTopk_B_smax(score)) 					 1474.849411 (46.841313 %) 
+sTopk_B_recover_MAX_Score 					 796.370309 (25.292773 %) 
+sTopk_B_subtract_Score(SBD_score)) 					 32.327407 (1.026721 %) 
+sTopk_B_extract_result 					 108.828265 (3.456393 %) 
+sTopk_B_update_score 					 547.161203 (17.377875 %) 
+# retrieved node : 0
+Result(0) :	477	427	506	501	
+Result(1) :	435	471	472	510	
+Result(2) :	488	437	490	456	
+Result(3) :	349	506	501	507	
+Result(4) :	449	491	472	431	
+Result(5) :	470	491	491	388	
+Result(6) :	463	457	493	425	
+Result(7) :	446	478	482	420	
+Result(8) :	489	468	473	395	
+Result(9) :	498	492	310	505	
+
+

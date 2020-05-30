@@ -31,8 +31,8 @@ paillier_ciphertext_t* protocol::GSRO(paillier_ciphertext_t** qLL, paillier_ciph
 		mpz_init(F2_array[i]->c);
 		mpz_init(R1_array[i]->c);
 		mpz_init(R2_array[i]->c);
-		iR1_array[i] = 5;
-		iR2_array[i] = 5;
+		iR1_array[i] = 0;
+		iR2_array[i] = 0;
 		R1_array[i] = paillier_create_enc(iR1_array[i]);
 		R2_array[i] = paillier_create_enc(iR2_array[i]);
 		//	gmp_printf("%d : %Zd\t", i, F1_array[i]);		gmp_printf("%Zd\t", F2_array[i]);		gmp_printf("%Zd\t", R1_array[i]);		gmp_printf("%Zd\t", R2_array[i]);		cout << endl;
@@ -40,51 +40,57 @@ paillier_ciphertext_t* protocol::GSRO(paillier_ciphertext_t** qLL, paillier_ciph
 	srand((unsigned int)time(NULL));
 	for( i = 0 ; i < dim ; i ++ )
 	{
-		random = rand()%2;
+		//random = rand()%2;
+		//gmp_printf("%d : %Zd\t", random, paillier_dec(0, pub, prv, qLL[i]));		gmp_printf("%Zd\t", paillier_dec(0, pub, prv, nodeRR[i]));		cout << endl;
 		if (random==0)
 		{
 			Flag_array[i] = 0;
-			paillier_mul(pub,F1_array[i],qLL[cnt],R1_array[i]);
-			paillier_mul(pub,F2_array[i],nodeRR[cnt++],R2_array[i]);
+			paillier_mul(pub, F1_array[i], qLL[cnt], R1_array[i]);
+			paillier_mul(pub, F2_array[i], nodeRR[cnt++], R2_array[i]);
 		}
 		else
 		{
 			Flag_array[i] = 1;
-			paillier_mul(pub,F1_array[i],nodeRR[cnt],R2_array[i]);
-			paillier_mul(pub,F2_array[i],qLL[cnt++],R1_array[i]);
+			paillier_mul(pub, F1_array[i], nodeRR[cnt], R2_array[i]);
+			paillier_mul(pub, F2_array[i], qLL[cnt++], R1_array[i]);
 		}
 	}
+
 	for( i = dim, cnt = 0 ; i < dim*2 ; i++ )
 	{
-		random = rand()%2;
+		//random = rand()%2;
+		//gmp_printf("%d : %Zd\t", random, paillier_dec(0, pub, prv, qRR[cnt]));		gmp_printf("%Zd\t", paillier_dec(0, pub, prv, nodeLL[cnt]));		cout << endl;
 		if( random == 0 )
 		{
 			Flag_array[i] = 0;
-			paillier_mul(pub,F1_array[i],nodeLL[cnt],R1_array[i]);
-			paillier_mul(pub,F2_array[i],qRR[cnt++],R2_array[i]);
+			paillier_mul(pub, F1_array[i], nodeLL[cnt], R1_array[i]);
+			paillier_mul(pub, F2_array[i], qRR[cnt++], R2_array[i]);
 		}
 		else
 		{
 			Flag_array[i] = 1;
-			paillier_mul(pub,F1_array[i],qRR[cnt],R2_array[i]);
-			paillier_mul(pub,F2_array[i],nodeLL[cnt++],R1_array[i]);
+			paillier_mul(pub, F1_array[i], qRR[cnt], R2_array[i]);
+			paillier_mul(pub, F2_array[i], nodeLL[cnt++], R1_array[i]);
 		}
 	}
-	F1_array = GSRO_sub(F1_array,F2_array,iR1_array,iR2_array);
 
+	F1_array = GSRO_sub(F1_array, F2_array, iR1_array, iR2_array);
+
+/*
 	for( i = 0 ; i < dim*2 ; i ++){
-		//F1_array[i] = paillier_create_enc(Flag_array[i]);
-		if(Flag_array[i] == 1 ){
-			F1_array[i] = SBN(F1_array[i]);
-		}
-		//F1_array[i] = SBXOR(F1_array[i],F2_array[i]);
-//	 	gmp_printf("%Zd\t",paillier_dec(0, pub, prv, F1_array[i]));
-	}
+		F1_array[i] = paillier_create_enc(Flag_array[i]);
+		F1_array[i] = SBXOR(F1_array[i],F2_array[i]);
+	} 
 	for( i = 0 ; i < dim*2 ; i ++){
 		F1_array[0] = SM_p1(F1_array[0],F1_array[i]);
 	}
+*/	
 
-	//gmp_printf("\n\nrap : %Zd\n", paillier_dec(0, pub, prv, F1_array[0]));
+
+	for( i = 0 ; i < dim*2 ; i ++){
+		F1_array[0] = SM_p1(F1_array[0], F1_array[i]);
+	}
+
 	return F1_array[0];
 }
 
@@ -95,16 +101,15 @@ paillier_ciphertext_t** protocol::GSRO_sub(paillier_ciphertext_t** A, paillier_c
 	int * iresult = (int *)malloc(sizeof(int)*dim*2);
 	int * iA = (int *)malloc(sizeof(int)*dim*2);
 	int * iB = (int *)malloc(sizeof(int)*dim*2);
+
 	for( i = 0 ; i < dim*2 ; i ++){
 		plain = paillier_dec(0, pub, prv, A[i]);
 		iA[i] = mpz_get_ui(plain->m);
 		plain = paillier_dec(0, pub, prv, B[i]);
 		iB[i] = mpz_get_ui(plain->m);
 	}
-	/*
-	cout << endl;
-	cout << endl;
 	
+	/*
 	cout << " GSRO_sub " <<endl;
 	for( i = 0 ; i < dim*2 ; i ++){
 		cout << iA[i] << "\t";
@@ -123,21 +128,53 @@ paillier_ciphertext_t** protocol::GSRO_sub(paillier_ciphertext_t** A, paillier_c
 	}
 	cout << endl;
 	*/
+
+
+	makeGate();
+	
+
 	for(i=0; i < dim*2; i++){
-		iresult[i] = G_CMP(iB[i],R2[i],iA[i],R1[i]);
-	/*	if( (iA[i]-R1[i]) < (iB[i]-R2[i]) ){
-			iresult[i] = 1;
-		}else{
-			iresult[i] = 0;
-		}
-		cout << iresult[i] << "\t";
-	*/	result[i] = paillier_create_enc(iresult[i]);
+		//cout << iA[i] << "\t" << R1[i] << "\t" << iB[i] << "\t" << R2[i] << "\t";
+		iresult[i] = G_CMP(iA[i], R2[i], iB[i], R1[i]);
+		//cout << iresult[i]  << " \n " ;
+		result[i] = SBN(paillier_create_enc(iresult[i]));
 	}
+
 	return result;
 }
+/*
+paillier_ciphertext_t** protocol::GSRO_sub(paillier_ciphertext_t** A, paillier_ciphertext_t** B, int * R1, int * R2){
+	int i = 0;
+	paillier_plaintext_t* plain;
+	paillier_ciphertext_t** result = (paillier_ciphertext_t**)malloc(sizeof(paillier_ciphertext_t*)*(dim*2));
+	int * iresult = (int *)malloc(sizeof(int)*dim*2);
+	int * iA = (int *)malloc(sizeof(int)*dim*2);
+	int * iB = (int *)malloc(sizeof(int)*dim*2);
 
-paillier_ciphertext_t* protocol::DP_GSRO(paillier_ciphertext_t** qLL, paillier_ciphertext_t** qRR, paillier_ciphertext_t** nodeLL, paillier_ciphertext_t** nodeRR){
-	//cout << "DP_GSRO start" <<endl;
+	for( i = 0 ; i < dim*2 ; i ++){
+		plain = paillier_dec(0, pub, prv, A[i]);
+		iA[i] = mpz_get_ui(plain->m);
+		plain = paillier_dec(0, pub, prv, B[i]);
+		iB[i] = mpz_get_ui(plain->m);
+	}
+	
+
+
+	makeGate();
+	
+	for(i=0; i < dim*2; i++){
+		cout << iA[i] << "\t" << R1[i] << "\t" << iB[i] << "\t" << R2[i] << "\t";
+		iresult[i] = G_CMP(iB[i], R2[i], iA[i], R1[i]);
+		cout << iresult[i]  << " \n " ;
+		result[i] = paillier_create_enc(iresult[i]);
+	}
+	cout << endl;
+	return result;
+}
+*/
+/*
+paillier_ciphertext_t* protocol::GSRO(paillier_ciphertext_t** qLL, paillier_ciphertext_t** qRR, paillier_ciphertext_t** nodeLL, paillier_ciphertext_t** nodeRR){
+	//cout << "GSRO start" <<endl;
 	int i = 0;
 	int * Flag_array = (int *)malloc(sizeof(int)*(dim*2));
 	int * R1 = (int *)malloc(sizeof(int)*(dim*2));
@@ -159,8 +196,8 @@ paillier_ciphertext_t* protocol::DP_GSRO(paillier_ciphertext_t** qLL, paillier_c
 	
 	paillier_ciphertext_t* c1_array;
 	paillier_ciphertext_t* c2_array;
-	paillier_ciphertext_t* ciper_tmp = (paillier_ciphertext_t*) malloc(sizeof(paillier_ciphertext_t));	
-	mpz_init(ciper_tmp->c);
+	paillier_ciphertext_t* cipher_tmp = (paillier_ciphertext_t*) malloc(sizeof(paillier_ciphertext_t));	
+	mpz_init(cipher_tmp->c);
 
 	paillier_ciphertext_t** temp_qLL = (paillier_ciphertext_t**) malloc(sizeof(paillier_ciphertext_t*)*dim);
 	paillier_ciphertext_t** temp_qRR = (paillier_ciphertext_t**) malloc(sizeof(paillier_ciphertext_t*)*dim);
@@ -209,10 +246,10 @@ paillier_ciphertext_t* protocol::DP_GSRO(paillier_ciphertext_t** qLL, paillier_c
 	// 2qRR+1 2nodeRR+1
 	for( i = 0 ; i < dim ; i++){
 		paillier_exp(pubkey, temp_nodeRR[i], nodeRR[i], shift); 
-		paillier_mul(pubkey, temp_nodeRR[i], temp_nodeRR[i], ciper_one); 
+		paillier_mul(pubkey, temp_nodeRR[i], temp_nodeRR[i], cipher_one); 
 		
 		paillier_exp(pubkey, temp_qRR[i], qRR[i], shift);
-		paillier_mul(pubkey, temp_qRR[i], temp_qRR[i], ciper_one); 
+		paillier_mul(pubkey, temp_qRR[i], temp_qRR[i], cipher_one); 
 	}
 
 	// add to Array QueryLL, nodeRR value
@@ -221,16 +258,16 @@ paillier_ciphertext_t* protocol::DP_GSRO(paillier_ciphertext_t** qLL, paillier_c
 		mpz_ui_pow_ui(shift->m,2,DP*i);
 		if (random == 0){
 			Flag_array[i] = 0;
-			paillier_exp(pubkey, ciper_tmp, temp_qLL[cnt], shift); //multi
-			paillier_mul(pubkey, c1_array, c1_array, ciper_tmp); //E_add
-			paillier_exp(pubkey, ciper_tmp, temp_nodeRR[cnt++], shift); //multi
-			paillier_mul(pubkey, c2_array, c2_array, ciper_tmp); //E_add			
+			paillier_exp(pubkey, cipher_tmp, temp_qLL[cnt], shift); //multi
+			paillier_mul(pubkey, c1_array, c1_array, cipher_tmp); //E_add
+			paillier_exp(pubkey, cipher_tmp, temp_nodeRR[cnt++], shift); //multi
+			paillier_mul(pubkey, c2_array, c2_array, cipher_tmp); //E_add			
 		}else{
 			Flag_array[i] = 1;
-			paillier_exp(pubkey, ciper_tmp, temp_nodeRR[cnt], shift); //multi
-			paillier_mul(pubkey, c1_array, c1_array, ciper_tmp); //E_add
-			paillier_exp(pubkey, ciper_tmp, temp_qLL[cnt++], shift); //multi
-			paillier_mul(pubkey, c2_array, c2_array, ciper_tmp); //E_add
+			paillier_exp(pubkey, cipher_tmp, temp_nodeRR[cnt], shift); //multi
+			paillier_mul(pubkey, c1_array, c1_array, cipher_tmp); //E_add
+			paillier_exp(pubkey, cipher_tmp, temp_qLL[cnt++], shift); //multi
+			paillier_mul(pubkey, c2_array, c2_array, cipher_tmp); //E_add
 		}
 	}
 	// add to Array QueryRR, nodeLL value	
@@ -239,26 +276,26 @@ paillier_ciphertext_t* protocol::DP_GSRO(paillier_ciphertext_t** qLL, paillier_c
 		mpz_ui_pow_ui(shift->m,2,DP*i);
 		if (random == 0){
 			Flag_array[i] = 0;
-			paillier_exp(pubkey, ciper_tmp, temp_nodeLL[cnt], shift); //multi
-			paillier_mul(pubkey, c1_array, c1_array, ciper_tmp); //E_add
-			paillier_exp(pubkey, ciper_tmp, temp_qRR[cnt++], shift); //multi
-			paillier_mul(pubkey, c2_array, c2_array, ciper_tmp); //E_add			
+			paillier_exp(pubkey, cipher_tmp, temp_nodeLL[cnt], shift); //multi
+			paillier_mul(pubkey, c1_array, c1_array, cipher_tmp); //E_add
+			paillier_exp(pubkey, cipher_tmp, temp_qRR[cnt++], shift); //multi
+			paillier_mul(pubkey, c2_array, c2_array, cipher_tmp); //E_add			
 		}else{
 			Flag_array[i] = 1;
-			paillier_exp(pubkey, ciper_tmp, temp_qRR[cnt], shift); //multi
-			paillier_mul(pubkey, c1_array, c1_array, ciper_tmp); //E_add
-			paillier_exp(pubkey, ciper_tmp, temp_nodeLL[cnt++], shift); //multi
-			paillier_mul(pubkey, c2_array, c2_array, ciper_tmp); //E_add			
+			paillier_exp(pubkey, cipher_tmp, temp_qRR[cnt], shift); //multi
+			paillier_mul(pubkey, c1_array, c1_array, cipher_tmp); //E_add
+			paillier_exp(pubkey, cipher_tmp, temp_nodeLL[cnt++], shift); //multi
+			paillier_mul(pubkey, c2_array, c2_array, cipher_tmp); //E_add			
 		}
 	}
 
-	F2_array = unDP_GSRO(c1_array, c2_array, R1, R2);
+	F2_array = unGSRO(c1_array, c2_array, R1, R2);
 	
 	
 	for( i = 0 ; i < dim*2 ; i ++){
 		F1_array[i] = paillier_create_enc(Flag_array[i]);
 		F1_array[i] = SBXOR(F1_array[i],F2_array[(dim*2)-i-1]);
-	}
+	} 
 	for( i = 0 ; i < dim*2 ; i ++){
 		F1_array[0] = SM_p1(F1_array[0],F1_array[i]);
 	}
@@ -271,7 +308,7 @@ paillier_ciphertext_t* protocol::DP_GSRO(paillier_ciphertext_t** qLL, paillier_c
 	free(p1_array);
 	free(p2_array);
 	free(tmp);
-	free(ciper_tmp);
+	free(cipher_tmp);
 	for(i=0;i<dim*2;i++){
 		free(R1_array[i]);
 		free(R2_array[i]);
@@ -288,8 +325,9 @@ paillier_ciphertext_t* protocol::DP_GSRO(paillier_ciphertext_t** qLL, paillier_c
 	}
 	return F1_array[0];
 }
-paillier_ciphertext_t** protocol::unDP_GSRO(paillier_ciphertext_t* A, paillier_ciphertext_t* B, int * R1, int * R2){
-	//cout << "unDP_GSRO start" <<endl;
+*/
+paillier_ciphertext_t** protocol::unGSRO(paillier_ciphertext_t* A, paillier_ciphertext_t* B, int * R1, int * R2){
+	//cout << "unGSRO start" <<endl;
 	paillier_ciphertext_t** result	= (paillier_ciphertext_t**)malloc(sizeof(paillier_ciphertext_t*)*(dim*2));
 	int * iresult = (int *)malloc(sizeof(int)*dim*2);
 	int i = 0;
@@ -314,7 +352,9 @@ paillier_ciphertext_t** protocol::unDP_GSRO(paillier_ciphertext_t* A, paillier_c
 	}
 
 	makeGate();
+
 	for(i=0; i < dim*2; i++){
+		cout << A_array_result[i] << "\t" << R1[i] << "\t" << B_array_result[i] << "\t" << R2[i] << "\n";
 		iresult[i] = G_CMP(B_array_result[i],R2[i],A_array_result[i],R1[i]);
 		result[i] = paillier_create_enc(iresult[i]);
 	}
@@ -329,15 +369,12 @@ paillier_ciphertext_t** protocol::unDP_GSRO(paillier_ciphertext_t* A, paillier_c
 }	
 
 
-paillier_ciphertext_t*** protocol::GSRO_sNodeRetrievalforRange(paillier_ciphertext_t*** data, paillier_ciphertext_t** ciper_qLL, paillier_ciphertext_t** ciper_qRR, boundary* node, int NumData, int NumNode, int* cnt, int* NumNodeGroup, int type)
+paillier_ciphertext_t*** protocol::GSRO_sNodeRetrievalforRange(paillier_ciphertext_t*** data, paillier_ciphertext_t** cipher_qLL, paillier_ciphertext_t** cipher_qRR, boundary* node, int NumData, int NumNode, int* cnt, int* NumNodeGroup, int type)
 {
 	printf("\n===== Now GSRO_sNodeRetrievalforRange starts =====\n");
 	printf("NumNode : %d\n", NumNode);
 	int i=0, j=0, m=0;
 
-	time_t startTime = 0;
-	time_t endTime = 0;
-	float gap = 0.0;
 
 	int** node_group;
 
@@ -347,20 +384,15 @@ paillier_ciphertext_t*** protocol::GSRO_sNodeRetrievalforRange(paillier_cipherte
 		mpz_init(alpha[i]->c);
 	}
 
+	startTime = std::chrono::system_clock::now(); // startTime check
 	// 각 노드 GSRO 호출
 	for(i=0; i<NumNode; i++) {	
-		startTime = clock();
-		alpha[i] = DP_GSRO(ciper_qLL, ciper_qRR, node[i].LL, node[i].RR);		
-		endTime = clock();
-		node_SRO_time += (float)(endTime-startTime)/(CLOCKS_PER_SEC);
-		if(strcmp( paillier_plaintext_to_str( paillier_dec(0, pub, prv, alpha[i])), paillier_plaintext_to_str(plain_one)) == 0) 
-			printf("%dth node overlaps the query region.\n", i);
+		alpha[i] = GSRO(cipher_qLL, cipher_qRR, node[i].LL, node[i].RR);		
 	}
-
-	printf("node SBD time: %f\n", node_Processing_time);
-	printf("SRO time : %f\n", node_SRO_time);
-
-	startTime = clock();
+	endTime = std::chrono::system_clock::now(); // endTime check
+	duration_sec = endTime - startTime;  // calculate duration 
+	//time_variable.insert(make_pair("sRange_GI_GSRO(Data, QUERY)", duration_sec.count() ));
+	time_variable["sRange_GI_GSRO(Data, QUERY)"] = time_variable.find("sRange_GI_GSRO(Data, QUERY)")->second + duration_sec.count();
 	
 	node_group = sRange_sub(alpha, NumNode, NumNodeGroup);
 
@@ -384,6 +416,9 @@ paillier_ciphertext_t*** protocol::GSRO_sNodeRetrievalforRange(paillier_cipherte
 			mpz_init(cand[i][j]->c);
 		}
 	}
+
+
+	startTime = std::chrono::system_clock::now(); // startTime check
 
 
 	// 노드 그룹 별로 데이터 추출을 통해, 질의 영역을 포함하는 노드 내 데이터 추출
@@ -414,9 +449,9 @@ paillier_ciphertext_t*** protocol::GSRO_sNodeRetrievalforRange(paillier_cipherte
 				else {		// 해당 노드에는 데이터가 없지만, 동일 노드 그룹 내 다른 노드에는 아직 처리할 데이터가 있는 경우를 핸들링
 					for(z=0; z<dim; z++) {
 						if(m == 1) {
-							cand[*cnt][z] = SM_p1(ciper_MAX, alpha[nodeId]);  // 해당 데이터 ID의 실제 데이터에 접근
+							cand[*cnt][z] = SM_p1(cipher_MAX, alpha[nodeId]);  // 해당 데이터 ID의 실제 데이터에 접근
 						} else {
-							tmp[z] = SM_p1(ciper_MAX, alpha[nodeId]);  // 해당 데이터 ID의 실제 데이터에 접근
+							tmp[z] = SM_p1(cipher_MAX, alpha[nodeId]);  // 해당 데이터 ID의 실제 데이터에 접근
 							paillier_mul(pub, cand[*cnt][z], cand[*cnt][z], tmp[z]);
 						}
 					}
@@ -426,11 +461,10 @@ paillier_ciphertext_t*** protocol::GSRO_sNodeRetrievalforRange(paillier_cipherte
 		}
 	}
 
-	endTime = clock();
-	data_extract_first_time = (float)(endTime-startTime)/(CLOCKS_PER_SEC);
-	printf("Node Retrieval time : %f\n", data_extract_first_time);
-
-	
+	endTime = std::chrono::system_clock::now(); // endTime check
+	duration_sec = endTime - startTime;  // calculate duration 
+	//time_variable.insert(make_pair("sRange_GI_Extract(Data)", duration_sec.count() ));
+	time_variable["sRange_GI_Extract(Data)"] = time_variable.find("sRange_GI_Extract(Data)")->second + duration_sec.count();
 
 	return cand;
 }
@@ -442,42 +476,36 @@ int** protocol::sRange_G(paillier_ciphertext_t*** data, boundary q, boundary* no
 	int i=0, j=0, m=0;
 	int rand = 5;
 
-	time_t startTime = 0;
-	time_t endTime = 0;
-	float gap = 0.0;
-
 	int NumNodeGroup = 0;
 
-	paillier_ciphertext_t* ciper_rand = paillier_create_enc(rand);
-	paillier_print("rand : ",ciper_rand);
+	paillier_ciphertext_t* cipher_rand = paillier_create_enc(rand);
+	paillier_print("rand : ",cipher_rand);
 
 
 	int cnt = 0;	 // 질의 영역과 겹치는 노드 내에 존재하는 총 데이터의 수
 
 	paillier_ciphertext_t*** cand ;
 
+
+
 	cand = GSRO_sNodeRetrievalforRange(data, q.LL, q.RR, node, NumData, NumNode, &cnt, &NumNodeGroup, 1);
-
-	
-
 	totalNumOfRetrievedNodes += NumNodeGroup;
 
 	paillier_ciphertext_t** alpha = (paillier_ciphertext_t**)malloc(sizeof(paillier_ciphertext_t*)*cnt);
 	
 	// cand 비트 변환 수행 및 SPE호출
-	for(i=0; i<cnt; i++) {
-		startTime = clock();
-		alpha[i] = DP_GSRO(cand[i], cand[i], q.LL, q.RR);
-		//alpha[i]=SPE(cand_bit,ciper_nodeLL_bit, ciper_nodeRR_bit);		
-		endTime = clock();
-		data_SPE_time += (float)(endTime-startTime)/(CLOCKS_PER_SEC);
-		//printf("data SPE time : %f\n", (float)(endTime-startTime)/(CLOCKS_PER_SEC));
-	
-		for(j=0; j<dim; j++){
-			paillier_mul(pubkey,cand[i][j],cand[i][j],ciper_rand);
-		}
-	}
 
+	startTime = std::chrono::system_clock::now(); // startTime check
+	for(i=0; i<cnt; i++) {
+		alpha[i] = GSRO(cand[i], cand[i], q.LL, q.RR);	
+		for(j=0; j<dim; j++){
+			paillier_mul(pubkey,cand[i][j],cand[i][j],cipher_rand);
+		}
+	}	
+	endTime = std::chrono::system_clock::now(); // endTime check
+	duration_sec = endTime - startTime;  // calculate duration 
+	//time_variable.insert(make_pair("sRange_GI_GSRO(filtered_Data, Query)", duration_sec.count() ));
+	time_variable["sRange_GI_GSRO(filtered_Data, Query)"] = time_variable.find("sRange_GI_GSRO(filtered_Data, Query)")->second + duration_sec.count();
 	
 
 	paillier_ciphertext_t*** result;

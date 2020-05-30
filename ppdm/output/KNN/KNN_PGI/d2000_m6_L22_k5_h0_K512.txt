@@ -1,0 +1,6 @@
+time : 2020-05-31-03-03-06
+query : KNN_PGI TREE_LEVEL : 7 THREAD : 4 DATA : 2000 DIMENSION : 6 BITS : 22 k : 5 KEY : 512  QUERY : 184 23 37 177 33 7 
+total time : 20
+# retrieved node : 7
+
+

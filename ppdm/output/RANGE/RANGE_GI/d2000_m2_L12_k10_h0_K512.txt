@@ -242,3 +242,86 @@ data_SPE(range) : 1  (9%)
 1 = 2	1 = 2	
 
 
+query : ./PPDM  0  2  7  0  2000  2  12  10  512  0  0  2  2  
+total time : 8
+sRange_GI_GSRO(Data, QUERY) 
+1.411379 (18.262673 %) 
+sRange_GI_Extract(Data) 
+5.571592 (72.094158 %) 
+sRange_GI_GSRO(filtered_Data, Query) 
+0.707828 (9.159005 %) 
+# retrieved node : 1
+Result(0) :	0	0	
+Result(1) :	0	0	
+Result(2) :	2	0	
+Result(3) :	2	0	
+Result(4) :	2	0	
+Result(5) :	2	0	
+Result(6) :	2	0	
+Result(7) :	0	0	
+Result(8) :	1	0	
+Result(9) :	0	0	
+Result(10) :	0	0	
+Result(11) :	2	1	
+Result(12) :	1	1	
+Result(13) :	2	1	
+Result(14) :	2	1	
+Result(15) :	0	1	
+Result(16) :	0	1	
+Result(17) :	1	1	
+Result(18) :	2	2	
+Result(19) :	2	2	
+Result(20) :	0	2	
+Result(21) :	1	2	
+Result(22) :	1	2	
+Result(23) :	1	2	
+
+
+query : ./PPDM  0  2  7  0  2000  2  12  10  512  0  0  2  2  
+total time : 8
+sRange_GI_GSRO(Data, QUERY) 
+1.407794 (18.164870 %) 
+sRange_GI_Extract(Data) 
+5.552167 (71.640024 %) 
+sRange_GI_GSRO(filtered_Data, Query) 
+0.752861 (9.714226 %) 
+# retrieved node : 1
+Result(0) :	0	0	
+Result(1) :	0	0	
+Result(2) :	2	0	
+Result(3) :	2	0	
+Result(4) :	2	0	
+Result(5) :	2	0	
+Result(6) :	2	0	
+Result(7) :	0	0	
+Result(8) :	1	0	
+Result(9) :	0	0	
+Result(10) :	0	0	
+Result(11) :	2	1	
+Result(12) :	1	1	
+Result(13) :	2	1	
+Result(14) :	2	1	
+Result(15) :	0	1	
+Result(16) :	0	1	
+Result(17) :	1	1	
+Result(18) :	2	2	
+Result(19) :	2	2	
+Result(20) :	0	2	
+Result(21) :	1	2	
+Result(22) :	1	2	
+Result(23) :	1	2	
+
+
+time : 2020-05-30-19-56-09
+query : RANGE_GI TREE_LEVEL : 7 THREAD : 0 DATA : 2000 DIMENSION : 2 BITS : 12 k : 10 KEY : 512  QUERY : 0 0 2 2 
+total time : 8
+sRange_GI_GSRO(Data, QUERY) 					 1.443176 (18.875700 %) 
+sRange_GI_Extract(Data) 					 5.552028 (72.616491 %) 
+sRange_GI_GSRO(filtered_Data, Query) 					 0.623228 (8.151364 %) 
+# retrieved node : 1
+Result(0) :	1	1	
+Result(1) :	0	1	
+Result(2) :	0	1	
+Result(3) :	1	1	
+
+

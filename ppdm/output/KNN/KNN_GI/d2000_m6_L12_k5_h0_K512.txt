@@ -31,3 +31,23 @@ data_SPE(range) : 0  (0%)
 # retrieved node : 64
 
 
+time : 2020-05-30-00-02-53
+query : KNN_GI TREE_LEVEL : 7 THREAD : 4 DATA : 2000 DIMENSION : 6 BITS : 12 k : 5 KEY : 512  QUERY : 10 10 10 10 10 10 
+total time : 50
+Subtract 					 0.516199 (1.042296 %) 
+ExtractkNN 					 3.761800 (7.595739 %) 
+SRO 					 4.036185 (8.149770 %) 
+CheckExpansion 					 6.096384 (12.309675 %) 
+Filter 					 16.730032 (33.780888 %) 
+Expand 					 22.821534 (46.080707 %) 
+SSED 					 0.626882 (1.265786 %) 
+SMSn 					 0.421080 (0.850235 %) 
+# retrieved node : 2
+
+
+time : 2020-05-31-02-14-17
+query : KNN_GI TREE_LEVEL : 7 THREAD : 0 DATA : 2000 DIMENSION : 6 BITS : 12 k : 5 KEY : 512  QUERY : 10 10 10 10 10 10 
+total time : 95
+# retrieved node : 19
+
+

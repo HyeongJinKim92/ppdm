@@ -20,3 +20,17 @@ data_SPE(range) : 0  (0%)
 # retrieved node : 64
 
 
+time : 2020-05-29-23-05-35
+query : KNN_PGI TREE_LEVEL : 7 THREAD : 4 DATA : 2000 DIMENSION : 6 BITS : 12 k : 5 KEY : 512  QUERY : 10 10 10 10 10 10 
+total time : 71
+PGSRO 					 1.214557 (1.709579 %) 
+CheckExpand 					 1.602873 (2.256163 %) 
+Filter 					 4.446516 (6.258799 %) 
+Expand 					 4.443028 (6.253890 %) 
+SSED 					 5.268445 (7.415726 %) 
+SMINn 					 9.525889 (13.408393 %) 
+Subtract 					 3.772160 (5.309594 %) 
+ExtractkNN 					 29.910898 (42.101799 %) 
+# retrieved node : 64
+
+

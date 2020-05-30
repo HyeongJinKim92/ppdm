@@ -2,21 +2,28 @@
 #include <stdio.h>
 #include <string.h>
 #include <gmp.h>
-#include<iostream>
+#include <iostream>
 #include "protocol.h"
 
 using namespace std;
 
 
-paillier_ciphertext_t*** protocol::sNodeRetrievalforRange(paillier_ciphertext_t*** data, paillier_ciphertext_t*** ciper_qLL_bit, paillier_ciphertext_t*** ciper_qRR_bit, boundary* node, int NumData, int NumNode, int* cnt, int* NumNodeGroup, int type)
+paillier_ciphertext_t*** protocol::sNodeRetrievalforRange(paillier_ciphertext_t*** data, paillier_ciphertext_t*** cipher_qLL_bit, paillier_ciphertext_t*** cipher_qRR_bit, boundary* node, int NumData, int NumNode, int* cnt, int* NumNodeGroup, int type)
 {
 	printf("\n===== Now sNodeRetrievalforRange starts =====\n");
 	int i=0, j=0, m=0;
 
+	std::chrono::system_clock::time_point startTime;
+	std::chrono::system_clock::time_point endTime;
+	std::chrono::duration<float> duration_sec;		
+
+
+
+
 	int** node_group;
 
-	paillier_ciphertext_t*** ciper_nodeLL_bit = (paillier_ciphertext_t***)malloc(sizeof(paillier_ciphertext_t**)*dim);
-	paillier_ciphertext_t*** ciper_nodeRR_bit = (paillier_ciphertext_t***)malloc(sizeof(paillier_ciphertext_t**)*dim);
+	paillier_ciphertext_t*** cipher_nodeLL_bit = (paillier_ciphertext_t***)malloc(sizeof(paillier_ciphertext_t**)*dim);
+	paillier_ciphertext_t*** cipher_nodeRR_bit = (paillier_ciphertext_t***)malloc(sizeof(paillier_ciphertext_t**)*dim);
 
 	paillier_ciphertext_t** alpha = (paillier_ciphertext_t**) malloc(sizeof(paillier_ciphertext_t*)*NumNode);
 	for( i = 0 ; i < NumNode ; i++ ){
@@ -25,31 +32,27 @@ paillier_ciphertext_t*** protocol::sNodeRetrievalforRange(paillier_ciphertext_t*
 	}
 
 	float progress = 0.1;
+	
 
 	printf("\n=== Node SBD & SRO start ===\n");
-
+	startTime = std::chrono::system_clock::now();
 	// 각 노드 비트 변환 수행 및 SRO 호출
 	for( i = 0 ; i < NumNode ; i++ ) {	
-		startTime = std::chrono::system_clock::now();
 		for( j = 0 ; j < dim ; j++ ) {
-			ciper_nodeLL_bit[j] = SBD_for_SRO(node[i].LL[j], 0);				// node LL bound 변환
-			ciper_nodeRR_bit[j] = SBD_for_SRO(node[i].RR[j], 1);	 			// node RR bound 변환
+			cipher_nodeLL_bit[j] = SBD_for_SRO(node[i].LL[j], 0);				// node LL bound 변환
+			cipher_nodeRR_bit[j] = SBD_for_SRO(node[i].RR[j], 1);	 			// node RR bound 변환
 		}
-		endTime = std::chrono::system_clock::now();
-		duration_sec = endTime - startTime;
-		node_Processing_time += duration_sec.count();
-
-		startTime = std::chrono::system_clock::now();
 		if(type == 0) {
-			alpha[i] = SRO(ciper_qLL_bit, ciper_qRR_bit, ciper_nodeLL_bit, ciper_nodeRR_bit);		
+			alpha[i] = SRO(cipher_qLL_bit, cipher_qRR_bit, cipher_nodeLL_bit, cipher_nodeRR_bit);		
 		}
 		else if(type == 1) {
-			alpha[i] = faster_SRO(ciper_qLL_bit, ciper_qRR_bit, ciper_nodeLL_bit, ciper_nodeRR_bit);		
+			alpha[i] = faster_SRO(cipher_qLL_bit, cipher_qRR_bit, cipher_nodeLL_bit, cipher_nodeRR_bit);		
 		}
-		endTime = std::chrono::system_clock::now();
-		duration_sec = endTime - startTime;
-		node_SRO_time += duration_sec.count();
 	}
+	endTime = std::chrono::system_clock::now();
+	duration_sec = endTime - startTime;
+	//time_variable.insert(make_pair("sRange_I_SBD_for_SRO(node)", duration_sec.count()));
+	time_variable["sRange_I_SBD_for_SRO(node)"] = time_variable.find("sRange_I_SBD_for_SRO(node)")->second + duration_sec.count();
 
 	node_group = sRange_sub(alpha, NumNode, NumNodeGroup);
 	
@@ -114,9 +117,9 @@ paillier_ciphertext_t*** protocol::sNodeRetrievalforRange(paillier_ciphertext_t*
 				else {		// 해당 노드에는 데이터가 없지만, 동일 노드 그룹 내 다른 노드에는 아직 처리할 데이터가 있는 경우를 핸들링
 					for(z=0; z<dim; z++) {
 						if(m == 1) {
-							cand[*cnt][z] = SM_p1(ciper_MAX, alpha[nodeId]);  // 해당 데이터 ID의 실제 데이터에 접근
+							cand[*cnt][z] = SM_p1(cipher_MAX, alpha[nodeId]);  // 해당 데이터 ID의 실제 데이터에 접근
 						} else {
-							tmp[z] = SM_p1(ciper_MAX, alpha[nodeId]);  // 해당 데이터 ID의 실제 데이터에 접근
+							tmp[z] = SM_p1(cipher_MAX, alpha[nodeId]);  // 해당 데이터 ID의 실제 데이터에 접근
 							paillier_mul(pub, cand[*cnt][z], cand[*cnt][z], tmp[z]);
 						}
 					}
@@ -128,7 +131,8 @@ paillier_ciphertext_t*** protocol::sNodeRetrievalforRange(paillier_ciphertext_t*
 	endTime = std::chrono::system_clock::now();
 	duration_sec = endTime - startTime;
 	data_extract_first_time += duration_sec.count();
-
+	//time_variable.insert(make_pair("sRange_I_extract_data", data_extract_first_time));
+	time_variable["sRange_I_extract_data"] = time_variable.find("sRange_I_extract_data")->second + duration_sec.count();
 	return cand;
 }
 
@@ -142,27 +146,27 @@ int** protocol::sRange_I(paillier_ciphertext_t*** data, boundary q, boundary* no
 	int rand = 5;
 	int NumNodeGroup = 0;
 
-	paillier_ciphertext_t*** ciper_qLL_bit = (paillier_ciphertext_t***)malloc(sizeof(paillier_ciphertext_t**)*dim);
-	paillier_ciphertext_t*** ciper_qRR_bit = (paillier_ciphertext_t***)malloc(sizeof(paillier_ciphertext_t**)*dim);
+	paillier_ciphertext_t*** cipher_qLL_bit = (paillier_ciphertext_t***)malloc(sizeof(paillier_ciphertext_t**)*dim);
+	paillier_ciphertext_t*** cipher_qRR_bit = (paillier_ciphertext_t***)malloc(sizeof(paillier_ciphertext_t**)*dim);
 
-	paillier_ciphertext_t* ciper_rand = paillier_create_enc(rand);
+	paillier_ciphertext_t* cipher_rand = paillier_create_enc(rand);
 	
 	startTime = std::chrono::system_clock::now(); // check startTime
 	// query 비트 변환 수행
 	for(i=0; i<dim; i++) {
-		ciper_qLL_bit[i] = SBD_for_SRO(q.LL[i], 0);			// query LL bound 변환
-		ciper_qRR_bit[i] = SBD_for_SRO(q.RR[i], 1);		// query RR bound 변환
+		cipher_qLL_bit[i] = SBD_for_SRO(q.LL[i], 0);			// query LL bound 변환
+		cipher_qRR_bit[i] = SBD_for_SRO(q.RR[i], 1);		// query RR bound 변환
 	}
 	endTime = std::chrono::system_clock::now(); // check endTime
 	duration_sec = endTime - startTime;
-	query_Processing_time += duration_sec.count();  // query_Processing_time
-
+	//time_variable.insert(make_pair("sRange_I_SBD_for_SRO(query)", duration_sec.count()));
+	time_variable["sRange_I_SBD_for_SRO(query)"] = time_variable.find("sRange_I_SBD_for_SRO(query)")->second + duration_sec.count();
 
 	int cnt = 0;	 // 질의 영역과 겹치는 노드 내에 존재하는 총 데이터의 수
 
 	paillier_ciphertext_t*** cand ;
 	
-	cand = sNodeRetrievalforRange(data, ciper_qLL_bit, ciper_qRR_bit, node, NumData, NumNode, &cnt, &NumNodeGroup, 0);
+	cand = sNodeRetrievalforRange(data, cipher_qLL_bit, cipher_qRR_bit, node, NumData, NumNode, &cnt, &NumNodeGroup, 0);
 	totalNumOfRetrievedNodes += NumNodeGroup;
 
 
@@ -171,22 +175,20 @@ int** protocol::sRange_I(paillier_ciphertext_t*** data, boundary q, boundary* no
 
 	paillier_ciphertext_t** alpha = (paillier_ciphertext_t**)malloc(sizeof(paillier_ciphertext_t*)*cnt);
 
+	startTime = std::chrono::system_clock::now();
 	for( i = 0 ; i < cnt ; i++ ) {
-		startTime = std::chrono::system_clock::now();
 		for(j=0; j<dim; j++) {
 			candLL_bit[j] = SBD_for_SRO(cand[i][j], 0);			// query cand 변환
 			candRR_bit[j] = SBD_for_SRO(cand[i][j], 1);		
 		}
-		endTime = std::chrono::system_clock::now();
-		duration_sec = endTime - startTime;
-		data_Processing_time += duration_sec.count(); //data Processing time
 		
-		startTime = std::chrono::system_clock::now();
-		alpha[i] = SRO(candLL_bit, candRR_bit, ciper_qLL_bit, ciper_qRR_bit);		
-		endTime = std::chrono::system_clock::now();
-		duration_sec = endTime - startTime;
-		node_SRO_time += duration_sec.count();  //node SRO time
+		alpha[i] = SRO(candLL_bit, candRR_bit, cipher_qLL_bit, cipher_qRR_bit);		
 	}
+	endTime = std::chrono::system_clock::now();
+	duration_sec = endTime - startTime;
+	//time_variable.insert(make_pair("sRange_I_SBD and SRO(filtered_data, query)", duration_sec.count()));
+	time_variable["sRange_I_SBD and SRO(filtered_data, query)"] = time_variable.find("sRange_I_SBD and SRO(filtered_data, query)")->second + duration_sec.count();
+
 
 
 	paillier_ciphertext_t*** result = (paillier_ciphertext_t***)malloc(sizeof(paillier_ciphertext_t**)*NumNodeGroup*FanOut); //할당방법 변경해야하고
@@ -204,7 +206,7 @@ int** protocol::sRange_I(paillier_ciphertext_t*** data, boundary q, boundary* no
 	// user(Bob)에게 결과 전송을 위해 random 값 삽입
 	for(i=0;i<(*result_num);i++){
 		for(j=0; j<dim; j++){
-			paillier_mul(pubkey,result[i][j],result[i][j],ciper_rand);
+			paillier_mul(pubkey,result[i][j],result[i][j],cipher_rand);
 			
 		}
 	}
@@ -290,8 +292,8 @@ int** protocol::sRange_B(paillier_ciphertext_t*** data, boundary q, boundary* no
 	int rand = 5;
 	int NumNodeGroup = 0;
 
-	paillier_ciphertext_t*** ciper_qLL_bit = (paillier_ciphertext_t***)malloc(sizeof(paillier_ciphertext_t**)*dim);
-	paillier_ciphertext_t*** ciper_qRR_bit = (paillier_ciphertext_t***)malloc(sizeof(paillier_ciphertext_t**)*dim);
+	paillier_ciphertext_t*** cipher_qLL_bit = (paillier_ciphertext_t***)malloc(sizeof(paillier_ciphertext_t**)*dim);
+	paillier_ciphertext_t*** cipher_qRR_bit = (paillier_ciphertext_t***)malloc(sizeof(paillier_ciphertext_t**)*dim);
 
 	paillier_ciphertext_t* cipher_rand = paillier_create_enc(rand);
 	
@@ -299,13 +301,13 @@ int** protocol::sRange_B(paillier_ciphertext_t*** data, boundary q, boundary* no
 	// query 비트 변환 수행
 	startTime = std::chrono::system_clock::now(); // startTime check
 	for( i = 0 ; i < dim ; i++ ) {
-		ciper_qLL_bit[i] = SBD_for_SRO(q.LL[i], 0);		// query LL bound 변환
-		ciper_qRR_bit[i] = SBD_for_SRO(q.RR[i], 1);		// query RR bound 변환
+		cipher_qLL_bit[i] = SBD_for_SRO(q.LL[i], 0);		// query LL bound 변환
+		cipher_qRR_bit[i] = SBD_for_SRO(q.RR[i], 1);		// query RR bound 변환
 	}
 	endTime = std::chrono::system_clock::now(); // endTime check
 	duration_sec = endTime - startTime;  // calculate duration 
-	query_Processing_time += duration_sec.count(); // summarize the SBD(query)
-	time_variable.insert(make_pair("sRange_B_SBD_for_SRO(QUERY)", query_Processing_time));
+	//time_variable.insert(make_pair("sRange_B_SBD_for_SRO(QUERY)", duration_sec.count() ));
+	time_variable["sRange_B_SBD_for_SRO(QUERY)"] = time_variable.find("sRange_B_SBD_for_SRO(QUERY)")->second + duration_sec.count();
 
 
 
@@ -316,25 +318,18 @@ int** protocol::sRange_B(paillier_ciphertext_t*** data, boundary q, boundary* no
 
 	cout << "\n=====================SBD DATA and SRO=====================\n" << endl;
 
+	startTime = std::chrono::system_clock::now(); // startTime check
 	for( i = 0 ; i < NumData ; i++ ) {
-		startTime = std::chrono::system_clock::now(); // startTime check
 		for( j = 0 ; j < dim ; j++ ) {
 			candLL_bit[j] = SBD_for_SRO(data[i][j], 0);			// query cand 변환
 			candRR_bit[j] = SBD_for_SRO(data[i][j], 1);		
 		}		
-		endTime = std::chrono::system_clock::now(); // endTime check
-		duration_sec = endTime - startTime;  // calculate duration 
-		data_Processing_time += duration_sec.count(); // summarize the SBD(data)
-
-		startTime = std::chrono::system_clock::now(); // startTime check
-		alpha[i] = SRO(candLL_bit, candRR_bit, ciper_qLL_bit, ciper_qRR_bit);
-		endTime = std::chrono::system_clock::now();  // endTime check
-		duration_sec = endTime - startTime;  // calculate duration 
-		node_SRO_time += duration_sec.count(); // summarize the SRO(data)
+		alpha[i] = SRO(candLL_bit, candRR_bit, cipher_qLL_bit, cipher_qRR_bit);
 	}
-	time_variable.insert(make_pair("sRange_B_SBD_for_SRO(Data)", data_Processing_time));
-	time_variable.insert(make_pair("sRange_B_SRO(DATA, QUERY)", node_SRO_time));
-
+	endTime = std::chrono::system_clock::now();  // endTime check
+	duration_sec = endTime - startTime;  // calculate duration 
+	//time_variable.insert(make_pair("sRange_B_SBD, SRO(DATA, QUERY)", duration_sec.count() ));
+	time_variable["sRange_B_SBD, SRO(DATA, QUERY)"] = time_variable.find("sRange_B_SBD, SRO(DATA, QUERY)")->second + duration_sec.count();
 	cout << "\n=======================EXTRACT RESULT=====================\n" << endl;
 
 	paillier_ciphertext_t*** result = (paillier_ciphertext_t***)malloc(sizeof(paillier_ciphertext_t**)*NumData); //할당방법 변경해야하고
@@ -398,14 +393,14 @@ paillier_ciphertext_t* protocol::faster_SRO(paillier_ciphertext_t*** qLL, pailli
 	
 	bool func = false;
 	paillier_plaintext_t* Rand_value=paillier_plaintext_from_ui(5);
-	paillier_ciphertext_t* ciper_Rand_value = paillier_enc(0, pubkey, Rand_value, paillier_get_rand_devurandom);	
+	paillier_ciphertext_t* cipher_Rand_value = paillier_enc(0, pubkey, Rand_value, paillier_get_rand_devurandom);	
 
-	paillier_ciphertext_t** ciper_W		 = (paillier_ciphertext_t**)malloc(sizeof(paillier_ciphertext_t*)*(size+1));
-	paillier_ciphertext_t** ciper_G	= (paillier_ciphertext_t**)malloc(sizeof(paillier_ciphertext_t*)*(size+1));
-	paillier_ciphertext_t** ciper_H		 = (paillier_ciphertext_t**)malloc(sizeof(paillier_ciphertext_t*)*(size+1));
-	paillier_ciphertext_t** ciper_L		 = (paillier_ciphertext_t**)malloc(sizeof(paillier_ciphertext_t*)*(size+1));
-	paillier_ciphertext_t** ciper_M		 = (paillier_ciphertext_t**)malloc(sizeof(paillier_ciphertext_t*)*(size+1));
-	paillier_ciphertext_t** ciper_PI	= (paillier_ciphertext_t**)malloc(sizeof(paillier_ciphertext_t*)*(size+1));
+	paillier_ciphertext_t** cipher_W		 = (paillier_ciphertext_t**)malloc(sizeof(paillier_ciphertext_t*)*(size+1));
+	paillier_ciphertext_t** cipher_G	= (paillier_ciphertext_t**)malloc(sizeof(paillier_ciphertext_t*)*(size+1));
+	paillier_ciphertext_t** cipher_H		 = (paillier_ciphertext_t**)malloc(sizeof(paillier_ciphertext_t*)*(size+1));
+	paillier_ciphertext_t** cipher_L		 = (paillier_ciphertext_t**)malloc(sizeof(paillier_ciphertext_t*)*(size+1));
+	paillier_ciphertext_t** cipher_M		 = (paillier_ciphertext_t**)malloc(sizeof(paillier_ciphertext_t*)*(size+1));
+	paillier_ciphertext_t** cipher_PI	= (paillier_ciphertext_t**)malloc(sizeof(paillier_ciphertext_t*)*(size+1));
 
 	paillier_plaintext_t* alpha = paillier_plaintext_from_ui(0);
 
@@ -416,21 +411,21 @@ paillier_ciphertext_t* protocol::faster_SRO(paillier_ciphertext_t*** qLL, pailli
 	paillier_ciphertext_t** temp2	= (paillier_ciphertext_t**)malloc(sizeof(paillier_ciphertext_t*)*(size+1));
 
 	for(i=0; i<size+1; i++){
-		ciper_W[i] = (paillier_ciphertext_t*) malloc(sizeof(paillier_ciphertext_t));
-		ciper_G[i]	 = (paillier_ciphertext_t*) malloc(sizeof(paillier_ciphertext_t));
-		ciper_H[i]	 = (paillier_ciphertext_t*) malloc(sizeof(paillier_ciphertext_t));
-		ciper_L[i]	= (paillier_ciphertext_t*) malloc(sizeof(paillier_ciphertext_t));
-		ciper_M[i]	 = (paillier_ciphertext_t*) malloc(sizeof(paillier_ciphertext_t));
-		ciper_PI[i] = (paillier_ciphertext_t*) malloc(sizeof(paillier_ciphertext_t));
+		cipher_W[i] = (paillier_ciphertext_t*) malloc(sizeof(paillier_ciphertext_t));
+		cipher_G[i]	 = (paillier_ciphertext_t*) malloc(sizeof(paillier_ciphertext_t));
+		cipher_H[i]	 = (paillier_ciphertext_t*) malloc(sizeof(paillier_ciphertext_t));
+		cipher_L[i]	= (paillier_ciphertext_t*) malloc(sizeof(paillier_ciphertext_t));
+		cipher_M[i]	 = (paillier_ciphertext_t*) malloc(sizeof(paillier_ciphertext_t));
+		cipher_PI[i] = (paillier_ciphertext_t*) malloc(sizeof(paillier_ciphertext_t));
 		temp[i]	= (paillier_ciphertext_t*) malloc(sizeof(paillier_ciphertext_t));
 		temp2[i] = (paillier_ciphertext_t*) malloc(sizeof(paillier_ciphertext_t));
 
-		mpz_init(ciper_W[i]->c);
-		mpz_init(ciper_G[i]->c);
-		mpz_init(ciper_H[i]->c);
-		mpz_init(ciper_L[i]->c);
-		mpz_init(ciper_M[i]->c);
-		mpz_init(ciper_PI[i]->c);
+		mpz_init(cipher_W[i]->c);
+		mpz_init(cipher_G[i]->c);
+		mpz_init(cipher_H[i]->c);
+		mpz_init(cipher_L[i]->c);
+		mpz_init(cipher_M[i]->c);
+		mpz_init(cipher_PI[i]->c);
 		mpz_init(temp[i]->c);
 		mpz_init(temp2[i]->c);
 	}
@@ -439,36 +434,36 @@ paillier_ciphertext_t* protocol::faster_SRO(paillier_ciphertext_t*** qLL, pailli
 		for(j=0; j<size+1; j++) {
 			// compute W
 			if(func){	// true :  F : u>v	
-				paillier_subtract(pubkey, ciper_W[j], qLL[i][j], SM_p1(qLL[i][j], nodeRR[i][j]));	
+				paillier_subtract(pubkey, cipher_W[j], qLL[i][j], SM_p1(qLL[i][j], nodeRR[i][j]));	
 			}else{
-				paillier_subtract(pubkey, ciper_W[j], nodeRR[i][j], SM_p1(qLL[i][j], nodeRR[i][j]));
+				paillier_subtract(pubkey, cipher_W[j], nodeRR[i][j], SM_p1(qLL[i][j], nodeRR[i][j]));
 			}
 
 			// compute G
-			ciper_G[j]=SBXOR(qLL[i][j],nodeRR[i][j]);
+			cipher_G[j]=SBXOR(qLL[i][j],nodeRR[i][j]);
 
 			// compute H
 			if(j==0){
-				paillier_exp(pubkey,ciper_H[j], ciper_zero, Rand_value);
-				paillier_mul(pubkey,ciper_H[j], ciper_H[j], ciper_G[j]);
+				paillier_exp(pubkey,cipher_H[j], cipher_zero, Rand_value);
+				paillier_mul(pubkey,cipher_H[j], cipher_H[j], cipher_G[j]);
 			}else{
-				paillier_exp(pubkey,temp[j],ciper_H[j-1],Rand_value);
-				paillier_mul(pubkey,ciper_H[j],temp[j],ciper_G[j]);
+				paillier_exp(pubkey,temp[j],cipher_H[j-1],Rand_value);
+				paillier_mul(pubkey,cipher_H[j],temp[j],cipher_G[j]);
 			}
 		}
 
 		for(j=0; j<size+1; j++){
 			// compute PI
-			paillier_mul(pubkey, ciper_PI[j], ciper_H[j], ciper_minus);	// PI
+			paillier_mul(pubkey, cipher_PI[j], cipher_H[j], cipher_minus);	// PI
 
 			// compute L with enhanced privacy (new IDEA)
 			mpz_init(temp[i]->c);
-			paillier_exp(pubkey,temp[j],ciper_PI[j],Rand_value);	// randomize PI
-			paillier_exp(pubkey,temp2[j],ciper_W[j],Rand_value); // randomize W
-			paillier_mul(pubkey,ciper_L[j],temp[j], temp2[j]);
+			paillier_exp(pubkey,temp[j],cipher_PI[j],Rand_value);	// randomize PI
+			paillier_exp(pubkey,temp2[j],cipher_W[j],Rand_value); // randomize W
+			paillier_mul(pubkey,cipher_L[j],temp[j], temp2[j]);
 		}
 
-		alpha = faster_SRO2(ciper_L, alpha);
+		alpha = faster_SRO2(cipher_L, alpha);
 
 		if(func){
 			if(strcmp( paillier_plaintext_to_str(alpha), paillier_plaintext_to_str(plain_zero)) == 0)
@@ -479,7 +474,7 @@ paillier_ciphertext_t* protocol::faster_SRO(paillier_ciphertext_t*** qLL, pailli
 		
 		//이 부분에 알파가 0이면 break!!
 		if(strcmp( paillier_plaintext_to_str(alpha), paillier_plaintext_to_str(plain_zero)) == 0)
-			return ciper_zero;	
+			return cipher_zero;	
 
 		// AND operation (using SM Protocol) 
 		if(i == 0)			
@@ -494,34 +489,34 @@ paillier_ciphertext_t* protocol::faster_SRO(paillier_ciphertext_t*** qLL, pailli
 		for(j=0; j<size+1; j++) {
 			// compute W
 			if(func){	// true :  F : u>v	
-				paillier_subtract(pubkey, ciper_W[j], nodeLL[i][j], SM_p1(nodeLL[i][j], qRR[i][j]));	
+				paillier_subtract(pubkey, cipher_W[j], nodeLL[i][j], SM_p1(nodeLL[i][j], qRR[i][j]));	
 			}else{
-				paillier_subtract(pubkey, ciper_W[j], qRR[i][j], SM_p1(nodeLL[i][j], qRR[i][j]));
+				paillier_subtract(pubkey, cipher_W[j], qRR[i][j], SM_p1(nodeLL[i][j], qRR[i][j]));
 			}
 
 			// compute G
-			ciper_G[j]=SBXOR(nodeLL[i][j], qRR[i][j]);
+			cipher_G[j]=SBXOR(nodeLL[i][j], qRR[i][j]);
 
 			// compute H
 			if(j==0){
-				paillier_exp(pubkey,ciper_H[j], ciper_zero, Rand_value);
-				paillier_mul(pubkey,ciper_H[j], ciper_H[j], ciper_G[j]);
+				paillier_exp(pubkey,cipher_H[j], cipher_zero, Rand_value);
+				paillier_mul(pubkey,cipher_H[j], cipher_H[j], cipher_G[j]);
 			}else{
-				paillier_exp(pubkey,temp[j],ciper_H[j-1],Rand_value);
-				paillier_mul(pubkey,ciper_H[j],temp[j],ciper_G[j]);
+				paillier_exp(pubkey,temp[j],cipher_H[j-1],Rand_value);
+				paillier_mul(pubkey,cipher_H[j],temp[j],cipher_G[j]);
 			}
 		}
 
 		for(j=0; j<size+1; j++){
 			// compute PI
-			paillier_mul(pubkey, ciper_PI[j], ciper_H[j], ciper_minus);	// PI
+			paillier_mul(pubkey, cipher_PI[j], cipher_H[j], cipher_minus);	// PI
 			mpz_init(temp[i]->c);
-			paillier_exp(pubkey,temp[j],ciper_PI[j],Rand_value);	// randomize PI
-			paillier_exp(pubkey,temp2[j],ciper_W[j],Rand_value); // randomize W
-			paillier_mul(pubkey,ciper_L[j],temp[j], temp2[j]);
+			paillier_exp(pubkey,temp[j],cipher_PI[j],Rand_value);	// randomize PI
+			paillier_exp(pubkey,temp2[j],cipher_W[j],Rand_value); // randomize W
+			paillier_mul(pubkey,cipher_L[j],temp[j], temp2[j]);
 		}
 
-		alpha = faster_SRO2(ciper_L, alpha);
+		alpha = faster_SRO2(cipher_L, alpha);
 		
 		if(func){
 			//alpha = SBN(alpha);
@@ -533,7 +528,7 @@ paillier_ciphertext_t* protocol::faster_SRO(paillier_ciphertext_t*** qLL, pailli
 		
 		//이 부분에 알파가 0이면 break!!
 		if(strcmp( paillier_plaintext_to_str(alpha), paillier_plaintext_to_str(plain_zero)) == 0)
-			return ciper_zero;		
+			return cipher_zero;		
 	
 		// AND operation (using SM Protocol) 
 		//final_alpha = SM_p1(final_alpha, alpha);
@@ -543,10 +538,10 @@ paillier_ciphertext_t* protocol::faster_SRO(paillier_ciphertext_t*** qLL, pailli
 
 	// free memory
 	paillier_freeplaintext(Rand_value);	 
-	paillier_freeciphertext(ciper_Rand_value);		paillier_freeciphertext(tmp);
+	paillier_freeciphertext(cipher_Rand_value);		paillier_freeciphertext(tmp);
 
 	for(i=0; i<size+1; i++){
-		paillier_freeciphertext(ciper_W[i]);	paillier_freeciphertext(ciper_H[i]);	paillier_freeciphertext(ciper_L[i]);	paillier_freeciphertext(ciper_M[i]);
+		paillier_freeciphertext(cipher_W[i]);	paillier_freeciphertext(cipher_H[i]);	paillier_freeciphertext(cipher_L[i]);	paillier_freeciphertext(cipher_M[i]);
 		paillier_freeciphertext(temp[i]); paillier_freeciphertext(temp2[i]);	
 	}
 
@@ -554,13 +549,13 @@ paillier_ciphertext_t* protocol::faster_SRO(paillier_ciphertext_t*** qLL, pailli
 }
 
 // added by mc. 0731   //평문으로 바꾸고
-paillier_plaintext_t*  protocol::faster_SRO2(paillier_ciphertext_t** ciper_L, paillier_plaintext_t* alpha)
+paillier_plaintext_t*  protocol::faster_SRO2(paillier_ciphertext_t** cipher_L, paillier_plaintext_t* alpha)
 {
 	int i;
 
 	// compute alpha
 	for(i=0; i<size+1; i++)	{
-		if (strcmp( paillier_plaintext_to_str( paillier_dec(0, pubkey, prvkey, ciper_L[i])), paillier_plaintext_to_str(plain_zero)) == 0) {
+		if (strcmp( paillier_plaintext_to_str( paillier_dec(0, pubkey, prvkey, cipher_L[i])), paillier_plaintext_to_str(plain_zero)) == 0) {
 			//alpha = paillier_enc(0, pubkey, plain_zero, paillier_get_rand_devurandom);
 			alpha = plain_zero;
 			//plain_print("alpha 0 : ", alpha);
@@ -592,36 +587,36 @@ int** protocol::faster_sRange(paillier_ciphertext_t*** data, boundary q, boundar
 
 	int NumNodeGroup = 0;
 
-	paillier_ciphertext_t*** ciper_qLL_bit = (paillier_ciphertext_t***)malloc(sizeof(paillier_ciphertext_t**)*dim);
-	paillier_ciphertext_t*** ciper_qRR_bit = (paillier_ciphertext_t***)malloc(sizeof(paillier_ciphertext_t**)*dim);
-	paillier_ciphertext_t*** ciper_nodeLL_bit = (paillier_ciphertext_t***)malloc(sizeof(paillier_ciphertext_t**)*dim);
-	paillier_ciphertext_t*** ciper_nodeRR_bit = (paillier_ciphertext_t***)malloc(sizeof(paillier_ciphertext_t**)*dim);
+	paillier_ciphertext_t*** cipher_qLL_bit = (paillier_ciphertext_t***)malloc(sizeof(paillier_ciphertext_t**)*dim);
+	paillier_ciphertext_t*** cipher_qRR_bit = (paillier_ciphertext_t***)malloc(sizeof(paillier_ciphertext_t**)*dim);
+	paillier_ciphertext_t*** cipher_nodeLL_bit = (paillier_ciphertext_t***)malloc(sizeof(paillier_ciphertext_t**)*dim);
+	paillier_ciphertext_t*** cipher_nodeRR_bit = (paillier_ciphertext_t***)malloc(sizeof(paillier_ciphertext_t**)*dim);
 
-	paillier_ciphertext_t* ciper_rand = paillier_create_enc(rand);
-	paillier_print("rand : ",ciper_rand);
+	paillier_ciphertext_t* cipher_rand = paillier_create_enc(rand);
+	paillier_print("rand : ",cipher_rand);
 
 	// query 비트 변환 수행
 	for(i=0; i<dim; i++) {
 		//gmp_printf("%Zd ", paillier_dec(0, pubkey, prvkey, q.LL[i]));
 
-		ciper_qLL_bit[i] = SBD_for_SRO(q.LL[i], 0);			// query LL bound 변환
+		cipher_qLL_bit[i] = SBD_for_SRO(q.LL[i], 0);			// query LL bound 변환
 		//gmp_printf("%Zd ", paillier_dec(0, pubkey, prvkey, q.RR[i]));
 
-		ciper_qRR_bit[i] = SBD_for_SRO(q.RR[i], 1);		// query RR bound 변환
+		cipher_qRR_bit[i] = SBD_for_SRO(q.RR[i], 1);		// query RR bound 변환
 	}
 
 	/*	
 	printf("Query LL bound\n");
 	for(i=0; i<dim; i++) {
 		for(j=0; j<size+1; j++) {
-			gmp_printf("%Zd", paillier_dec(0, pubkey, prvkey, ciper_qLL_bit[i][j]));
+			gmp_printf("%Zd", paillier_dec(0, pubkey, prvkey, cipher_qLL_bit[i][j]));
 		}
 		printf("\n");
 	}
 	printf("Query RR bound\n");
 	for(i=0; i<dim; i++) {	
 		for(j=0; j<size+1; j++) {
-			gmp_printf("%Zd", paillier_dec(0, pubkey, prvkey, ciper_qRR_bit[i][j]));
+			gmp_printf("%Zd", paillier_dec(0, pubkey, prvkey, cipher_qRR_bit[i][j]));
 		}
 		printf("\n");
 	}
@@ -631,7 +626,7 @@ int** protocol::faster_sRange(paillier_ciphertext_t*** data, boundary q, boundar
 
 	paillier_ciphertext_t*** cand ;
 
-	cand = sNodeRetrievalforRange(data, ciper_qLL_bit, ciper_qRR_bit, node, NumData, NumNode, &cnt, &NumNodeGroup, 1);
+	cand = sNodeRetrievalforRange(data, cipher_qLL_bit, cipher_qRR_bit, node, NumData, NumNode, &cnt, &NumNodeGroup, 1);
 	totalNumOfRetrievedNodes += NumNodeGroup;
 
 	paillier_ciphertext_t*** candLL_bit = (paillier_ciphertext_t***)malloc(sizeof(paillier_ciphertext_t**)*dim);
@@ -653,7 +648,7 @@ int** protocol::faster_sRange(paillier_ciphertext_t*** data, boundary q, boundar
 
 		startTime = clock();
 
-		alpha[i]=faster_SRO(candLL_bit,candRR_bit,ciper_qLL_bit, ciper_qRR_bit);
+		alpha[i]=faster_SRO(candLL_bit,candRR_bit,cipher_qLL_bit, cipher_qRR_bit);
 
 		endTime = clock();
 		data_SPE_time += (float)(endTime-startTime)/(CLOCKS_PER_SEC);
@@ -675,7 +670,7 @@ int** protocol::faster_sRange(paillier_ciphertext_t*** data, boundary q, boundar
 	// user(Bob)에게 결과 전송을 위해 random 값 삽입
 	for(i=0;i<(*result_num);i++){
 		for(j=0; j<dim; j++){
-			paillier_mul(pubkey,result[i][j],result[i][j],ciper_rand);
+			paillier_mul(pubkey,result[i][j],result[i][j],cipher_rand);
 		}
 	}
 	
@@ -691,14 +686,14 @@ paillier_ciphertext_t* protocol::SPE(paillier_ciphertext_t*** qBound, paillier_c
 	
 	bool func = false;
 	paillier_plaintext_t* Rand_value=paillier_plaintext_from_ui(5);
-	paillier_ciphertext_t* ciper_Rand_value = paillier_enc(0, pubkey, Rand_value, paillier_get_rand_devurandom);	
+	paillier_ciphertext_t* cipher_Rand_value = paillier_enc(0, pubkey, Rand_value, paillier_get_rand_devurandom);	
 
-	paillier_ciphertext_t** ciper_W		 = (paillier_ciphertext_t**)malloc(sizeof(paillier_ciphertext_t*)*(size+1));
-	paillier_ciphertext_t** ciper_G	= (paillier_ciphertext_t**)malloc(sizeof(paillier_ciphertext_t*)*(size+1));
-	paillier_ciphertext_t** ciper_H		 = (paillier_ciphertext_t**)malloc(sizeof(paillier_ciphertext_t*)*(size+1));
-	paillier_ciphertext_t** ciper_L		 = (paillier_ciphertext_t**)malloc(sizeof(paillier_ciphertext_t*)*(size+1));
-	paillier_ciphertext_t** ciper_M		 = (paillier_ciphertext_t**)malloc(sizeof(paillier_ciphertext_t*)*(size+1));
-	paillier_ciphertext_t** ciper_PI	= (paillier_ciphertext_t**)malloc(sizeof(paillier_ciphertext_t*)*(size+1));
+	paillier_ciphertext_t** cipher_W		 = (paillier_ciphertext_t**)malloc(sizeof(paillier_ciphertext_t*)*(size+1));
+	paillier_ciphertext_t** cipher_G	= (paillier_ciphertext_t**)malloc(sizeof(paillier_ciphertext_t*)*(size+1));
+	paillier_ciphertext_t** cipher_H		 = (paillier_ciphertext_t**)malloc(sizeof(paillier_ciphertext_t*)*(size+1));
+	paillier_ciphertext_t** cipher_L		 = (paillier_ciphertext_t**)malloc(sizeof(paillier_ciphertext_t*)*(size+1));
+	paillier_ciphertext_t** cipher_M		 = (paillier_ciphertext_t**)malloc(sizeof(paillier_ciphertext_t*)*(size+1));
+	paillier_ciphertext_t** cipher_PI	= (paillier_ciphertext_t**)malloc(sizeof(paillier_ciphertext_t*)*(size+1));
 
 	paillier_ciphertext_t* alpha = (paillier_ciphertext_t*) malloc(sizeof(paillier_ciphertext_t));
 	mpz_init(alpha->c);
@@ -710,21 +705,21 @@ paillier_ciphertext_t* protocol::SPE(paillier_ciphertext_t*** qBound, paillier_c
 	paillier_ciphertext_t** temp2	= (paillier_ciphertext_t**)malloc(sizeof(paillier_ciphertext_t*)*(size+1));
 
 	for(i=0; i<size+1; i++){
-		ciper_W[i] = (paillier_ciphertext_t*) malloc(sizeof(paillier_ciphertext_t));
-		ciper_G[i]	 = (paillier_ciphertext_t*) malloc(sizeof(paillier_ciphertext_t));
-		ciper_H[i]	 = (paillier_ciphertext_t*) malloc(sizeof(paillier_ciphertext_t));
-		ciper_L[i]	= (paillier_ciphertext_t*) malloc(sizeof(paillier_ciphertext_t));
-		ciper_M[i]	 = (paillier_ciphertext_t*) malloc(sizeof(paillier_ciphertext_t));
-		ciper_PI[i] = (paillier_ciphertext_t*) malloc(sizeof(paillier_ciphertext_t));
+		cipher_W[i] = (paillier_ciphertext_t*) malloc(sizeof(paillier_ciphertext_t));
+		cipher_G[i]	 = (paillier_ciphertext_t*) malloc(sizeof(paillier_ciphertext_t));
+		cipher_H[i]	 = (paillier_ciphertext_t*) malloc(sizeof(paillier_ciphertext_t));
+		cipher_L[i]	= (paillier_ciphertext_t*) malloc(sizeof(paillier_ciphertext_t));
+		cipher_M[i]	 = (paillier_ciphertext_t*) malloc(sizeof(paillier_ciphertext_t));
+		cipher_PI[i] = (paillier_ciphertext_t*) malloc(sizeof(paillier_ciphertext_t));
 		temp[i]	= (paillier_ciphertext_t*) malloc(sizeof(paillier_ciphertext_t));
 		temp2[i] = (paillier_ciphertext_t*) malloc(sizeof(paillier_ciphertext_t));
 
-		mpz_init(ciper_W[i]->c);
-		mpz_init(ciper_G[i]->c);
-		mpz_init(ciper_H[i]->c);
-		mpz_init(ciper_L[i]->c);
-		mpz_init(ciper_M[i]->c);
-		mpz_init(ciper_PI[i]->c);
+		mpz_init(cipher_W[i]->c);
+		mpz_init(cipher_G[i]->c);
+		mpz_init(cipher_H[i]->c);
+		mpz_init(cipher_L[i]->c);
+		mpz_init(cipher_M[i]->c);
+		mpz_init(cipher_PI[i]->c);
 		mpz_init(temp[i]->c);
 		mpz_init(temp2[i]->c);
 	}
@@ -738,37 +733,37 @@ paillier_ciphertext_t* protocol::SPE(paillier_ciphertext_t*** qBound, paillier_c
 		for(j=0; j<size+1; j++) {
 			// compute W
 			if(func){	// true :  F : u>v	
-				paillier_subtract(pubkey, ciper_W[j], qBound[i][j], SM_p1(qBound[i][j], nodeRR[i][j]));					
+				paillier_subtract(pubkey, cipher_W[j], qBound[i][j], SM_p1(qBound[i][j], nodeRR[i][j]));					
 			}else{
-				paillier_subtract(pubkey, ciper_W[j], nodeRR[i][j], SM_p1(qBound[i][j], nodeRR[i][j]));				
+				paillier_subtract(pubkey, cipher_W[j], nodeRR[i][j], SM_p1(qBound[i][j], nodeRR[i][j]));				
 			}
 
 			// compute G
-			ciper_G[j]=SBXOR(qBound[i][j],nodeRR[i][j]);
+			cipher_G[j]=SBXOR(qBound[i][j],nodeRR[i][j]);
 
 			// compute H
 			if(j==0){
-				paillier_exp(pubkey,ciper_H[j], ciper_zero, Rand_value);
-				paillier_mul(pubkey,ciper_H[j], ciper_H[j], ciper_G[j]);
+				paillier_exp(pubkey,cipher_H[j], cipher_zero, Rand_value);
+				paillier_mul(pubkey,cipher_H[j], cipher_H[j], cipher_G[j]);
 			}else{
-				paillier_exp(pubkey,temp[j],ciper_H[j-1],Rand_value);
-				paillier_mul(pubkey,ciper_H[j],temp[j],ciper_G[j]);
+				paillier_exp(pubkey,temp[j],cipher_H[j-1],Rand_value);
+				paillier_mul(pubkey,cipher_H[j],temp[j],cipher_G[j]);
 			}
 
 		}
 
 		for(j=0; j<size+1; j++){
 			// compute PI
-			paillier_mul(pubkey, ciper_PI[j], ciper_H[j], ciper_minus);	// PI
+			paillier_mul(pubkey, cipher_PI[j], cipher_H[j], cipher_minus);	// PI
 
 			// compute L with enhanced privacy (new IDEA)
 			mpz_init(temp[i]->c);
-			paillier_exp(pubkey,temp[j],ciper_PI[j],Rand_value);	// randomize PI
-			paillier_exp(pubkey,temp2[j],ciper_W[j],Rand_value); // randomize W
-			paillier_mul(pubkey,ciper_L[j],temp[j], temp2[j]);
+			paillier_exp(pubkey,temp[j],cipher_PI[j],Rand_value);	// randomize PI
+			paillier_exp(pubkey,temp2[j],cipher_W[j],Rand_value); // randomize W
+			paillier_mul(pubkey,cipher_L[j],temp[j], temp2[j]);
 		}
 
-		alpha = SRO2(ciper_L, alpha);
+		alpha = SRO2(cipher_L, alpha);
 
 		if(func){
 			alpha = SBN(alpha);
@@ -777,7 +772,7 @@ paillier_ciphertext_t* protocol::SPE(paillier_ciphertext_t*** qBound, paillier_c
 	
 		// AND operation (using SM Protocol) 
 		if(i == 0)
-			final_alpha = SM_p1(ciper_one, alpha);	// 최초에는 1과 AND 연산을 해야함. 한번이라도 0이 나오면 0으로 바뀌는 논리
+			final_alpha = SM_p1(cipher_one, alpha);	// 최초에는 1과 AND 연산을 해야함. 한번이라도 0이 나오면 0으로 바뀌는 논리
 		else
 			final_alpha = SM_p1(final_alpha, alpha);
 
@@ -792,36 +787,36 @@ paillier_ciphertext_t* protocol::SPE(paillier_ciphertext_t*** qBound, paillier_c
 		for(j=0; j<size+1; j++) {
 			// compute W
 			if(func){	// true :  F : u>v	
-				paillier_subtract(pubkey, ciper_W[j], nodeLL[i][j], SM_p1(nodeLL[i][j], qBound[i][j]));	
+				paillier_subtract(pubkey, cipher_W[j], nodeLL[i][j], SM_p1(nodeLL[i][j], qBound[i][j]));	
 			}else{
-				paillier_subtract(pubkey, ciper_W[j], qBound[i][j], SM_p1(nodeLL[i][j], qBound[i][j]));
+				paillier_subtract(pubkey, cipher_W[j], qBound[i][j], SM_p1(nodeLL[i][j], qBound[i][j]));
 			}
 
 			// compute G
-			ciper_G[j]=SBXOR(nodeLL[i][j], qBound[i][j]);
+			cipher_G[j]=SBXOR(nodeLL[i][j], qBound[i][j]);
 
 			// compute H
 			if(j==0){
-				paillier_exp(pubkey,ciper_H[j], ciper_zero, Rand_value);
-				paillier_mul(pubkey,ciper_H[j], ciper_H[j], ciper_G[j]);
+				paillier_exp(pubkey,cipher_H[j], cipher_zero, Rand_value);
+				paillier_mul(pubkey,cipher_H[j], cipher_H[j], cipher_G[j]);
 			}else{
-				paillier_exp(pubkey,temp[j],ciper_H[j-1],Rand_value);
-				paillier_mul(pubkey,ciper_H[j],temp[j],ciper_G[j]);
+				paillier_exp(pubkey,temp[j],cipher_H[j-1],Rand_value);
+				paillier_mul(pubkey,cipher_H[j],temp[j],cipher_G[j]);
 			}
 		}
 
 		for(j=0; j<size+1; j++){
 			// compute PI
-			paillier_mul(pubkey, ciper_PI[j], ciper_H[j], ciper_minus);	// PI
+			paillier_mul(pubkey, cipher_PI[j], cipher_H[j], cipher_minus);	// PI
 
 			// compute L with enhanced privacy (new IDEA)
 			mpz_init(temp[i]->c);
-			paillier_exp(pubkey,temp[j],ciper_PI[j],Rand_value);	// randomize PI
-			paillier_exp(pubkey,temp2[j],ciper_W[j],Rand_value); // randomize W
-			paillier_mul(pubkey,ciper_L[j],temp[j], temp2[j]);
+			paillier_exp(pubkey,temp[j],cipher_PI[j],Rand_value);	// randomize PI
+			paillier_exp(pubkey,temp2[j],cipher_W[j],Rand_value); // randomize W
+			paillier_mul(pubkey,cipher_L[j],temp[j], temp2[j]);
 		}
 
-		alpha = SRO2(ciper_L, alpha);
+		alpha = SRO2(cipher_L, alpha);
 
 		if(func){
 			alpha = SBN(alpha);
@@ -836,12 +831,12 @@ paillier_ciphertext_t* protocol::SPE(paillier_ciphertext_t*** qBound, paillier_c
 
 	// free memory
 	paillier_freeplaintext(Rand_value);	 
-	paillier_freeciphertext(ciper_Rand_value);		paillier_freeciphertext(tmp);
+	paillier_freeciphertext(cipher_Rand_value);		paillier_freeciphertext(tmp);
 
 	paillier_freeciphertext(alpha);
 	
 	for(i=0; i<size+1; i++){
-		paillier_freeciphertext(ciper_W[i]);	paillier_freeciphertext(ciper_H[i]);	paillier_freeciphertext(ciper_L[i]);	paillier_freeciphertext(ciper_M[i]);
+		paillier_freeciphertext(cipher_W[i]);	paillier_freeciphertext(cipher_H[i]);	paillier_freeciphertext(cipher_L[i]);	paillier_freeciphertext(cipher_M[i]);
 		paillier_freeciphertext(temp[i]); paillier_freeciphertext(temp2[i]);	
 	}
 

@@ -13,10 +13,6 @@ paillier_ciphertext_t*** protocol::sNodeRetrievalforTopk(paillier_ciphertext_t**
 	printf("\n===== Now sNodeRetrievalforTopk starts =====\n");
 	int i=0, j=0, m=0;
 
-	time_t startTime = 0;
-	time_t endTime = 0;
-	float gap = 0.0;
-
 	int** node_group;
 
 	node_group = sRange_sub(alpha, NumNode, NumNodeGroup);
@@ -58,7 +54,6 @@ paillier_ciphertext_t*** protocol::sNodeRetrievalforTopk(paillier_ciphertext_t**
 	for(i=0; i<*NumNodeGroup; i++) {
 		remained = node_group[i][0];	 // 해당 노드 그룹 내에서 아직 처리할 데이터가 남?팀獵?노드가 몇개인지 저장함
 		for(j=0; j<FanOut; j++) {
-			cout << j <<endl;
 			if(remained == 0)	// 해당 노드 그룹 내에서 더 이상 처리할 데이터가 없다면, 다음 노드로 넘어감
 				break;
 
@@ -88,9 +83,9 @@ paillier_ciphertext_t*** protocol::sNodeRetrievalforTopk(paillier_ciphertext_t**
 				else {		// 해당 노드에는 데이터가 없지만, 동일 노드 그룹 내 다른 노드에는 아??처리할 데이터가 있는 경우를 핸들링
 					for(z=0; z<dim; z++) {
 						if(m == 1) {
-							cand[*cnt][z] = SM_p1(ciper_zero, alpha[nodeId]);  // 해당 데이터 ID의 실제 데이터에 접근
+							cand[*cnt][z] = SM_p1(cipher_zero, alpha[nodeId]);  // 해당 데이터 ID의 실제 데이터에 접근
 						} else {
-							tmp[z] = SM_p1(ciper_zero, alpha[nodeId]);  // 해당 데이터 ID의 실제 데이터에 접근
+							tmp[z] = SM_p1(cipher_zero, alpha[nodeId]);  // 해당 데이터 ID의 실제 데이터에 접근
 							paillier_mul(pubkey, cand[*cnt][z], cand[*cnt][z], tmp[z]);
 						}
 					}
@@ -100,8 +95,6 @@ paillier_ciphertext_t*** protocol::sNodeRetrievalforTopk(paillier_ciphertext_t**
 			(*cnt)++;	// 노드 그룹의 노드들을 한바퀴 돌고나면, 데이터 하나가 완성됨
 		}
 	}
-
-
 	return cand;
 }
 
@@ -118,7 +111,7 @@ paillier_ciphertext_t*** protocol::GSRO_sNodeRetrievalforTopk(paillier_ciphertex
 	int** node_group;
 	
 	node_group = sRange_sub(alpha, NumNode, NumNodeGroup);
-	printf("111set_num : %d\n", *NumNodeGroup);
+	printf("set_num : %d\n", *NumNodeGroup);
 
 	if(*NumNodeGroup == 0)
 		return 0;
@@ -196,9 +189,9 @@ paillier_ciphertext_t*** protocol::GSRO_sNodeRetrievalforTopk(paillier_ciphertex
 				else {		// 해당 노드에는 데이터가 없지만, 동일 노드 그룹 내 다른 노드에는 아직 처리할 데이터가 있는 경우를 핸들링
 					for(z=0; z<dim; z++) {
 						if(m == 1) {
-							cand[*cnt][z] = SM_p1(ciper_zero, alpha[nodeId]);  // 해당 데이터 ID의 실제 데이터에 접근
+							cand[*cnt][z] = SM_p1(cipher_zero, alpha[nodeId]);  // 해당 데이터 ID의 실제 데이터에 접근
 						} else {
-							tmp[z] = SM_p1(ciper_zero, alpha[nodeId]);  // 해당 데이터 ID의 실제 데이터에 접근
+							tmp[z] = SM_p1(cipher_zero, alpha[nodeId]);  // 해당 데이터 ID의 실제 데이터에 접근
 							paillier_mul(pubkey, cand[*cnt][z], cand[*cnt][z], tmp[z]);
 						}
 					}
@@ -402,32 +395,14 @@ paillier_ciphertext_t** protocol::Smax_n(paillier_ciphertext_t*** ciper, int num
 			if (i == 1) {
 				e = 2 * j - 2;
 				q = 2 * j - 1;
-				/*
-				for(k=0; k<size; k++){
-					gmp_printf("%Zd", paillier_dec(0, pubkey, prvkey, copy_ciper[e][k]));
-				}
-				printf("\n");
-				for(k=0; k<size; k++){
-					gmp_printf("%Zd", paillier_dec(0, pubkey, prvkey, copy_ciper[q][k]));
-				}
-				printf("\n");
-				*/
+
 				copy_ciper[e] = Smax_basic1(copy_ciper[e],copy_ciper[q]);
 				copy_ciper[q] = sbd;
 				//printf("%d %d\n",e,q);
 			} else {
 				e = (int)pow(2, i) * (j - 1);
 				q = (int)pow(2, i) * j - (int)pow(2, i - 1);
-				/*
-				for(k=0; k<size; k++){
-					gmp_printf("%Zd", paillier_dec(0, pubkey, prvkey, copy_ciper[e][k]));
-				}
-				printf("\n");
-				for(k=0; k<size; k++){
-					gmp_printf("%Zd", paillier_dec(0, pubkey, prvkey, copy_ciper[q][k]));
-				}
-				printf("\n");
-				*/
+
 				copy_ciper[e] = Smax_basic1(copy_ciper[e],copy_ciper[q]);
 				copy_ciper[q] = sbd;
 				//printf("%d %d\n",e,q);
@@ -513,14 +488,14 @@ paillier_ciphertext_t** protocol::Smax_basic1(paillier_ciphertext_t** cipher1, p
 		ciper_G[i]=SBXOR(cipher1[i],cipher2[i]);
 
 		if(i==0){
-			paillier_exp(pubkey,ciper_H[i], ciper_zero, Rand_value);
+			paillier_exp(pubkey,ciper_H[i], cipher_zero, Rand_value);
 			paillier_mul(pubkey,ciper_H[i], ciper_H[i], ciper_G[i]);		
 		}else{
 			paillier_exp(pubkey,temp[i],ciper_H[i-1],Rand_value);
 			paillier_mul(pubkey,ciper_H[i],temp[i],ciper_G[i]);
 		}
 
-		paillier_mul(pubkey,ciper_O[i],ciper_H[i],ciper_minus);	// PI
+		paillier_mul(pubkey,ciper_O[i],ciper_H[i],cipher_minus);	// PI
 		paillier_exp(pubkey,ciper_O[i],ciper_O[i],Rand_value);
 		// paillier_exp(pubkey,temp3[i],ciper_W[i],Rand_value);   // our IDEA
 		// paillier_mul(pubkey,ciper_L[i],temp2[i], temp3[i]);	 // our IDEA
@@ -605,7 +580,7 @@ int** protocol::STopk_I(paillier_ciphertext_t*** data, paillier_ciphertext_t** q
 	int NumNodeGroup = 0;
 	Print = false;
 	bool verify_flag = false;
-	time_t startTime = 0; time_t endTime = 0; float gap = 0.0;
+
 	paillier_ciphertext_t * hint = paillier_create_enc_zero();
 	paillier_ciphertext_t*** cand;
 	paillier_ciphertext_t*** temp_cand ;
@@ -621,8 +596,8 @@ int** protocol::STopk_I(paillier_ciphertext_t*** data, paillier_ciphertext_t** q
 	paillier_ciphertext_t**** ciper_nodeLL_bit = (paillier_ciphertext_t****)malloc(sizeof(paillier_ciphertext_t***)*NumNode);
 	paillier_ciphertext_t**** ciper_nodeRR_bit = (paillier_ciphertext_t****)malloc(sizeof(paillier_ciphertext_t***)*NumNode);
 	paillier_plaintext_t * pt = paillier_plaintext_from_ui(0);
-	paillier_ciphertext_t* ciper_binary;
-	paillier_ciphertext_t* ciper_max	= paillier_create_enc_zero();
+	paillier_ciphertext_t* cipher_binary;
+	paillier_ciphertext_t* cipher_MAX	= paillier_create_enc_zero();
 	paillier_ciphertext_t* ciper_scores	= paillier_create_enc_zero();
 	paillier_ciphertext_t* ciper_rand	= paillier_create_enc(rand);
 	paillier_ciphertext_t* temp_score = paillier_create_enc_zero();
@@ -651,6 +626,10 @@ int** protocol::STopk_I(paillier_ciphertext_t*** data, paillier_ciphertext_t** q
 		psi[i] = (paillier_ciphertext_t*) malloc(sizeof(paillier_ciphertext_t));
 		mpz_init(alpha[i]->c);
 	}
+	
+
+
+	startTime = std::chrono::system_clock::now(); // startTime check
 	hint = q[dim];
 	if(Print){
 		gmp_printf("hint : %Zd  /  %Zd\n", paillier_dec(0, pubkey, prvkey, hint),paillier_dec(0, pubkey, prvkey, q[dim]));
@@ -676,25 +655,13 @@ int** protocol::STopk_I(paillier_ciphertext_t*** data, paillier_ciphertext_t** q
 	{
 		ciper_coeff_bit[i] = SBD_for_SRO(coeff[i], 0);			// query(coeff) 비트 변환 수행
 		psi[i] = SCMP(ciper_hint_bit, ciper_coeff_bit[i]);		// 프사이 계산 (1이면 계수가 양수인 항, 0이면 계수가 음수인 항)
-		// debugging
-		if(Print)
-		{
-			printf("coeff (SBD) : ");
-			for(j=0; j<size+1; j++) 
-			{
-				gmp_printf("%Zd", paillier_dec(0, pubkey, prvkey, ciper_coeff_bit[i][j]));
-			}
-			printf("\n");
-			gmp_printf("psi : %Zd ", paillier_dec(0, pubkey, prvkey, psi[i]));
-			if ( strcmp( paillier_plaintext_to_str( paillier_dec(0, pubkey, prvkey, psi[i]) ), paillier_plaintext_to_str(plain_one)) == 0 )
-			{
-				cout << " Q["<< i <<"] > 0 " <<endl; 
-			}else{
-				cout << " Q["<< i <<"] < 0 " <<endl; 
-			}
-		}
 	}
-	startTime = clock();
+	endTime = std::chrono::system_clock::now(); // endTime check
+	duration_sec = endTime - startTime;  // calculate duration 
+	time_variable["sTopk_I_preprocessing_query"] = time_variable.find("sTopk_I_preprocessing_query")->second + duration_sec.count();
+
+
+	startTime = std::chrono::system_clock::now(); // startTime check
 	// 각 노드 비트 변환 수행
 	cout << "\n\nnode.LL, node.RR SBD Start" <<endl;
 	for(i=0; i<NumNode; i++) {	
@@ -728,10 +695,12 @@ int** protocol::STopk_I(paillier_ciphertext_t*** data, paillier_ciphertext_t** q
 			}
 		}
 	}
-	endTime = clock();
-	node_Processing_time += (float)(endTime-startTime)/(CLOCKS_PER_SEC);
-	printf("node SBD time: %f\n", node_Processing_time);
-	
+	endTime = std::chrono::system_clock::now(); // endTime check
+	duration_sec = endTime - startTime;  // calculate duration 
+	time_variable["sTopk_I_SBD_node"] = time_variable.find("sTopk_I_SBD_node")->second + duration_sec.count();
+
+
+	startTime = std::chrono::system_clock::now(); // startTime check	
 	for(i=0; i<dim; i++) {	
 		temp_q[i] = SM_p1(max_val[i], psi[i]);	
 	}
@@ -739,28 +708,13 @@ int** protocol::STopk_I(paillier_ciphertext_t*** data, paillier_ciphertext_t** q
 		ciper_qLL_bit[i] = SBD_for_SRO(temp_q[i], 0);		// query LL bound 변환
 		ciper_qRR_bit[i] = SBD_for_SRO(temp_q[i], 1);		// query RR bound 변환
 	}
-	// debugging
-	if(Print)
-	{
-		printf("===query for node searching===\n");
-		cout << "Max_val : ";
-		for(i=0; i<dim; i++) {
-			gmp_printf("%Zd\t\t", paillier_dec(0, pubkey, prvkey, max_val[i]));
-		}cout<<endl;
-		for(i=0; i<dim; i++) {
-			gmp_printf("%Zd\t\t", paillier_dec(0, pubkey, prvkey, temp_q[i]));
-		}
-		cout<<endl;
-		for(i=0; i<dim; i++) {
-			for(m=0; m<size+1; m++) {
-				gmp_printf("%Zd", paillier_dec(0, pubkey, prvkey, ciper_qLL_bit[i][m]));
-			}
-			cout <<" ";
-		}
-		printf("\n");
-	}
-	cout << "FIND Range\tFIND Range\tFIND Range\tFIND Range\tFIND Range\t"<<endl;
-	startTime = clock();
+	endTime = std::chrono::system_clock::now(); // endTime check
+	duration_sec = endTime - startTime;  // calculate duration 
+	time_variable["sTopk_I_SBD_query"] = time_variable.find("sTopk_I_SBD_query")->second + duration_sec.count();
+
+
+	startTime = std::chrono::system_clock::now(); // startTime check	
+
 	for(i=0; i<NumNode; i++) {	
 		alpha[i] = SRO(ciper_qLL_bit, ciper_qRR_bit, ciper_nodeLL_bit[i], ciper_nodeRR_bit[i]);		
 		if(!verify_flag)	{	//  검증 단계에서는 수행하지 않음
@@ -769,49 +723,30 @@ int** protocol::STopk_I(paillier_ciphertext_t*** data, paillier_ciphertext_t** q
 				node[i].RR[j] = SM_p1(node[i].RR[j], SBN(alpha[i]));
 			}
 		}
-		if(1)
-		{
-			gmp_printf("alpha %d : %Zd  ", i+1 , paillier_dec(0, pubkey, prvkey, alpha[i]));
-			if(strcmp( paillier_plaintext_to_str( paillier_dec(0, pubkey, prvkey, alpha[i])), paillier_plaintext_to_str(plain_one)) == 0) {
-				cout << " OverLaps "<<endl;
-			}else{
-				cout << " Not overlaps "<<endl;
-			}
-		}
 	}
-	endTime = clock();
-	node_SRO_time += (float)(endTime-startTime)/(CLOCKS_PER_SEC);
-	printf("SRO time : %f\n", node_SRO_time);
-	printf("test  (%d line)\n", __LINE__);
+	endTime = std::chrono::system_clock::now(); // endTime check
+	duration_sec = endTime - startTime;  // calculate duration 
+	time_variable["sTopk_I_SRO_node_query"] = time_variable.find("sTopk_I_SRO_node_query")->second + duration_sec.count();
+
+
 	while(1) {
 		cnt = 0;
 		if(!verify_flag)	{	// 검증 단계가 아닐 시에는, cand에 저장
-			startTime = clock();
+			startTime = std::chrono::system_clock::now(); // startTime check	
 			cand	= sNodeRetrievalforTopk(data, ciper_qLL_bit, ciper_qRR_bit, node, alpha, NumData, NumNode, &cnt, &NumNodeGroup);
 			totalNumOfRetrievedNodes += NumNodeGroup;
-			endTime = clock();
-			data_extract_first_time += (float)(endTime-startTime)/(CLOCKS_PER_SEC);
-			printf("data_extract_first_time : %f\n", data_extract_first_time);
+			endTime = std::chrono::system_clock::now(); // endTime check
+			duration_sec = endTime - startTime;  // calculate duration 
+			time_variable["sTopk_I_extract_cand"] = time_variable.find("sTopk_I_extract_cand")->second + duration_sec.count();
 	
-			if(Print)
-			{
-				cout << "cnt : " <<cnt <<endl;
-				cout << "######cand######"<<endl;
-				for( i = 0 ; i < cnt ; i ++){
-					cout << i+1 <<" : ";
-					for( j = 0 ; j < dim ; j++){
-						gmp_printf(" %Zd ", paillier_dec(0, pubkey, prvkey, cand[i][j]));
-					}
-					cout<<endl;
-				}
-			}
 		}else {		// 검증 단계일 시에는, 이전 결과와 cand를 합침
-			startTime = clock();
+			startTime = std::chrono::system_clock::now(); // startTime check	
 			temp_cand = sNodeRetrievalforTopk(data, ciper_qLL_bit, ciper_qRR_bit, node, alpha, NumData, NumNode, &cnt, &NumNodeGroup);
 			totalNumOfRetrievedNodes += NumNodeGroup;
-			endTime = clock();
-			data_extract_second_time += (float)(endTime-startTime)/(CLOCKS_PER_SEC);
-			printf("data_extract_first_time : %f\n", data_extract_second_time);
+
+			endTime = std::chrono::system_clock::now(); // endTime check
+			duration_sec = endTime - startTime;  // calculate duration 
+			time_variable["sTopk_I_extract_expand_cand"] = time_variable.find("sTopk_I_extract_expand_cand")->second + duration_sec.count();
 	
 			printf("cnt : %d \n", cnt);
 			if(cnt == 0) {	// 검증을 위해 추가 탐색이 필요한 노드가 없는 경우를 처리함
@@ -838,17 +773,6 @@ int** protocol::STopk_I(paillier_ciphertext_t*** data, paillier_ciphertext_t** q
 				}
 			}
 			cnt = cnt + k;
-			if(Print)
-			{
-				cout << "######ciper_result + TEMP_cand######"<<endl;
-				for( i = 0 ; i < cnt ; i ++){
-					cout << i+1 <<" : ";
-					for( j = 0 ; j < dim ; j++){
-						gmp_printf(" %Zd ", paillier_dec(0, pubkey, prvkey, cand[i][j]));
-					}
-					cout<<endl;
-				}
-			}
 		}
 		paillier_ciphertext_t*** ciper_SBD_score	= (paillier_ciphertext_t***)malloc(sizeof(paillier_ciphertext_t**)*cnt);
 		paillier_ciphertext_t*** ciper_V2			= (paillier_ciphertext_t***)malloc(sizeof(paillier_ciphertext_t**)*cnt);
@@ -859,78 +783,48 @@ int** protocol::STopk_I(paillier_ciphertext_t*** data, paillier_ciphertext_t** q
 		for( i = 0 ; i < cnt ; i++ ){
 			ciper_score[i] 		= 	(paillier_ciphertext_t*) malloc(sizeof(paillier_ciphertext_t));
 			ciper_SBD_score[i]	= (paillier_ciphertext_t**)malloc(sizeof(paillier_ciphertext_t*)*size);
-			ciper_V[i]			= ciper_zero;
+			ciper_V[i]			= cipher_zero;
 			ciper_V2[i]			= (paillier_ciphertext_t**)malloc(sizeof(paillier_ciphertext_t*)*dim);
 		}
 		for( i = 0 ; i < size; i++ ){
-			ciper_Smax[i] = ciper_zero;
+			ciper_Smax[i] = cipher_zero;
 		}
-		/*
-		if(1)
-		{
-			cout << "ciper_Smax : "; 
-			for( j = 0 ; j < dim ; j++){
-				gmp_printf("%Zd", paillier_dec(0, pubkey, prvkey, ciper_Smax[j]));
-			}cout<<endl;
-		}
-		*/
-		startTime = clock();
+
+		startTime = std::chrono::system_clock::now(); // startTime check	
 		for( i = 0 ; i < cnt ; i++ ){
-			//ciper_score[i] = computeScore2(q, cand[i], coeff, hint);
 			ciper_score[i] = computeScore(q, cand[i]);
 			ciper_SBD_score[i] = SBD(ciper_score[i]);
-			/*
-			if(Print)
-			{
-				gmp_printf("score : %Zd\n",  paillier_dec(0, pubkey, prvkey, ciper_score[i]));	
-				for( j = 0 ; j < size ; j++ ){
-					gmp_printf("%Zd", paillier_dec(0, pubkey, prvkey, ciper_SBD_score[i][j]));
-				}
-				printf("\n");
-			}
-			*/
 		}
-		endTime = clock();
-		data_SSED_SBD_time = (float)(endTime-startTime)/(CLOCKS_PER_SEC);
-		printf("SSED & SBD time : %f\n", data_SSED_SBD_time);
-
+		endTime = std::chrono::system_clock::now(); // endTime check
+		duration_sec = endTime - startTime;  // calculate duration 
+		time_variable["sTopk_I_computescore&SBD"] = time_variable.find("sTopk_I_computescore")->second + duration_sec.count();
+	
 		for( s = 0 ; s < k ; s++ ){
 			printf("\n%dth sTopk start \n", s+1);
-			startTime = clock();
+			startTime = std::chrono::system_clock::now(); // startTime check	
 			ciper_Smax = Smax_n(ciper_SBD_score, cnt);	// bit로 표현된 암호화 max score 추출
-			endTime = clock();
 			if(!verify_flag){
-				sMINn_first_time += (float)(endTime-startTime)/(CLOCKS_PER_SEC);
-				printf("%dth sMAXn first time : %f\n", s+1, sMINn_first_time);
+				endTime = std::chrono::system_clock::now(); // endTime check
+				duration_sec = endTime - startTime;  // calculate duration 
+				time_variable["sTopk_I_smax_n"] = time_variable.find("sTopk_I_smax_n")->second + duration_sec.count();
 			}else{
-				sMINn_second_time += (float)(endTime-startTime)/(CLOCKS_PER_SEC);
-				printf("%dth sMAXn second time : %f\n", s+1, sMINn_second_time);
+				endTime = std::chrono::system_clock::now(); // endTime check
+				duration_sec = endTime - startTime;  // calculate duration 
+				time_variable["sTopk_I_smax_n_expand"] = time_variable.find("sTopk_I_smax_n_expand")->second + duration_sec.count();
 			}
-			/*
-			if(Print)
-			{
-				cout<< "MAX : ";
-				for( j = 0 ; j < size ; j++ ){
-					gmp_printf("%Zd", paillier_dec(0, pubkey, prvkey, ciper_Smax[j]));
-				}
-				printf("\n");	
-			}
-			*/
+
+
+			startTime = std::chrono::system_clock::now(); // startTime check	
 			// bit로 표현된 암호화 max score를 암호화 정수로 변환
 			for( j = size ; j > 0 ; j-- ){
 				t = (int)pow(2, j-1);
-				ciper_binary = paillier_create_enc(t);
-				ciper_binary = SM_p1(ciper_binary, ciper_Smax[size-j]);
-				paillier_mul(pubkey, ciper_max, ciper_binary, ciper_max);
-				paillier_freeciphertext(ciper_binary);
-				//gmp_printf("min : %Zd\n", ciper_max);
+				cipher_binary = paillier_create_enc(t);
+				cipher_binary = SM_p1(cipher_binary, ciper_Smax[size-j]);
+				paillier_mul(pubkey, cipher_MAX, cipher_binary, cipher_MAX);
+				paillier_freeciphertext(cipher_binary);
+				//gmp_printf("min : %Zd\n", cipher_MAX);
 			}
-			gmp_printf("MAX Value score: %Zd\n", paillier_dec(0, pubkey, prvkey, ciper_max));
-
-			if(Print)
-			{
-				gmp_printf("MAX Value score: %Zd\n", paillier_dec(0, pubkey, prvkey, ciper_max));
-			}
+			gmp_printf("MAX Value score: %Zd\n", paillier_dec(0, pubkey, prvkey, cipher_MAX));
 
 			// 이전 iteration에서 max값으로 선택된 데이터의 score가 secure하게 MIN으로 변환되었기 때문에, 
 			// 데이터의 점수 계산을 모두 다시 수행
@@ -939,40 +833,36 @@ int** protocol::STopk_I(paillier_ciphertext_t*** data, paillier_ciphertext_t** q
 					temp_score = paillier_enc(0, pubkey, plain_zero, paillier_get_rand_devurandom);
 					for( j = size ; j > 0 ; j--){
 						t = (int)pow(2, j-1);
-						ciper_binary = paillier_create_enc(t);
-						ciper_binary = SM_p1(ciper_binary, ciper_SBD_score[i][size-j]);
-						paillier_mul(pubkey, temp_score, ciper_binary, temp_score);
+						cipher_binary = paillier_create_enc(t);
+						cipher_binary = SM_p1(cipher_binary, ciper_SBD_score[i][size-j]);
+						paillier_mul(pubkey, temp_score, cipher_binary, temp_score);
 					}
 					ciper_score[i] = temp_score;
 					temp_score = paillier_enc(0, pubkey, plain_zero, paillier_get_rand_devurandom);
 				}
 			}
-			if(Print)
-			{
-				for( i = 0 ; i < cnt ; i++ ){
-					gmp_printf("score : %Zd\n", paillier_dec(0, pubkey, prvkey, ciper_score[i]) );
-				}
-			}
+			endTime = std::chrono::system_clock::now(); // endTime check
+			duration_sec = endTime - startTime;  // calculate duration 
+			time_variable["sTopk_I_recovery_score"] = time_variable.find("sTopk_I_recovery_score")->second + duration_sec.count();
 
+			startTime = std::chrono::system_clock::now(); // startTime check	
 			// 각 데이터의 점수와 max score와의 차를 구함 (max 데이터의 경우에만 0으로 만들기 위함)
 			for( i = 0 ; i < cnt ; i++ ){
-				paillier_subtract(pubkey, temp_score, ciper_score[i], ciper_max);
+				paillier_subtract(pubkey, temp_score, ciper_score[i], cipher_MAX);
 				ciper_mid[i] = SM_p1(temp_score, ciper_rand);
 				if(Print)
 				{
 					gmp_printf("dist-dist : %Zd\n", paillier_dec(0, pubkey, prvkey, ciper_mid[i]));
 				}
 			}
+			endTime = std::chrono::system_clock::now(); // endTime check
+			duration_sec = endTime - startTime;  // calculate duration 
+			time_variable["sTopk_I_subtract"] = time_variable.find("sTopk_I_subtract")->second + duration_sec.count();
 
 			ciper_V = Topk_sub(ciper_mid, cnt);
-			
-			if(Print)
-			{
-				for( i = 0 ; i < cnt ; i++ ){
-					gmp_printf("%d ciper_V : %Zd\n", i+1, paillier_dec(0, pubkey, prvkey, ciper_V[i]));
-				}
-			}
 
+
+			startTime = std::chrono::system_clock::now(); // startTime check	
 			// max 데이터 추출
 			for( i = 0 ; i < cnt ; i++ ){
 				for( j = 0 ; j < dim; j++ ){
@@ -985,53 +875,24 @@ int** protocol::STopk_I(paillier_ciphertext_t*** data, paillier_ciphertext_t** q
 					}
 				}
 			}
-			startTime = clock();
+			endTime = std::chrono::system_clock::now(); // endTime check
+			duration_sec = endTime - startTime;  // calculate duration 
+			time_variable["sTopk_I_extract_topk"] = time_variable.find("sTopk_I_extract_topk")->second + duration_sec.count();
+
+
+			startTime = std::chrono::system_clock::now(); // startTime check	
 			for( i = 0 ; i < cnt ; i++ ){
 				for( j = 0; j < size ; j++ ){
 					ciper_SBD_score[i][j] = SM_p1(SBN(ciper_V[i]), ciper_SBD_score[i][j]);
 				}
 			}
-			ciper_max = paillier_enc(0, pubkey, pt, paillier_get_rand_devurandom);
-			endTime = clock();
-			data_SBOR_time += (float)(endTime-startTime)/(CLOCKS_PER_SEC);
-			if(Print)
-			{
-				for( i = 0 ; i < cnt ; i++ ){
-					cout<<"cand : ";
-					for( j = 0 ; j < dim; j++ ){
-						gmp_printf(" %Zd ", paillier_dec(0, pubkey, prvkey, cand[i][j]));
-					}
-					cout<<endl;
-				}
-				printf("result : ");
-				for( j = 0 ; j < dim; j++ ){
-					gmp_printf(" %Zd ", paillier_dec(0, pubkey, prvkey, ciper_result[s][j]));
-				}
-				printf("\n");
-				cout<<"SBD score"<<endl;
-				for( i = 0 ; i < cnt ; i++ ){
-					cout<< i+1 <<" : ";
-					for( j = 0; j < size ; j++ ){
-						gmp_printf("%Zd", paillier_dec(0, pubkey, prvkey, ciper_SBD_score[i][j]));
-					}
-					cout<<endl;
-				}
-				cout<<endl;
-			}
-		}
-		if(Print)
-		{
-			cout<< "!!!!!!!!!!!!!MAX !!!!!!!!!!!!!"<<endl;
-			for( s = 0 ; s < k ; s ++){
-				cout << s << " : ";
-				for( i = 0 ; i < dim ; i ++){
-					gmp_printf("%Zd ", paillier_dec(0, pubkey, prvkey, ciper_result[s][i]));
-				}
-				cout<<endl;
-			}
+			endTime = std::chrono::system_clock::now(); // endTime check
+			duration_sec = endTime - startTime;  // calculate duration 
+			time_variable["sTopk_I_updateScore"] = time_variable.find("sTopk_I_updateScore")->second + duration_sec.count();
+			cipher_MAX	= paillier_create_enc_zero();
 		}
 		if(!verify_flag){
-			startTime = clock();
+			startTime = std::chrono::system_clock::now(); // startTime check	
 			if(cnt < k)	 // 노드의 fanout이 k보다 적은 경우를 처리함
 				kth_score = computeScore(q, ciper_result[cnt-1]);
 			else	// k개가 찾아졌다면, k번째 데이터의 score를 계산
@@ -1042,19 +903,12 @@ int** protocol::STopk_I(paillier_ciphertext_t*** data, paillier_ciphertext_t** q
 					paillier_mul(pubkey, temp_q[j], SM_p1(node[i].RR[j], psi[j]), SM_p1(node[i].LL[j], SBN(psi[j])));	
 				}
 				ciper_kthscore_bit = SBD_for_SRO(kth_score, 0);		// k번째 score SBD 수행
-				//ciper_kthscore_bit = SBD(kth_score);		// k번째 score SBD 수행
 				ciper_tempscore_bit = SBD_for_SRO(computeScore(q, temp_q), 1);  // 각 노드의 score를 SBD 수행
-				//ciper_tempscore_bit = SBD(computeScore(q, temp_q));  // 각 노드의 score를 SBD 수행
 				alpha[i] = SCMP(ciper_kthscore_bit , ciper_tempscore_bit);	// k번째 score보다 높을 가능성이 있으면 alpha=1
-				//alpha[i] = SCMP_for_SBD(ciper_kthscore_bit , ciper_tempscore_bit);	// k번째 score보다 높을 가능성이 있으면 alpha=1
-	
-				if(1){
-					gmp_printf("computeScore(q, temp_q) : %Zd %d line\n", paillier_dec(0, pubkey, prvkey, computeScore(q, temp_q)), __LINE__);
-					gmp_printf("alpha : %Zd\n", paillier_dec(0, pubkey, prvkey, alpha[i]));
-				}
 			}
-			endTime = clock();
-			node_expansion_time = (float)(endTime-startTime)/(CLOCKS_PER_SEC);
+			endTime = std::chrono::system_clock::now(); // endTime check
+			duration_sec = endTime - startTime;  // calculate duration 
+			time_variable["sTopk_I_check_expand_cond"] = time_variable.find("sTopk_I_check_expand_cond")->second + duration_sec.count();
 		}
 		if(!verify_flag)	{
 			verify_flag = true;		// 검증을 수행하기 위해 flag를 true로 변경
@@ -1083,7 +937,7 @@ int** protocol::STopk_I(paillier_ciphertext_t*** data, paillier_ciphertext_t** q
 	free(ciper_nodeLL_bit);
 	free(ciper_nodeRR_bit);
 	free(pt);
-	free(ciper_max);
+	free(cipher_MAX);
 	free(ciper_scores);
 	free(ciper_rand);
 	free(temp_score);
@@ -1122,8 +976,8 @@ int** protocol::STopk(paillier_ciphertext_t*** data, paillier_ciphertext_t** q, 
 	
 	paillier_plaintext_t * pt = paillier_plaintext_from_ui(0);
 
-	paillier_ciphertext_t* ciper_binary;
-	paillier_ciphertext_t* ciper_max	= paillier_create_enc_zero();
+	paillier_ciphertext_t* cipher_binary;
+	paillier_ciphertext_t* cipher_MAX	= paillier_create_enc_zero();
 	paillier_ciphertext_t* ciper_scores	= paillier_create_enc_zero();
 	paillier_ciphertext_t* ciper_rand	= paillier_create_enc(rand);
 	paillier_ciphertext_t* temp_score = paillier_create_enc_zero();
@@ -1314,7 +1168,6 @@ int** protocol::STopk(paillier_ciphertext_t*** data, paillier_ciphertext_t** q, 
 		else {		// 검증 단계일 시에는, 이전 결과와 cand를 합침
 			temp_cand	= sNodeRetrievalforTopk(data, ciper_qLL_bit, ciper_qRR_bit, node, alpha, NumData, NumNode, &cnt, &NumNodeGroup);
 
-			printf("cnt : %d \n", cnt);
 			if(cnt == 0) {	// 검증을 위해 추가 탐색이 필요한 노드가 없는 경우를 처리함
 				break;
 			}
@@ -1361,7 +1214,7 @@ int** protocol::STopk(paillier_ciphertext_t*** data, paillier_ciphertext_t** q, 
 		paillier_ciphertext_t** ciper_Smax = (paillier_ciphertext_t**)malloc(sizeof(paillier_ciphertext_t*)*size);
 		
 		for( i = 0 ; i < size; i++ ){
-			ciper_Smax[i] = ciper_zero;
+			ciper_Smax[i] = cipher_zero;
 		}
 
 		for( i = 0 ; i < cnt ; i++ ){
@@ -1369,7 +1222,7 @@ int** protocol::STopk(paillier_ciphertext_t*** data, paillier_ciphertext_t** q, 
 			mpz_init(alpha[i]->c);
 
 			ciper_SBD_score[i] = (paillier_ciphertext_t**)malloc(sizeof(paillier_ciphertext_t*)*size);
-			ciper_V[i]	= ciper_zero;
+			ciper_V[i]	= cipher_zero;
 			ciper_V2[i] = (paillier_ciphertext_t**)malloc(sizeof(paillier_ciphertext_t*)*dim);
 		}
 
@@ -1408,13 +1261,13 @@ int** protocol::STopk(paillier_ciphertext_t*** data, paillier_ciphertext_t** q, 
 			// bit로 표현된 암호화 max score를 암호화 정수로 변환
 			for( j = size ; j > 0 ; j-- ){
 				t = (int)pow(2, j-1);
-				ciper_binary = paillier_create_enc(t);
-				ciper_binary = SM_p1(ciper_binary, ciper_Smax[size-j]);
-				paillier_mul(pubkey, ciper_max, ciper_binary, ciper_max);
-				paillier_freeciphertext(ciper_binary);
-				//gmp_printf("min : %Zd\n", ciper_max);
+				cipher_binary = paillier_create_enc(t);
+				cipher_binary = SM_p1(cipher_binary, ciper_Smax[size-j]);
+				paillier_mul(pubkey, cipher_MAX, cipher_binary, cipher_MAX);
+				paillier_freeciphertext(cipher_binary);
+				//gmp_printf("min : %Zd\n", cipher_MAX);
 			}
-			gmp_printf("max score: %Zd\n", paillier_dec(0, pubkey, prvkey, ciper_max));
+			gmp_printf("max score: %Zd\n", paillier_dec(0, pubkey, prvkey, cipher_MAX));
 
 
 			// 이전 iteration에서 max값으로 선택된 데이터의 score가 secure하게 MIN으로 변환되었기 때문에, 
@@ -1423,9 +1276,9 @@ int** protocol::STopk(paillier_ciphertext_t*** data, paillier_ciphertext_t** q, 
 				for( i = 0 ; i < cnt; i++ ){
 					for( j = size ; j > 0 ; j--){
 						t = (int)pow(2, j-1);
-						ciper_binary = paillier_create_enc(t);
-						ciper_binary = SM_p1(ciper_binary, ciper_SBD_score[i][size-j]);
-						paillier_mul(pubkey, temp_score, ciper_binary, temp_score);
+						cipher_binary = paillier_create_enc(t);
+						cipher_binary = SM_p1(cipher_binary, ciper_SBD_score[i][size-j]);
+						paillier_mul(pubkey, temp_score, cipher_binary, temp_score);
 					}
 					ciper_score[i] = temp_score;
 					temp_score = paillier_enc(0, pubkey, plain_zero, paillier_get_rand_devurandom);
@@ -1438,7 +1291,7 @@ int** protocol::STopk(paillier_ciphertext_t*** data, paillier_ciphertext_t** q, 
 
 			// 각 데이터의 점수와 max score와의 차를 구함 (max 데이터의 경우에만 0으로 만들기 위함)
 			for( i = 0 ; i < cnt ; i++ ){
-				paillier_subtract(pubkey, temp_score, ciper_score[i], ciper_max);
+				paillier_subtract(pubkey, temp_score, ciper_score[i], cipher_MAX);
 				ciper_mid[i] = SM_p1(temp_score, ciper_rand);
 				//gmp_printf("dist - dist : ",ciper_mid[i]);
 			}
@@ -1478,7 +1331,7 @@ int** protocol::STopk(paillier_ciphertext_t*** data, paillier_ciphertext_t** q, 
 				}
 			}
 
-			ciper_max = paillier_enc(0, pubkey, pt, paillier_get_rand_devurandom);	
+			cipher_MAX = paillier_enc(0, pubkey, pt, paillier_get_rand_devurandom);	
 		}
 
 
@@ -1548,7 +1401,6 @@ int** protocol::STopk_G(paillier_ciphertext_t*** data, paillier_ciphertext_t** q
 	int NumNodeGroup = 0;
 	Print = false;
 	bool verify_flag = false;
-	time_t startTime = 0;	time_t endTime = 0;	float gap = 0.0;
 
 	//쿼리 및 hint 세팅
 	paillier_ciphertext_t*	MIN				= paillier_create_enc(0);
@@ -1592,16 +1444,16 @@ int** protocol::STopk_G(paillier_ciphertext_t*** data, paillier_ciphertext_t** q
 		mpz_init(alpha[i]->c);
 	}
 	
-	
+	startTime = std::chrono::system_clock::now(); // startTime check
 	hint = q[dim];
-	if(Print)
+	if(Print == false)
 	{
 		gmp_printf("hint : %Zd  /  %Zd\n", paillier_dec(0, pubkey, prvkey, hint),paillier_dec(0, pubkey, prvkey, q[dim]));
 	}
 	for( i = 0 ; i < dim ; i++ )
 	{
 		paillier_mul(pubkey, coeff[i], q[i], hint);
-		if(Print)
+		if(Print == false)
 		{
 			cout <<"q[i] + hint : "<<endl;
 			gmp_printf(" %Zd ", paillier_dec(0, pubkey, prvkey, coeff[i]));
@@ -1611,7 +1463,7 @@ int** protocol::STopk_G(paillier_ciphertext_t*** data, paillier_ciphertext_t** q
 	for( i = 0 ; i < dim ; i++ )
 	{
 		psi[i] = GSCMP(hint, coeff[i]);
-		if(Print)
+		if(Print == false)
 		{
 			gmp_printf("psi : %Zd", paillier_dec(0, pubkey, prvkey, psi[i]));
 			if ( strcmp( paillier_plaintext_to_str( paillier_dec(0, pubkey, prvkey, psi[i]) ), paillier_plaintext_to_str(plain_one)) == 0 )
@@ -1627,27 +1479,19 @@ int** protocol::STopk_G(paillier_ciphertext_t*** data, paillier_ciphertext_t** q
 	{	
 		Q[i] = SM_p1(max_val[i], psi[i]);
 	}
-	if(Print)
-	{
-		printf("===query for node searching===\n");
-		cout << "Max_val\n";
-		for( i = 0 ; i < dim ; i++ )
-		{
-			gmp_printf("%Zd\t", paillier_dec(0, pubkey, prvkey, max_val[i]));
-		}cout<<endl;
-		cout << "Q : "<<endl;
-		for( i = 0 ; i < dim ; i++ ) 
-		{
-			gmp_printf("%Zd\t", paillier_dec(0, pubkey, prvkey, Q[i]));
-		}
-		cout<<endl;
-	}
-	cout << "FIND Range\tFIND Range\tFIND Range\tFIND Range\tFIND Range\t"<<endl;
-	startTime = clock();
+
+	endTime = std::chrono::system_clock::now(); // endTime check
+	duration_sec = endTime - startTime;  // calculate duration 
+	time_variable["sTopk_G_preprocessing_query"] = time_variable.find("sTopk_G_preprocessing_query")->second + duration_sec.count();
+
+
+
+	startTime = std::chrono::system_clock::now(); // startTime check
 	for( i = 0 ; i < NumNode ; i++ )
 	{	
-		alpha[i] = DP_GSRO(Q, Q, node[i].LL, node[i].RR);
-		
+		alpha[i] = GSRO(Q, Q, node[i].LL, node[i].RR);
+		//gmp_printf("alpha: %Zd\n", paillier_dec(0, pubkey, prvkey, alpha[i]));
+
 		if(!verify_flag)
 		{	//  검증 단계에서는 수행하지 않음
 			for( j = 0 ; j < dim ; j++ )
@@ -1656,55 +1500,35 @@ int** protocol::STopk_G(paillier_ciphertext_t*** data, paillier_ciphertext_t** q
 				node[i].RR[j] = SM_p1(node[i].RR[j], SBN(alpha[i]));
 			}
 		}
-		if(Print)
-		{
-			gmp_printf("alpha %d : %Zd  ", i+1 , paillier_dec(0, pubkey, prvkey, alpha[i]));
-			if(strcmp( paillier_plaintext_to_str( paillier_dec(0, pubkey, prvkey, alpha[i])), paillier_plaintext_to_str(plain_one)) == 0) {
-				cout << " OverLaps "<<endl;
-			}else{
-				cout << " Not overlaps "<<endl;
-			}
-		}
 	}
-	endTime = clock();
-	node_SRO_time += (float)(endTime-startTime)/(CLOCKS_PER_SEC);
-	printf("GSRO time : %f\n", node_SRO_time);
+	endTime = std::chrono::system_clock::now(); // endTime check
+	duration_sec = endTime - startTime;  // calculate duration 
+	time_variable["sTopk_G_GSRO_node_query"] = time_variable.find("sTopk_G_GSRO_node_query")->second + duration_sec.count();
+
+
+
+
 	while(1)
 	{
 		cnt = 0;
 		if(!verify_flag)
 		{	
-			startTime = clock();
+			startTime = std::chrono::system_clock::now(); // startTime check
 			cand = GSRO_sNodeRetrievalforTopk(data, node, alpha, NumData, NumNode, &cnt, &NumNodeGroup);
 			totalNumOfRetrievedNodes += NumNodeGroup;
-			endTime = clock();
-			data_extract_first_time += (float)(endTime-startTime)/(CLOCKS_PER_SEC);
-			printf("Node Retrieval time : %f\n", data_extract_first_time);
-			
-			if(Print)
-			{
-				cout << "cnt : " <<cnt <<endl;
-				cout << "######cand######"<<endl;
-				for( i = 0 ; i < cnt ; i++ )
-				{
-					cout << i+1 <<" : ";
-					for( j = 0 ; j < dim ; j++ )
-					{
-						gmp_printf(" %Zd ", paillier_dec(0, pubkey, prvkey, cand[i][j]));
-					}
-					cout<<endl;
-				}
-			}
+			endTime = std::chrono::system_clock::now(); // endTime check
+			duration_sec = endTime - startTime;  // calculate duration 
+			time_variable["sTopk_G_extract_cand"] = time_variable.find("sTopk_G_extract_cand")->second + duration_sec.count();
 		}
 		else
 		{
-			startTime = clock();
+			startTime = std::chrono::system_clock::now(); // startTime check
 			temp_cand = GSRO_sNodeRetrievalforTopk(data, node, alpha, NumData, NumNode, &cnt, &NumNodeGroup);
 			totalNumOfRetrievedNodes += NumNodeGroup;
-			endTime = clock();
-			data_extract_second_time += (float)(endTime-startTime)/(CLOCKS_PER_SEC);
-			printf("Node expansion time : %f\n", data_extract_second_time);
-			printf("cnt : %d \n", cnt);
+			endTime = std::chrono::system_clock::now(); // endTime check
+			duration_sec = endTime - startTime;  // calculate duration 
+			time_variable["sTopk_G_extract_expand_cand"] = time_variable.find("sTopk_G_extract_expand_cand")->second + duration_sec.count();
+
 			if(cnt == 0) {	// 검증을 위해 추가 탐색이 필요한 노드가 없는 경우를 처리함
 				break;
 			}
@@ -1728,18 +1552,8 @@ int** protocol::STopk_G(paillier_ciphertext_t*** data, paillier_ciphertext_t** q
 				}
 			}
 			cnt = cnt + k;
-			if(Print)
-			{
-				cout << "######ciper_result + TEMP_cand######"<<endl;
-				for( i = 0 ; i < cnt ; i ++){
-					cout << i+1 <<" : ";
-					for( j = 0 ; j < dim ; j++){
-						gmp_printf(" %Zd ", paillier_dec(0, pubkey, prvkey, cand[i][j]));
-					}
-					cout<<endl;
-				}
-			}
 		}
+
 		int MAX_idx = 0;
 		paillier_ciphertext_t*	MAX				= (paillier_ciphertext_t*)malloc(sizeof(paillier_ciphertext_t));
 		mpz_init(MAX->c);
@@ -1766,7 +1580,7 @@ int** protocol::STopk_G(paillier_ciphertext_t*** data, paillier_ciphertext_t** q
 			}
 		}
 
-		startTime = clock();
+		startTime = std::chrono::system_clock::now(); // startTime check	
 		for( i = 0 ; i < cnt ; i++ )
 		{
 			SCORE[i] = computeScore(q, cand[i]);
@@ -1775,30 +1589,31 @@ int** protocol::STopk_G(paillier_ciphertext_t*** data, paillier_ciphertext_t** q
 				gmp_printf("SCORE : %Zd\n",  paillier_dec(0, pubkey, prvkey, SCORE[i]));	
 			}
 		}
-		endTime = clock();
-		data_SSED_SBD_time += (float)(endTime-startTime)/(CLOCKS_PER_SEC);
-		printf("ComputeScore & SBD time : %f\n", data_SSED_SBD_time);
+		endTime = std::chrono::system_clock::now(); // endTime check
+		duration_sec = endTime - startTime;  // calculate duration 
+		time_variable["sTopk_G_computeScore"] = time_variable.find("sTopk_G_computeScore")->second + duration_sec.count();
 
 		for( s = 0 ; s < k ; s++ )
 		{
 			cout << s+1<<"dth MAXn_Topk start"<<endl;
-			startTime = clock();
+			startTime = std::chrono::system_clock::now(); // startTime check	
 			MAX_idx = MAXn(SCORE, cnt);
 			MAX = SCORE[MAX_idx];
-			if(Print)
-			{
-				gmp_printf("MAX VALUE : %Zd\n",  paillier_dec(0, pubkey, prvkey, MAX));	
-			}
-			endTime = clock();
+
+			gmp_printf("MAX : %Zd \n", paillier_dec(0, pubkey, prvkey, MAX));
 			if(!verify_flag) {
-				sMINn_first_time += (float)(endTime-startTime)/(CLOCKS_PER_SEC);
-				printf("ComputeScore & SBD time : %f\n", sMINn_first_time);
+				endTime = std::chrono::system_clock::now(); // endTime check
+				duration_sec = endTime - startTime;  // calculate duration 
+				time_variable["sTopk_G_sMaxn"] = time_variable.find("sTopk_G_sMaxn")->second + duration_sec.count();
 			}
 			else {
-				sMINn_second_time += (float)(endTime-startTime)/(CLOCKS_PER_SEC);
-				printf("ComputeScore & SBD time : %f\n", sMINn_second_time);
+				endTime = std::chrono::system_clock::now(); // endTime check
+				duration_sec = endTime - startTime;  // calculate duration 
+				time_variable["sTopk_G_sMaxn_second"] = time_variable.find("sTopk_G_sMaxn_second")->second + duration_sec.count();
 			}
 			
+
+			startTime = std::chrono::system_clock::now(); // startTime check	
 			for( i = 0 ; i < cnt ; i++ )
 			{
 				paillier_subtract(pubkey, SCORE_MINUS_MAX[i], SCORE[i], MAX);
@@ -1808,17 +1623,19 @@ int** protocol::STopk_G(paillier_ciphertext_t*** data, paillier_ciphertext_t** q
 					gmp_printf("SCORE-MAX : %Zd \n", paillier_dec(0, pubkey, prvkey, SCORE_MINUS_MAX[i]));
 				}
 			}
+			endTime = std::chrono::system_clock::now(); // endTime check
+			duration_sec = endTime - startTime;  // calculate duration 
+			time_variable["sTopk_G_subtract"] = time_variable.find("sTopk_G_subtract")->second + duration_sec.count();
+
+
 			
 			V = Topk_sub(SCORE_MINUS_MAX, cnt);
 
+
+			startTime = std::chrono::system_clock::now(); // startTime check	
 			for( i = 0 ; i < cnt ; i++ )
 			{
-				if(Print)
-				{
-					gmp_printf("V : %Zd \n", paillier_dec(0, pubkey, prvkey, V[i]));
-
-				}
-				paillier_subtract(pubkey, TMP_alpha, ciper_one, V[i]);
+				paillier_subtract(pubkey, TMP_alpha, cipher_one, V[i]);
 				paillier_mul(pubkey, SCORE[i], SM_p1(V[i], MIN), SM_p1(TMP_alpha, SCORE[i]));
 				for( j = 0 ; j < dim; j++ )
 				{
@@ -1833,23 +1650,15 @@ int** protocol::STopk_G(paillier_ciphertext_t*** data, paillier_ciphertext_t** q
 					}
 				}
 			}
+			endTime = std::chrono::system_clock::now(); // endTime check
+			duration_sec = endTime - startTime;  // calculate duration 
+			time_variable["sTopk_G_extract_topk"] = time_variable.find("sTopk_G_extract_topk")->second + duration_sec.count();
 		}
-		if(Print)
-		{
-			cout<< "!!!!!!!!!!!!!MAXn!!!!!!!!!!!!!"<<endl;
-			for( s = 0 ; s < k ; s++ )
-			{
-				cout << s << " : ";
-				for( i = 0 ; i < dim ; i++ )
-				{
-					gmp_printf("%Zd ", paillier_dec(0, pubkey, prvkey, RESULT[s][i]));
-				}
-				cout<<endl;
-			}
-		}
+
 		if(!verify_flag)
 		{	
-			startTime = clock();
+			startTime = std::chrono::system_clock::now(); // startTime check	
+
 			if(cnt < k)	 // 노드의 fanout이 k보다 적은 경우를 처리함
 				kth_score = computeScore(q, RESULT[cnt-1]);
 			else	// k개가 찾아졌다면, k번째 데이터의 score를 계산
@@ -1862,15 +1671,10 @@ int** protocol::STopk_G(paillier_ciphertext_t*** data, paillier_ciphertext_t** q
 					paillier_mul(pubkey, Q[j], SM_p1(node[i].RR[j], psi[j]), SM_p1(node[i].LL[j], SBN(psi[j])));	
 				}
 				alpha[i] = GSCMP(kth_score , computeScore(q, Q));	// k번째 score보다 높을 가능성이 있으면 alpha=1
-				
-				if(Print)
-				{
-					gmp_printf("computeScore(q, Q) : %Zd %d line\n", paillier_dec(0, pubkey, prvkey, computeScore(q, Q)), __LINE__);
-					gmp_printf("alpha : %Zd\n", paillier_dec(0, pubkey, prvkey, alpha[i]));
-				}
 			}
-			endTime = clock();
-			node_expansion_time += (float)(endTime-startTime)/(CLOCKS_PER_SEC);
+			endTime = std::chrono::system_clock::now(); // endTime check
+			duration_sec = endTime - startTime;  // calculate duration 
+			time_variable["sTopk_G_check_expand_cond"] = time_variable.find("sTopk_G_check_expand_cond")->second + duration_sec.count();
 		}
 		if(!verify_flag)
 		{
@@ -1881,16 +1685,12 @@ int** protocol::STopk_G(paillier_ciphertext_t*** data, paillier_ciphertext_t** q
 	for( i = 0 ; i < k ; i++ )
 	{
 		printf("%d final result : ", i);
-		gmp_printf(" %Zd : ", paillier_dec(0, pubkey, prvkey, computeScore(q, RESULT[i])));
+		gmp_printf(" %Zd : \n", paillier_dec(0, pubkey, prvkey, computeScore(q, RESULT[i])));
 	
 		for( j = 0 ; j < dim ; j++ )
 		{
-	//		gmp_printf("%Zd\t", paillier_dec(0, pubkey, prvkey, RESULT[i][j]));
 			paillier_mul(pubkey, RESULT[i][j], RESULT[i][j], C_RAND);
-		}
-	
-	//	printf("\n");
-	
+		}	
 	}
 	cout << "End Line" <<endl;
 	return SkNNm_Bob2(RESULT, rand, k, dim);
@@ -2060,126 +1860,7 @@ int protocol::MAXn(paillier_ciphertext_t** ciper, int cnt){
 	
 	return MAXn_result_idx;
 }
-/*
-paillier_ciphertext_t* protocol::DP_computeScore(paillier_ciphertext_t** cipher1, paillier_ciphertext_t** cipher2, int col_num)
-{
-		
-	paillier_plaintext_t* shift = paillier_plaintext_from_ui(0);
-	paillier_plaintext_t* value = paillier_plaintext_from_ui(0);
-	paillier_plaintext_t** rand = (paillier_plaintext_t**)malloc(sizeof(paillier_plaintext_t*)*col_num);
-	paillier_plaintext_t* tmp= paillier_plaintext_from_ui(0);
-	paillier_ciphertext_t* result = paillier_create_enc_zero();
 
-	paillier_ciphertext_t* ciper_value;
-	//paillier_ciphertext_t* ciper_tmp= paillier_create_enc_zero();	
-	paillier_ciphertext_t* ciper_tmp = (paillier_ciphertext_t*) malloc(sizeof(paillier_ciphertext_t));	
-	mpz_init(ciper_tmp->c);
-	
-	paillier_ciphertext_t* mul =  paillier_create_enc_zero();
-
-	paillier_ciphertext_t** result_array=(paillier_ciphertext_t**)malloc(sizeof(paillier_ciphertext_t*)*col_num);
-	for(int i=0;i<col_num;i++){
-		result_array[i]	= paillier_create_enc_zero();
-	}
-
-
-	for(int i=0;i<col_num;i++){
-		mpz_ui_pow_ui(shift->m,2,16*i);	
-		rand[i] = paillier_plaintext_from_ui(i+100);
-		//gmp_printf("rand : %Zd\n",rand[i]);
-		
-		mpz_mul(tmp->m,rand[i]->m,shift->m);
-
-		mpz_add(value->m,value->m, tmp->m);
-
-		//gmp_printf("value : %Zd\n",value);
-	}
-
-	
-	ciper_value =  paillier_enc(0, pubkey, value, paillier_get_rand_devurandom);	
-
-	for(int i=0;i<col_num;i++){
-		mpz_ui_pow_ui(shift->m,2,16*i);			//shift
-		//gmp_printf("shift : %Zd\n",shift);
-
-		paillier_exp(pubkey,mul,cipher1[i],cipher2[i]); 
-		gmp_printf("mul : %Zd\n",paillier_dec(0, pubkey, prvkey, mul));
-
-				
-		paillier_exp(pubkey, ciper_tmp, mul, shift); //multi		
-		gmp_printf("ciper_tmp : %Zd\n", paillier_dec(0, pubkey, prvkey, ciper_tmp));
-
-		paillier_mul(pubkey,ciper_value,ciper_value,ciper_tmp); //E_add
-		//gmp_printf("value : %Zd\n", paillier_dec(0, pubkey, prvkey, ciper_value));
-	}
-	
-		
-	//result_array=unDP_SSED(ciper_value,col_num);
-	paillier_ciphertext_t* test = unDP_computeScore(ciper_value,col_num);
-
-	result = unDP_computeScore(ciper_value,col_num);
-
-	//gmp_printf("unDP_SSED result : %Zd\n",paillier_dec(0, pubkey, prvkey, test));
-
-	for(int i=0; i<col_num; i++){
-		mpz_mul(tmp->m,rand[i]->m,rand[i]->m);
-		ciper_tmp=paillier_enc(0,pub,tmp,paillier_get_rand_devurandom);
-		paillier_subtract(pub,result,result,ciper_tmp );
-
-		mpz_mul_ui (rand[i]->m,rand[i]->m,2);
-		paillier_subtract(pub,ciper_tmp,cipher1[i],cipher2[i]);
-		paillier_exp(pubkey, sub, ciper_tmp, rand[i]);
-		paillier_subtract(pub,result,result,sub);
-	}
-
-	//gmp_printf("result : %Zd\n",paillier_dec(0, pubkey, prvkey, result));
-
-	return result;	
-
-}
-
-paillier_ciphertext_t* protocol::unDP_computeScore(paillier_ciphertext_t* cipher1, int col_num){
-	paillier_ciphertext_t** result_array=(paillier_ciphertext_t**)malloc(sizeof(paillier_ciphertext_t*)*col_num);
-
-	paillier_plaintext_t* shift = paillier_plaintext_from_ui(0);
-	paillier_plaintext_t* tmp = paillier_plaintext_from_ui(0);
-	paillier_plaintext_t* result = paillier_dec(0, pub, prv, cipher1);
-
-	paillier_plaintext_t* test = paillier_plaintext_from_ui(0);
-	paillier_ciphertext_t* enc_test = paillier_create_enc_zero();
-	
-	
-	//gmp_printf("unDP_SSED val : %Zd\n",result);
-
-	for(int i=0; i<col_num; i++){
-		mpz_ui_pow_ui(shift->m,2,(col_num-i-1)*16);
-		//gmp_printf("unDP_SSED shift : %Zd\n",shift);
-		
-		//gmp_printf("unDP_SSED   result : %Zd , shift: %Zd\n",result,shift);
-		mpz_div(tmp->m,result->m,shift->m);
-		
-		//gmp_printf("div_tmp : %Zd\n",tmp);
-
-
-		mpz_pow_ui(tmp->m,tmp->m,2);
-		
-		//result_array[col_num-i-1]=paillier_enc(0,pub,tmp,paillier_get_rand_devurandom);
-		mpz_add(test->m,test->m,tmp->m);
-		
-		//gmp_printf("unDP_SSED re : %Zd\n",tmp);
-
-		mpz_mod(result->m,result->m,shift->m);
-	}
-	enc_test=paillier_enc(0,pub,test,paillier_get_rand_devurandom);
-	
-	for(int i=0; i<col_num; i++){
-		gmp_printf("unDP_SSED re : %Zd\n",paillier_dec(0, pub, prv, result_array[i]));
-	}
-	
-	return enc_test;
-	//return result_array;
-}
-*/
 paillier_ciphertext_t** protocol::Topk_sub(paillier_ciphertext_t** ciper_n, int n){
 	int i = 0;
 	int cnt = 0;
@@ -2217,153 +1898,149 @@ int ** protocol::STopk_B(paillier_ciphertext_t*** data, paillier_ciphertext_t** 
 	int j = 0;
 	int rand = 5;
 	n = NumData;
-
-	time_t startTime = 0;
-	time_t endTime = 0;
-	float gap = 0.0;
-
 	paillier_ciphertext_t * hint = paillier_create_enc_zero();
 
 	paillier_plaintext_t * pt = paillier_plaintext_from_ui(0);
 
-	paillier_ciphertext_t* ciper_binary;
-	paillier_ciphertext_t* ciper_min	= paillier_create_enc_zero();
-	paillier_ciphertext_t* ciper_dist	= paillier_create_enc_zero();
-	paillier_ciphertext_t* ciper_rand	= paillier_create_enc(rand);
+	paillier_ciphertext_t* cipher_binary;
+	paillier_ciphertext_t* cipher_min	= paillier_create_enc_zero();
+	paillier_ciphertext_t* cipher_dist	= paillier_create_enc_zero();
+	paillier_ciphertext_t* cipher_rand	= paillier_create_enc(rand);
 	paillier_ciphertext_t* temp_dist = paillier_create_enc_zero();
 
-	paillier_ciphertext_t** ciper_distance = (paillier_ciphertext_t**)malloc(sizeof(paillier_ciphertext_t*)*n);
-	paillier_ciphertext_t*** ciper_SBD_distance = (paillier_ciphertext_t***)malloc(sizeof(paillier_ciphertext_t**)*n);
-	paillier_ciphertext_t** ciper_mid = (paillier_ciphertext_t**)malloc(sizeof(paillier_ciphertext_t*)*n);
-	paillier_ciphertext_t** ciper_Smin = (paillier_ciphertext_t**)malloc(sizeof(paillier_ciphertext_t*)*n);
-	paillier_ciphertext_t** ciper_V=(paillier_ciphertext_t**)malloc(sizeof(paillier_ciphertext_t*)*n);
-	paillier_ciphertext_t*** ciper_V2 = (paillier_ciphertext_t***)malloc(sizeof(paillier_ciphertext_t**)*n);
+	paillier_ciphertext_t** cipher_distance = (paillier_ciphertext_t**)malloc(sizeof(paillier_ciphertext_t*)*n);
+	paillier_ciphertext_t*** cipher_SBD_distance = (paillier_ciphertext_t***)malloc(sizeof(paillier_ciphertext_t**)*n);
+	paillier_ciphertext_t** cipher_mid = (paillier_ciphertext_t**)malloc(sizeof(paillier_ciphertext_t*)*n);
+	paillier_ciphertext_t** cipher_Smin = (paillier_ciphertext_t**)malloc(sizeof(paillier_ciphertext_t*)*n);
+	paillier_ciphertext_t** cipher_V=(paillier_ciphertext_t**)malloc(sizeof(paillier_ciphertext_t*)*n);
+	paillier_ciphertext_t*** cipher_V2 = (paillier_ciphertext_t***)malloc(sizeof(paillier_ciphertext_t**)*n);
 
-	paillier_ciphertext_t*** ciper_result = (paillier_ciphertext_t***)malloc(sizeof(paillier_ciphertext_t**)*k);
+	paillier_ciphertext_t*** cipher_result = (paillier_ciphertext_t***)malloc(sizeof(paillier_ciphertext_t**)*k);
 
 	for( i = 0 ; i < size; i++ ){
-		ciper_Smin[i] = ciper_zero;
+		cipher_Smin[i] = cipher_zero;
 	}
 
-	for( i = 0 ; i < n ; i++ ){
-		ciper_distance[i] 	= ciper_zero;
-		ciper_SBD_distance[i] = (paillier_ciphertext_t**)malloc(sizeof(paillier_ciphertext_t*)*size);
-		ciper_V[i]	= ciper_zero;
-		ciper_V2[i] = (paillier_ciphertext_t**)malloc(sizeof(paillier_ciphertext_t*)*dim);
+	for( i = 0 ; i < NumData ; i++ ){
+		cipher_distance[i] 	= cipher_zero;
+		cipher_SBD_distance[i] = (paillier_ciphertext_t**)malloc(sizeof(paillier_ciphertext_t*)*size);
+		cipher_V[i]	= cipher_zero;
+		cipher_V2[i] = (paillier_ciphertext_t**)malloc(sizeof(paillier_ciphertext_t*)*dim);
 	}
 
 	for( i = 0 ; i < k ; i++ ){
-		ciper_result[i] = (paillier_ciphertext_t**)malloc(sizeof(paillier_ciphertext_t*)*dim);
+		cipher_result[i] = (paillier_ciphertext_t**)malloc(sizeof(paillier_ciphertext_t*)*dim);
 		for( j = 0 ; j < dim; j ++ ){
-			ciper_result[i][j] = paillier_create_enc_zero();
+			cipher_result[i][j] = paillier_create_enc_zero();
 		}
 	}
 
-
+	startTime = std::chrono::system_clock::now(); // startTime check
 	printf("\n=== Data compute & SBD start ===\n");
-	startTime = clock();
-	for( i = 0 ; i < n ; i++ ){
-		ciper_distance[i] = computeScore(q, data[i]);
-		ciper_SBD_distance[i] = SBD(ciper_distance[i]);
-		
-		/*
-		paillier_print("dist : ", ciper_distance[i]);	
-		for( j = 0 ; j < size ; j++ ){
-			gmp_printf("%Zd", paillier_dec(0, pubkey, prvkey, ciper_SBD_distance[i][j]));
-		}
-		printf("\n");
-		*/		
+	for( i = 0 ; i < NumData ; i++ ){
+		cipher_distance[i] = computeScore(q, data[i]);
+		cipher_SBD_distance[i] = SBD(cipher_distance[i]);
 	}
-	endTime = clock();
-	data_SSED_SBD_time += (float)(endTime-startTime)/(CLOCKS_PER_SEC);
-	printf("data compute & SBD time : %f\n", (float)(endTime-startTime)/(CLOCKS_PER_SEC));
-
+	endTime = std::chrono::system_clock::now(); // endTime check
+	duration_sec = endTime - startTime;  // calculate duration 
+	time_variable["sTopk_B_SBD(CS(score))"] = time_variable.find("sTopk_B_SBD(CS(score))")->second + duration_sec.count();
+	
 	for( s = 0 ; s < k ; s++ ){
 		printf("\n%dth sMAX start \n", s+1);
-		startTime = clock();
-		ciper_Smin = Smax_n(ciper_SBD_distance, n);	// bit로 표현된 암호화 min 거리 추출
-		endTime = clock();
-		gap = (float)(endTime-startTime)/(CLOCKS_PER_SEC);
-		sMINn_first_time += gap;
-		printf("%dth sMAX time : %f\n", s+1, gap);
-	
-		/*
-		for( j = 0 ; j < size ; j++ ){
-			gmp_printf("%Zd", paillier_dec(0, pubkey, prvkey, ciper_Smin[j]));
-		}
-		printf("\n");	
-		*/
-		
+
+		startTime = std::chrono::system_clock::now(); // startTime check
+		cipher_Smin = Smax_n(cipher_SBD_distance, NumData);	// bit로 표현된 암호화 min 거리 추출
+		endTime = std::chrono::system_clock::now(); // endTime check
+		duration_sec = endTime - startTime;  // calculate duration 
+		time_variable["sTopk_B_smax(score))"] = time_variable.find("sTopk_B_smax(score))")->second + duration_sec.count();
+
+		startTime = std::chrono::system_clock::now(); // startTime check
 		// bit로 표현된 암호화 max 거리를 암호화 정수로 변환
 		for( j = size ; j > 0 ; j-- ){
 			t = (int)pow(2, j-1);
-			ciper_binary = paillier_create_enc(t);
-			ciper_binary = SM_p1(ciper_binary, ciper_Smin[size-j]);
-			paillier_mul(pubkey, ciper_min, ciper_binary, ciper_min);
-			paillier_freeciphertext(ciper_binary);
-			//paillier_print("min : ", ciper_min);
+			cipher_binary = paillier_create_enc(t);
+			cipher_binary = SM_p1(cipher_binary, cipher_Smin[size-j]);
+			paillier_mul(pubkey, cipher_min, cipher_binary, cipher_min);
+			paillier_freeciphertext(cipher_binary);
+			//paillier_print("min : ", cipher_min);
 		}
-		paillier_print("max dist : ", ciper_min);
+		paillier_print("max dist : ", cipher_min);
 		
 		printf("\n== recalculate query<->data distances ===\n");
 		// 이전 iteration에서 min값으로 선택된 데이터의 거리가 secure하게 MAX로 변환되었기 때문에, 
 		// 질의-데이터 간 거리 계산을 모두 다시 수행
 		if( s != 0 ){
-			for( i = 0 ; i < n ; i++ ){
+			for( i = 0 ; i < NumData ; i++ ){
 				for( j = size ; j > 0 ; j--){
 					t = (int)pow(2, j-1);
-					ciper_binary = paillier_create_enc(t);
-					ciper_binary = SM_p1(ciper_binary, ciper_SBD_distance[i][size-j]);
-					paillier_mul(pubkey, ciper_dist, ciper_binary, ciper_dist);
+					cipher_binary = paillier_create_enc(t);
+					cipher_binary = SM_p1(cipher_binary, cipher_SBD_distance[i][size-j]);
+					paillier_mul(pubkey, cipher_dist, cipher_binary, cipher_dist);
 				}
-				ciper_distance[i] = ciper_dist;
-				ciper_dist = paillier_enc(0, pubkey, plain_zero, paillier_get_rand_devurandom);
+				cipher_distance[i] = cipher_dist;
+				cipher_dist = paillier_enc(0, pubkey, plain_zero, paillier_get_rand_devurandom);
 			}
 		}
+		endTime = std::chrono::system_clock::now(); // endTime check
+		duration_sec = endTime - startTime;  // calculate duration 
+		time_variable["sTopk_B_recover_MAX_Score"] = time_variable.find("sTopk_B_recover_MAX_Score")->second + duration_sec.count();
 		
+
+		startTime = std::chrono::system_clock::now(); // startTime check
 		// 질의-데이터 거리와 min 거리와의 차를 구함 (min 데이터의 경우에만 0으로 만들기 위함)
-		for( i = 0 ; i < n ; i++ ){
-			paillier_subtract(pubkey, temp_dist, ciper_distance[i], ciper_min);
-			ciper_mid[i] = SM_p1(temp_dist, ciper_rand);
+		for( i = 0 ; i < NumData ; i++ ){
+			paillier_subtract(pubkey, temp_dist, cipher_distance[i], cipher_min);
+			cipher_mid[i] = SM_p1(temp_dist, cipher_rand);
 		}
+		endTime = std::chrono::system_clock::now(); // endTime check
+		duration_sec = endTime - startTime;  // calculate duration 
+		time_variable["sTopk_B_subtract_Score(SBD_score))"] = time_variable.find("sTopk_B_subtract_Score(SBD_score))")->second + duration_sec.count();
 
-		ciper_V = Topk_sub(ciper_mid, n);
 
+
+		cipher_V = Topk_sub(cipher_mid, NumData);
+
+		startTime = std::chrono::system_clock::now(); // startTime check
 		// min 데이터 추출
-		for( i = 0 ; i < n ; i++ ){
+		for( i = 0 ; i < NumData ; i++ ){
 			for( j = 0 ; j < dim; j++ ){
-				ciper_V2[i][j] = SM_p1(ciper_V[i], data[i][j]);
-				paillier_mul(pubkey, ciper_result[s][j], ciper_V2[i][j], ciper_result[s][j]);
+				cipher_V2[i][j] = SM_p1(cipher_V[i], data[i][j]);
+				paillier_mul(pubkey, cipher_result[s][j], cipher_V2[i][j], cipher_result[s][j]);
 			}
 		}
+		endTime = std::chrono::system_clock::now(); // endTime check
+		duration_sec = endTime - startTime;  // calculate duration 
+		time_variable["sTopk_B_extract_result"] = time_variable.find("sTopk_B_extract_result")->second + duration_sec.count();
 
-		printf("ciper_result : ");	
+
+		printf("cipher_result : ");	
 		for( j = 0 ; j < dim; j++ ){
-			gmp_printf("%Zd ", paillier_dec(0, pubkey, prvkey,ciper_result[s][j]));
+			gmp_printf("%Zd ", paillier_dec(0, pubkey, prvkey,cipher_result[s][j]));
 		}
 		printf("\n");		
-		
+
+		startTime = std::chrono::system_clock::now(); // startTime check
 		// Data SBOR 수행
-		startTime = clock();
-		for( i = 0 ; i < n ; i++ ){
+		for( i = 0 ; i < NumData ; i++ ){
 			for( j = 0; j < size ; j++ ){
-				ciper_SBD_distance[i][j] = SM_p1(SBN(ciper_V[i]), ciper_SBD_distance[i][j]);
+				cipher_SBD_distance[i][j] = SM_p1(SBN(cipher_V[i]), cipher_SBD_distance[i][j]);
 			}
 		}
-		endTime = clock();
-		data_SBOR_time += (float)(endTime-startTime)/(CLOCKS_PER_SEC);
+		endTime = std::chrono::system_clock::now(); // endTime check
+		duration_sec = endTime - startTime;  // calculate duration 
+		time_variable["sTopk_B_update_score"] = time_variable.find("sTopk_B_update_score")->second + duration_sec.count();
 
-		ciper_min = paillier_enc(0, pubkey, pt, paillier_get_rand_devurandom);	
+		cipher_min = paillier_enc(0, pubkey, pt, paillier_get_rand_devurandom);	
 	}
 	
 	// user(Bob)에게 결과 전송을 위해 random 값 삽입
 	for(i=0;i<k;i++){
 		for(j=0; j<dim; j++){
-			paillier_mul(pubkey,ciper_result[i][j],ciper_result[i][j],ciper_rand);
+			paillier_mul(pubkey, cipher_result[i][j], cipher_result[i][j], cipher_rand);
 		}
 	}
 
 	paillier_freeciphertext(temp_dist);	
 	
-	return SkNNm_Bob2(ciper_result, rand, k, dim);
+	return SkNNm_Bob2(cipher_result, rand, k, dim);
 }

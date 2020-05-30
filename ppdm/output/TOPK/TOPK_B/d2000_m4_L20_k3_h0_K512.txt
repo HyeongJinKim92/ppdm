@@ -1,0 +1,26 @@
+query : ./PPDM  1  0  7  0  2000  4  20  3  512  10  10  10  10  10  
+total time : 988
+sTopk_B_SBD(CS(score)) 
+167.378638 (16.942689 %) 
+sTopk_B_smax(score)) 
+432.229384 (43.751868 %) 
+# retrieved node : 0
+
+
+query : ./PPDM  1  0  7  0  2000  4  20  3  512  10  10  10  10  10  
+total time : 996
+sTopk_B_SBD(CS(score)) 
+168.917555 (16.953301 %) 
+sTopk_B_smax(score)) 
+435.903816 (43.749205 %) 
+sTopk_B_recover_MAX_Score 
+177.812692 (17.846056 %) 
+sTopk_B_subtract_Score(SBD_score)) 
+9.788759 (0.982442 %) 
+sTopk_B_extract_result 
+32.779241 (3.289867 %) 
+sTopk_B_update_score 
+164.787944 (16.538836 %) 
+# retrieved node : 0
+
+

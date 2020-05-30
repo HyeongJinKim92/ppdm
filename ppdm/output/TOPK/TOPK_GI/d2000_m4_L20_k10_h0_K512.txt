@@ -42,3 +42,116 @@ data_SPE(range) : 0  (0%)
 # retrieved node : 4
 
 
+query : ./PPDM  1  2  7  0  2000  4  20  10  512  10  10  10  10  10  
+total time : 46
+sTopk_G_preprocessing_query 
+0.019004 (0.041319 %) 
+sTopk_G_GSRO_node_query 
+3.634006 (7.901186 %) 
+sTopk_G_extract_cand 
+11.225461 (24.406800 %) 
+sTopk_G_extract_expand_cand 
+11.225890 (24.407731 %) 
+sTopk_G_computeScore 
+0.868405 (1.888118 %) 
+sTopk_G_sMaxn 
+0.568775 (1.236650 %) 
+sTopk_G_sMaxn_second 
+1.631844 (3.548014 %) 
+sTopk_G_subtract 
+2.252489 (4.897443 %) 
+sTopk_G_extract_topk 
+11.352015 (24.681958 %) 
+sTopk_G_check_expand_cond 
+1.328918 (2.889381 %) 
+# retrieved node : 4
+Result(0) :	477	427	506	501	
+Result(1) :	435	471	472	510	
+Result(2) :	488	437	490	456	
+Result(3) :	349	506	501	507	
+Result(4) :	449	491	472	431	
+Result(5) :	470	491	491	388	
+Result(6) :	463	457	493	425	
+Result(7) :	446	478	482	420	
+Result(8) :	489	468	473	395	
+Result(9) :	498	492	310	505	
+
+
+time : 2020-05-30-23-59-23
+query : TOPK_GI TREE_LEVEL : 7 THREAD : 0 DATA : 2000 DIMENSION : 4 BITS : 20 k : 10 KEY : 512  QUERY : 10 10 10 10 10 
+total time : 46
+sTopk_G_preprocessing_query 					 0.023488 (0.051324 %) 
+sTopk_G_GSRO_node_query 					 3.452892 (7.544779 %) 
+sTopk_G_extract_cand 					 11.349139 (24.798556 %) 
+sTopk_G_extract_expand_cand 					 11.347141 (24.794190 %) 
+sTopk_G_computeScore 					 0.860260 (1.879720 %) 
+sTopk_G_sMaxn 					 0.574448 (1.255204 %) 
+sTopk_G_sMaxn_second 					 1.562083 (3.413245 %) 
+sTopk_G_subtract 					 2.214222 (4.838209 %) 
+sTopk_G_extract_topk 					 11.203885 (24.481166 %) 
+sTopk_G_check_expand_cond 					 1.314458 (2.872171 %) 
+# retrieved node : 4
+Result(0) :	477	427	506	501	
+Result(1) :	435	471	472	510	
+Result(2) :	488	437	490	456	
+Result(3) :	349	506	501	507	
+Result(4) :	449	491	472	431	
+Result(5) :	470	491	491	388	
+Result(6) :	463	457	493	425	
+Result(7) :	446	478	482	420	
+Result(8) :	489	468	473	395	
+Result(9) :	498	492	310	505	
+
+
+time : 2020-05-31-01-54-57
+query : TOPK_GI TREE_LEVEL : 7 THREAD : 0 DATA : 2000 DIMENSION : 4 BITS : 20 k : 10 KEY : 512  QUERY : 10 10 10 10 10 
+total time : 46
+sTopk_G_preprocessing_query 					 0.045146 (0.098445 %) 
+sTopk_G_GSRO_node_query 					 3.671682 (8.006465 %) 
+sTopk_G_extract_cand 					 11.167302 (24.351403 %) 
+sTopk_G_extract_expand_cand 					 11.168645 (24.354333 %) 
+sTopk_G_computeScore 					 0.865265 (1.886795 %) 
+sTopk_G_sMaxn 					 0.536851 (1.170656 %) 
+sTopk_G_sMaxn_second 					 1.670710 (3.643149 %) 
+sTopk_G_subtract 					 2.235017 (4.873675 %) 
+sTopk_G_extract_topk 					 11.295346 (24.630616 %) 
+sTopk_G_check_expand_cond 					 1.324075 (2.887277 %) 
+# retrieved node : 4
+Result(0) :	477	427	506	501	
+Result(1) :	435	471	472	510	
+Result(2) :	488	437	490	456	
+Result(3) :	349	506	501	507	
+Result(4) :	449	491	472	431	
+Result(5) :	470	491	491	388	
+Result(6) :	463	457	493	425	
+Result(7) :	446	478	482	420	
+Result(8) :	489	468	473	395	
+Result(9) :	498	492	310	505	
+
+
+time : 2020-05-31-01-56-31
+query : TOPK_GI TREE_LEVEL : 7 THREAD : 0 DATA : 2000 DIMENSION : 4 BITS : 20 k : 10 KEY : 512  QUERY : 10 10 10 10 10 
+total time : 46
+sTopk_G_preprocessing_query 					 0.023826 (0.052204 %) 
+sTopk_G_GSRO_node_query 					 3.391939 (7.432045 %) 
+sTopk_G_extract_cand 					 11.206514 (24.554487 %) 
+sTopk_G_extract_expand_cand 					 11.198260 (24.536401 %) 
+sTopk_G_computeScore 					 0.866071 (1.897639 %) 
+sTopk_G_sMaxn 					 0.569504 (1.247835 %) 
+sTopk_G_sMaxn_second 					 1.604313 (3.515196 %) 
+sTopk_G_subtract 					 2.240416 (4.908954 %) 
+sTopk_G_extract_topk 					 11.330264 (24.825635 %) 
+sTopk_G_check_expand_cond 					 1.327868 (2.909479 %) 
+# retrieved node : 4
+Result(0) :	477	427	506	501	
+Result(1) :	435	471	472	510	
+Result(2) :	488	437	490	456	
+Result(3) :	349	506	501	507	
+Result(4) :	449	491	472	431	
+Result(5) :	470	491	491	388	
+Result(6) :	463	457	493	425	
+Result(7) :	446	478	482	420	
+Result(8) :	489	468	473	395	
+Result(9) :	498	492	310	505	
+
+

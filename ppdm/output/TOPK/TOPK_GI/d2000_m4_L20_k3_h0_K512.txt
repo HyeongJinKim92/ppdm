@@ -1,0 +1,53 @@
+query : ./PPDM  1  2  7  0  2000  4  20  3  512  10  10  10  10  10  
+total time : 31
+sRange_G_preprocessing_query 
+0.019034 (0.060439 %) 
+sRange_G_GSRO_node_query 
+3.575469 (11.353223 %) 
+sRange_G_extract_cand 
+11.115982 (35.296690 %) 
+sRange_G_extract_expand_cand 
+10.944752 (34.752981 %) 
+sTopk_G_computeScore 
+0.610927 (1.939882 %) 
+sTopk_G_sMaxn 
+0.167472 (0.531775 %) 
+sTopk_G_sMaxn_second 
+0.327182 (1.038904 %) 
+sTopk_G_subtract 
+0.474140 (1.505541 %) 
+sTopk_G_extract_topk 
+2.394958 (7.604735 %) 
+sTopk_G_check_expand_cond 
+1.317598 (4.183783 %) 
+# retrieved node : 3
+
+
+query : ./PPDM  1  2  7  0  2000  4  20  3  512  10  10  10  10  10  
+total time : 32
+sTopk_G_preprocessing_query 
+0.018856 (0.059707 %) 
+sTopk_G_GSRO_node_query 
+3.618507 (11.457972 %) 
+sTopk_G_extract_cand 
+11.142359 (35.282185 %) 
+sTopk_G_extract_expand_cand 
+10.970453 (34.737843 %) 
+sTopk_G_computeScore 
+0.612221 (1.938592 %) 
+sTopk_G_sMaxn 
+0.168284 (0.532870 %) 
+sTopk_G_sMaxn_second 
+0.307737 (0.974447 %) 
+sTopk_G_subtract 
+0.474774 (1.503367 %) 
+sTopk_G_extract_topk 
+2.400868 (7.602329 %) 
+sTopk_G_check_expand_cond 
+1.320093 (4.180064 %) 
+# retrieved node : 3
+Result(0) :	477	427	506	501	
+Result(1) :	435	471	472	510	
+Result(2) :	488	437	490	456	
+
+

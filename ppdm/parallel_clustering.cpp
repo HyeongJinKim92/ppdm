@@ -243,7 +243,7 @@ paillier_ciphertext_t*** protocol::Parallel_Clustering_m_Grid(paillier_ciphertex
 
 			for( int j = 0 ; j < k ; j++){
 				Distance_center_data[i][j] = SSEDm(cipher[i], formerSumCluster[j], dim);
-				//Distance_center_data[i][j] = DP_SSED(cipher[i], formerSumCluster[j], dim);
+				//Distance_center_data[i][j] = SSEDm(cipher[i], formerSumCluster[j], dim);
 				//Distance_center_data[i][j] = OP_SSED(cipher[i], formerSumCluster[j], formerSumCntCluster, i, k);
 				//gmp_printf("dist : %Zd\n", paillier_dec(0, pubkey, prvkey, Distance_center_data[i][j]));
 			}
@@ -315,7 +315,7 @@ paillier_ciphertext_t*** protocol::Parallel_Clustering_m_Grid(paillier_ciphertex
 
 
 
-paillier_ciphertext_t*** protocol::Clustering_PB(paillier_ciphertext_t*** ciper, boundary* node, int NumNode, int NumData, int k)
+paillier_ciphertext_t*** protocol::Clustering_PB(paillier_ciphertext_t*** cipher, boundary* node, int NumNode, int NumData, int k)
 {
 	printf("!!!!!!!!!!!!!!!!!!!!!!!!Clustering_PB start!!!!!!!!!!!!!!!!!!!!!!!!\n");
 	if( thread_num < 1 ) 
@@ -331,7 +331,7 @@ paillier_ciphertext_t*** protocol::Clustering_PB(paillier_ciphertext_t*** ciper,
 		for(int j = 0 ; j < dim ; j++){
 			origin_data[i][j] = (paillier_ciphertext_t*)malloc(sizeof(paillier_ciphertext_t));
 			mpz_init(origin_data[i][j]->c);
-			origin_data[i][j] = ciper[i][j];
+			origin_data[i][j] = cipher[i][j];
 		}
 	}
 
@@ -468,7 +468,7 @@ paillier_ciphertext_t*** protocol::Clustering_PB(paillier_ciphertext_t*** ciper,
 
 
 
-paillier_ciphertext_t*** protocol::Clustering_PGI(paillier_ciphertext_t*** ciper, boundary* node, int NumNode, int NumData, int k)
+paillier_ciphertext_t*** protocol::Clustering_PGI(paillier_ciphertext_t*** cipher, boundary* node, int NumNode, int NumData, int k)
 {
 	printf("Start Clustering_Grid_preprocessing\n");
 
@@ -480,7 +480,7 @@ paillier_ciphertext_t*** protocol::Clustering_PGI(paillier_ciphertext_t*** ciper
 
 	int i = 0, j = 0, m = 0;
 											
-	paillier_ciphertext_t*** formerCenter = PreClustering(ciper, node, NumNode, NumData, k);
+	paillier_ciphertext_t*** formerCenter = PreClustering(cipher, node, NumNode, NumData, k);
 	
 
 	for( i = 0 ; i < k ; i++ ){
@@ -490,14 +490,14 @@ paillier_ciphertext_t*** protocol::Clustering_PGI(paillier_ciphertext_t*** ciper
 		printf("\n");
 	}
 
-	paillier_ciphertext_t*** NewCluster = Parallel_Clustering_m_Grid(ciper, NumData, k, 100, formerCenter);
+	paillier_ciphertext_t*** NewCluster = Parallel_Clustering_m_Grid(cipher, NumData, k, 100, formerCenter);
 	
 
 	printf("End Clustering_Grid\n");
 	return NewCluster;
 
 }
-paillier_ciphertext_t*** protocol::Clustering_PAI(paillier_ciphertext_t*** ciper, boundary* node, int NumNode, int NumData, int k)
+paillier_ciphertext_t*** protocol::Clustering_PAI(paillier_ciphertext_t*** cipher, boundary* node, int NumNode, int NumData, int k)
 {
 	return 0;	
 }

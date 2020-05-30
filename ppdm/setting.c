@@ -102,9 +102,9 @@ paillier_ciphertext_t*** setting::InputData_read(char* inputFilename,int dim, in
 
 	paillier_plaintext_t * plain;
 
-	paillier_ciphertext_t*** ciper = (paillier_ciphertext_t***)malloc(sizeof(paillier_ciphertext_t**)*NumData);
+	paillier_ciphertext_t*** cipher = (paillier_ciphertext_t***)malloc(sizeof(paillier_ciphertext_t**)*NumData);
 	for( i = 0 ; i < NumData ; i++ ){
-		ciper[i] = (paillier_ciphertext_t**)malloc(sizeof(paillier_ciphertext_t*)*dim);
+		cipher[i] = (paillier_ciphertext_t**)malloc(sizeof(paillier_ciphertext_t*)*dim);
 	}
 	i=0;
 	if( pFile != NULL ){   	
@@ -115,7 +115,7 @@ paillier_ciphertext_t*** setting::InputData_read(char* inputFilename,int dim, in
 			while(token != NULL && token !=" " ){
 				//printf("%s\n",token);
 				plain = paillier_plaintext_from_ui(atoi(token));
-				ciper[i][j] = paillier_enc(0, pub, plain, paillier_get_rand_devurandom);
+				cipher[i][j] = paillier_enc(0, pub, plain, paillier_get_rand_devurandom);
 				token = strtok(NULL, TOKEN);
 				j++;
 			 }
@@ -124,11 +124,11 @@ paillier_ciphertext_t*** setting::InputData_read(char* inputFilename,int dim, in
 	} //파일 읽기 끝 
 	
 	fclose(pFile);
-	return ciper;
+	return cipher;
 	
 }
 
-void setting::TimeResult_write_ciper(float time,paillier_ciphertext_t*** result,int result_num,int NumData,char* app, int bitsize,int dim){
+void setting::TimeResult_write_cipher(float time,paillier_ciphertext_t*** result,int result_num,int NumData,char* app, int bitsize,int dim){
 	FILE *fp_output;
 	char file_name[128]; 
 	sprintf(file_name, "output/%s/d%d_L%d.txt",app ,NumData,bitsize); 
@@ -150,7 +150,18 @@ void setting::TimeResult_write_ciper(float time,paillier_ciphertext_t*** result,
 
 void setting::TimeResult_write_map(char* query, int** result, int result_num, char* app, protocol proto)
 {
-	//protocol proto;
+
+	std::time_t rawtime;
+	std::tm* timeinfo;
+	char buffer [80];
+	
+	std::time(&rawtime);
+	timeinfo = std::localtime(&rawtime);
+
+	std::strftime(buffer,80,"%Y-%m-%d-%H-%M-%S",timeinfo);
+	std::puts(buffer);
+
+
 	FILE *fp_output;
 	char file_name[128]; 
 	sprintf(file_name, "output/%s/d%d_m%d_L%d_k%d_h%d_K%d.txt", app, proto.NumData, proto.dim, proto.size, proto.k, proto.tree_level, proto.modul); 
@@ -159,29 +170,19 @@ void setting::TimeResult_write_map(char* query, int** result, int result_num, ch
 	for(auto it = proto.time_variable.begin() ; it != proto.time_variable.end() ; it++ ){
 		cout <<  it->first << " " << "time : " << it->second << " "<< (it->second/proto.total_time)*100 << endl;
 	}
-
+	fprintf(fp_output,"time : %s\n", buffer);
 	fprintf(fp_output,"query : %s\n", query);
 	fprintf(fp_output,"total time : %.0f\n", proto.total_time);
 	for(auto it = proto.time_variable.begin() ; it != proto.time_variable.end() ; it++ ){
-		fprintf(fp_output,"%s \t time : \t %f \t (%f%%) \n", it->first, it->second, (it->second/proto.total_time)*100);
+		fprintf(fp_output,"%s \t\t\t\t\t %f (%f %%) \n", it->first, it->second, (it->second/proto.total_time)*100);
 	}
-/*
-	fprintf(fp_output,"query : %s\n", query);
-	fprintf(fp_output,"total time : %.0f\n", proto.total_time);
-	fprintf(fp_output,"query_Processing_time : %.0f  (%.0f%%)\n", proto.query_Processing_time, (proto.query_Processing_time/proto.total_time)*100);
-	fprintf(fp_output,"node_SBD : %.0f  (%.0f%%)\n", proto.node_Processing_time, (proto.node_Processing_time/proto.total_time)*100);
-	fprintf(fp_output,"node_SRO : %.0f  (%.0f%%) \t node_expansion(verify) : %.0f (%.0f%%)\n", proto.node_SRO_time, (proto.node_SRO_time/proto.total_time)*100, proto.node_expansion_time, (proto.node_expansion_time/proto.total_time)*100);
-	fprintf(fp_output,"node_retrieval : %.0f  (%.0f%%) \t node_retrieval(verify) : %.0f (%.0f%%)\n",proto.data_extract_first_time, (proto.data_extract_first_time/proto.total_time)*100, proto.data_extract_second_time, (proto.data_extract_second_time/proto.total_time)*100);
-	printf("data_Processing : %.0f (%.0f%%) \t data_SSED_SBD : %.0f  (%.0f%%) \t data_SBOR : %.0f (%.0f%%)\n", proto.data_Processing_time, (proto.data_Processing_time/proto.total_time)*100, proto.data_SSED_SBD_time, (proto.data_SSED_SBD_time/proto.total_time)*100, proto.data_SBOR_time, (proto.data_SBOR_time/proto.total_time)*100);
-	fprintf(fp_output,"sMINn : %.0f  (%.0f%%) \t sMINn (verify): %.0f (%.0f%%)\n", proto.sMINn_first_time, (proto.sMINn_first_time/proto.total_time)*100, proto.sMINn_second_time, (proto.sMINn_second_time/proto.total_time)*100);
-	fprintf(fp_output,"data_SPE(range) : %.0f  (%.0f%%) \n", proto.data_SPE_time, (proto.data_SPE_time/proto.total_time)*100);
-*/
+
 	fprintf(fp_output,"# retrieved node : %d\n", proto.totalNumOfRetrievedNodes); // 탐색한 총 노드의 개수 기록
 
 	//result file write
-	for(int i=0;i<result_num;i++){
+	for( int i = 0 ; i < result_num ; i++ ){
 		fprintf(fp_output,"Result(%d) :\t", i);
-		for(int j=0; j<proto.dim; j++) {				
+		for( int j = 0 ; j < proto.dim ; j++ ) {
 				fprintf(fp_output,"%d\t", result[i][j]);
 			}
 		fprintf(fp_output,"\n");
@@ -245,7 +246,7 @@ void setting::TimeResult_write_int_forRange(float time,int** result,int k,int re
 	printf("sMINn : %.0f  (%.0f%%) \t sMINn (verify): %.0f (%.0f%%)\n", proto.sMINn_first_time, (proto.sMINn_first_time/proto.total_time)*100, proto.sMINn_second_time, (proto.sMINn_second_time/proto.total_time)*100);
 	printf("data_SPE(range) : %.0f  (%.0f%%) \n", proto.data_SPE_time, (proto.data_SPE_time/proto.total_time)*100);
 
-
+	fprintf(fp_output,"total time : %.0f\n", proto.total_time);
 	fprintf(fp_output,"total time : %.0f\n", proto.total_time);
 	fprintf(fp_output,"node_SBD : %.0f  (%.0f%%)\n", proto.node_Processing_time, (proto.node_Processing_time/proto.total_time)*100);
 	fprintf(fp_output,"node_SRO : %.0f  (%.0f%%) \t node_expansion(verify) : %.0f (%.0f%%)\n", proto.node_SRO_time, (proto.node_SRO_time/proto.total_time)*100, proto.node_expansion_time, (proto.node_expansion_time/proto.total_time)*100);

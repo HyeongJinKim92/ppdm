@@ -31,3 +31,76 @@ data_SPE(range) : 0  (0%)
 # retrieved node : 4
 
 
+query : ./PPDM  1  1  7  0  2000  4  20  10  512  10  10  10  10  10  
+total time : 341
+sTopk_I_preprocessing_query 
+0.726073 (0.212984 %) 
+sTopk_I_SBD_node 
+40.803094 (11.969023 %) 
+sTopk_I_SBD_query 
+0.641380 (0.188140 %) 
+sTopk_I_SRO_node_query 
+41.080958 (12.050531 %) 
+sTopk_I_extract_cand 
+11.456179 (3.360512 %) 
+sTopk_I_extract_expand_cand 
+11.450454 (3.358832 %) 
+sTopk_I_computescore&SBD 
+9.128598 (2.677748 %) 
+sTopk_I_smax_n 
+23.153720 (6.791824 %) 
+sTopk_I_smax_n_expand 
+77.386929 (22.700386 %) 
+sTopk_I_recovery_score 
+56.944541 (16.703894 %) 
+sTopk_I_subtract 
+2.246143 (0.658875 %) 
+sTopk_I_extract_topk 
+7.542266 (2.212419 %) 
+sTopk_I_updateScore 
+37.895696 (11.116178 %) 
+sTopk_I_check_expand_cond 
+15.744239 (4.618355 %) 
+# retrieved node : 4
+Result(0) :	477	427	506	501	
+Result(1) :	435	471	472	510	
+Result(2) :	488	437	490	456	
+Result(3) :	349	506	501	507	
+Result(4) :	449	491	472	431	
+Result(5) :	470	491	491	388	
+Result(6) :	463	457	493	425	
+Result(7) :	446	478	482	420	
+Result(8) :	489	468	473	395	
+Result(9) :	498	492	310	505	
+
+
+time : 2020-05-30-21-30-18
+query : TOPK_I TREE_LEVEL : 7 THREAD : 0 DATA : 2000 DIMENSION : 4 BITS : 20 k : 10 KEY : 512  QUERY : 10 10 10 10 10 
+total time : 336
+sTopk_I_preprocessing_query 					 0.706413 (0.210117 %) 
+sTopk_I_SBD_node 					 39.612477 (11.782397 %) 
+sTopk_I_SBD_query 					 0.622972 (0.185298 %) 
+sTopk_I_SRO_node_query 					 40.211718 (11.960636 %) 
+sTopk_I_extract_cand 					 11.117655 (3.306853 %) 
+sTopk_I_extract_expand_cand 					 11.116691 (3.306566 %) 
+sTopk_I_computescore&SBD 					 8.903565 (2.648290 %) 
+sTopk_I_smax_n 					 23.033102 (6.851002 %) 
+sTopk_I_smax_n_expand 					 77.012809 (22.906810 %) 
+sTopk_I_recovery_score 					 56.611104 (16.838495 %) 
+sTopk_I_subtract 					 2.217378 (0.659540 %) 
+sTopk_I_extract_topk 					 7.481668 (2.225359 %) 
+sTopk_I_updateScore 					 37.597295 (11.182998 %) 
+sTopk_I_check_expand_cond 					 15.330602 (4.559958 %) 
+# retrieved node : 4
+Result(0) :	477	427	506	501	
+Result(1) :	435	471	472	510	
+Result(2) :	488	437	490	456	
+Result(3) :	349	506	501	507	
+Result(4) :	449	491	472	431	
+Result(5) :	470	491	491	388	
+Result(6) :	463	457	493	425	
+Result(7) :	446	478	482	420	
+Result(8) :	489	468	473	395	
+Result(9) :	498	492	310	505	
+
+

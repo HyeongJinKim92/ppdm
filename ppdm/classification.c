@@ -103,14 +103,14 @@ paillier_ciphertext_t*** protocol::sNodeRetrievalforClassification(paillier_ciph
 				else {		// 해당 노드에는 데이터가 없지만, 동일 노드 그룹 내 다른 노드에는 아직 처리할 데이터가 있는 경우를 핸들링
 					for(z=0; z<dim+1; z++) {
 						if(m == 1) {
-							//gmp_printf("data : %Zd, alpha : %Zd \n", paillier_dec(0, pubkey, prvkey, ciper_MAX), paillier_dec(0, pubkey, prvkey, alpha[nodeId]));
+							//gmp_printf("data : %Zd, alpha : %Zd \n", paillier_dec(0, pubkey, prvkey, cipher_MAX), paillier_dec(0, pubkey, prvkey, alpha[nodeId]));
 							//printf("cnt : %d,  dim : %d\n", *cnt, z);
-							cand[*cnt][z] = SM_p1(ciper_MAX, alpha[nodeId]);  // 해당 데이터 ID의 실제 데이터에 접근
+							cand[*cnt][z] = SM_p1(cipher_MAX, alpha[nodeId]);  // 해당 데이터 ID의 실제 데이터에 접근
 							//gmp_printf("%Zd \n", paillier_dec(0, pubkey, prvkey, cand[*cnt][z]));
 						} else {
-							//gmp_printf("data : %Zd, alpha : %Zd \n", paillier_dec(0, pubkey, prvkey, ciper_MAX), paillier_dec(0, pubkey, prvkey, alpha[nodeId]));
+							//gmp_printf("data : %Zd, alpha : %Zd \n", paillier_dec(0, pubkey, prvkey, cipher_MAX), paillier_dec(0, pubkey, prvkey, alpha[nodeId]));
 							//printf("cnt : %d,  dim : %d\n", *cnt, z);
-							tmp[z] = SM_p1(ciper_MAX, alpha[nodeId]);  // 해당 데이터 ID의 실제 데이터에 접근
+							tmp[z] = SM_p1(cipher_MAX, alpha[nodeId]);  // 해당 데이터 ID의 실제 데이터에 접근
 							//gmp_printf("%Zd \n", paillier_dec(0, pubkey, prvkey, cand[*cnt][z]));
 							//gmp_printf("%Zd \n", paillier_dec(0, pubkey, prvkey, tmp[z]));
 							paillier_mul(pubkey, cand[*cnt][z], cand[*cnt][z], tmp[z]);
@@ -215,7 +215,7 @@ int** protocol::Classification_G(paillier_ciphertext_t*** data, paillier_ciphert
 			{
 				for( i = 0 ; i < NumNode ; i ++ )
 				{
-					alpha[i] = DP_GSRO(q, q, node[i].LL, node[i].RR);
+					alpha[i] = GSRO(q, q, node[i].LL, node[i].RR);
 					if(Print)
 					{
 						cout<< i+1 <<" alpha : ";
@@ -239,8 +239,8 @@ int** protocol::Classification_G(paillier_ciphertext_t*** data, paillier_ciphert
 					temp_coord3		= SM_p1(SBN(psi[2]), temp_coord3);
 					paillier_mul(pubkey, shortestPoint[j], temp_coord1, temp_coord3);
 				}
-				TMP_NodeDIST		= DP_SSED(q, shortestPoint, dim);
-				paillier_subtract(pubkey, TMP_alpha, ciper_one, alpha[i]);
+				TMP_NodeDIST		= SSEDm(q, shortestPoint, dim);
+				paillier_subtract(pubkey, TMP_alpha, cipher_one, alpha[i]);
 				paillier_mul(pubkey, NodeDIST[i], SM_p1(alpha[i], MAX), SM_p1(TMP_alpha, TMP_NodeDIST));				
 				alpha[i]			= GSCMP(NodeDIST[i], K_DIST);
 				if(Print)
@@ -358,7 +358,7 @@ int** protocol::Classification_G(paillier_ciphertext_t*** data, paillier_ciphert
 		}
 		for( i = 0 ; i < cnt ; i ++)
 		{
-			DIST[i]			= DP_SSED(cand[i], q,dim);
+			DIST[i]			= SSEDm(cand[i], q,dim);
 
 			if(Print)
 			{
@@ -421,7 +421,7 @@ int** protocol::Classification_G(paillier_ciphertext_t*** data, paillier_ciphert
 
 				}
 				
-				paillier_subtract(pubkey, TMP_alpha, ciper_one, V[i]);
+				paillier_subtract(pubkey, TMP_alpha, cipher_one, V[i]);
 				paillier_mul(pubkey, DIST[i], SM_p1(V[i], MAX), SM_p1(TMP_alpha, DIST[i]));
 				for( j = 0 ; j < dim+1 ; j++ )
 				{
@@ -451,7 +451,7 @@ int** protocol::Classification_G(paillier_ciphertext_t*** data, paillier_ciphert
 		}
 		if(!verify_flag)
 		{	
-			K_DIST = DP_SSED(q, Result[k-1], dim); // k번째 결과까지의 거리
+			K_DIST = SSEDm(q, Result[k-1], dim); // k번째 결과까지의 거리
 		}
 
 		if(!verify_flag)
@@ -543,7 +543,6 @@ int** protocol::Classification_I(paillier_ciphertext_t*** data, paillier_ciphert
 	
 	printf("===== Query -> SBD || Node -> SBD =====\n");
 	
-	startTime = clock();
 	for( i = 0 ; i < dim ; i++ ){
 		qLL_bit[i] = SBD_for_SRO(q[i], 0);
 		qRR_bit[i] = SBD_for_SRO(q[i], 1);
@@ -555,12 +554,8 @@ int** protocol::Classification_I(paillier_ciphertext_t*** data, paillier_ciphert
 			nodeRR_bit[i][j] = SBD_for_SRO(node[i].RR[j], 1);
 		}
 	}
-	endTime = clock();
-	node_Processing_time = (float)(endTime-startTime)/(CLOCKS_PER_SEC);
-	printf("node SBD time: %f\n", node_Processing_time);
 	
 	while(1){
-		startTime = clock();
 		if(!verify_flag){
 			printf("===== Node SRO start =====\n");
 		}else{
@@ -602,30 +597,16 @@ int** protocol::Classification_I(paillier_ciphertext_t*** data, paillier_ciphert
 		protocol_3_printf(node_dist_bit, NumNode, size+1, "node_dist_bit", false);
 		
 		if(!verify_flag){
-			endTime = clock();
-			node_SRO_time = (float)(endTime-startTime)/(CLOCKS_PER_SEC);
-			printf("SRO time : %f\n", node_SRO_time);
 		}else{
-			endTime = clock();
-			node_expansion_time = (float)(endTime-startTime)/(CLOCKS_PER_SEC);
-			printf("Node Expansion time : %f\n", node_expansion_time);
 		}
 		cnt = 0;
 		if(!verify_flag){
-			startTime = clock();
 			cand = sNodeRetrievalforClassification(data, node, alpha, NumData, NumNode, &cnt, &NumNodeGroup);
 			totalNumOfRetrievedNodes += NumNodeGroup;
-			endTime = clock();
-			data_extract_first_time = (float)(endTime-startTime)/(CLOCKS_PER_SEC);
-			printf("Node Retrieval time : %f\n", data_extract_first_time);
 		}else{
 			protocol_3_free(cand, cnt, dim+1);
-			startTime = clock();
 			tmp_cand = sNodeRetrievalforClassification(data, node, alpha, NumData, NumNode, &cnt, &NumNodeGroup);
 			totalNumOfRetrievedNodes += NumNodeGroup;
-			endTime = clock();
-			data_extract_second_time = (float)(endTime-startTime)/(CLOCKS_PER_SEC);
-			printf("\nNode Retrieval time : %f\n", data_extract_second_time);
 
 			if(cnt == 0) {	// 검증을 위해 추가 탐색이 필요한 노드가 없는 경우를 처리함
 				break;
@@ -840,31 +821,31 @@ int** protocol::Classification_B(paillier_ciphertext_t*** data, paillier_ciphert
 
 	paillier_plaintext_t * pt = paillier_plaintext_from_ui(0);
 
-	paillier_ciphertext_t* ciper_binary;
-	paillier_ciphertext_t* ciper_min				= paillier_create_enc_zero();
-	paillier_ciphertext_t* ciper_dist				= paillier_create_enc_zero();
-	paillier_ciphertext_t* ciper_rand				= paillier_create_enc(rand);
+	paillier_ciphertext_t* cipher_binary;
+	paillier_ciphertext_t* cipher_min				= paillier_create_enc_zero();
+	paillier_ciphertext_t* cipher_dist				= paillier_create_enc_zero();
+	paillier_ciphertext_t* cipher_rand				= paillier_create_enc(rand);
 	paillier_ciphertext_t* temp_dist				= paillier_create_enc_zero();
 	
 	paillier_ciphertext_t*** min_record				= (paillier_ciphertext_t***)malloc(sizeof(paillier_ciphertext_t**)*k);
-	paillier_ciphertext_t** ciper_distance			= (paillier_ciphertext_t**)malloc(sizeof(paillier_ciphertext_t*)*n);
-	paillier_ciphertext_t*** ciper_SBD_distance		= (paillier_ciphertext_t***)malloc(sizeof(paillier_ciphertext_t**)*n);
-	paillier_ciphertext_t** ciper_mid				= (paillier_ciphertext_t**)malloc(sizeof(paillier_ciphertext_t*)*n);
-	paillier_ciphertext_t** ciper_Smin				= (paillier_ciphertext_t**)malloc(sizeof(paillier_ciphertext_t*)*n);
-	paillier_ciphertext_t** ciper_V					= (paillier_ciphertext_t**)malloc(sizeof(paillier_ciphertext_t*)*n);
-	paillier_ciphertext_t*** ciper_V2				= (paillier_ciphertext_t***)malloc(sizeof(paillier_ciphertext_t**)*n);
+	paillier_ciphertext_t** cipher_distance			= (paillier_ciphertext_t**)malloc(sizeof(paillier_ciphertext_t*)*n);
+	paillier_ciphertext_t*** cipher_SBD_distance		= (paillier_ciphertext_t***)malloc(sizeof(paillier_ciphertext_t**)*n);
+	paillier_ciphertext_t** cipher_mid				= (paillier_ciphertext_t**)malloc(sizeof(paillier_ciphertext_t*)*n);
+	paillier_ciphertext_t** cipher_Smin				= (paillier_ciphertext_t**)malloc(sizeof(paillier_ciphertext_t*)*n);
+	paillier_ciphertext_t** cipher_V					= (paillier_ciphertext_t**)malloc(sizeof(paillier_ciphertext_t*)*n);
+	paillier_ciphertext_t*** cipher_V2				= (paillier_ciphertext_t***)malloc(sizeof(paillier_ciphertext_t**)*n);
 
 	
-	paillier_ciphertext_t** ciper_rabel_result = (paillier_ciphertext_t**)malloc(sizeof(paillier_ciphertext_t*)*k);
+	paillier_ciphertext_t** cipher_rabel_result = (paillier_ciphertext_t**)malloc(sizeof(paillier_ciphertext_t*)*k);
 	for( i = 0 ; i < size; i++ ){
-		ciper_Smin[i] = ciper_zero;
+		cipher_Smin[i] = cipher_zero;
 	}
 
 	for( i = 0 ; i < n ; i++ ){
-		ciper_distance[i] 	= ciper_zero;
-		ciper_SBD_distance[i] = (paillier_ciphertext_t**)malloc(sizeof(paillier_ciphertext_t*)*size);
-		ciper_V[i]	= ciper_zero;
-		ciper_V2[i] = (paillier_ciphertext_t**)malloc(sizeof(paillier_ciphertext_t*)*(dim+1));
+		cipher_distance[i] 	= cipher_zero;
+		cipher_SBD_distance[i] = (paillier_ciphertext_t**)malloc(sizeof(paillier_ciphertext_t*)*size);
+		cipher_V[i]	= cipher_zero;
+		cipher_V2[i] = (paillier_ciphertext_t**)malloc(sizeof(paillier_ciphertext_t*)*(dim+1));
 	}
 
 	for( i = 0 ; i < k ; i++ ){
@@ -873,20 +854,20 @@ int** protocol::Classification_B(paillier_ciphertext_t*** data, paillier_ciphert
 			min_record[i][j] = (paillier_ciphertext_t*)malloc(sizeof(paillier_ciphertext_t));
 			mpz_init(min_record[i][j]->c);
 		}
-		ciper_rabel_result[i] = paillier_create_enc_zero();
+		cipher_rabel_result[i] = paillier_create_enc_zero();
 	}
 
 
 	printf("\n=== Data SSED & SBD start ===\n");
 	startTime = clock();
 	for( i = 0 ; i < n ; i++ ){
-		ciper_distance[i] = SSEDm(query, data[i], dim);
-		ciper_SBD_distance[i] = SBD(ciper_distance[i]);
+		cipher_distance[i] = SSEDm(query, data[i], dim);
+		cipher_SBD_distance[i] = SBD(cipher_distance[i]);
 		
 		/*
-		paillier_print("dist : ", ciper_distance[i]);	
+		paillier_print("dist : ", cipher_distance[i]);	
 		for( j = 0 ; j < size ; j++ ){
-			gmp_printf("%Zd", paillier_dec(0, pubkey, prvkey, ciper_SBD_distance[i][j]));
+			gmp_printf("%Zd", paillier_dec(0, pubkey, prvkey, cipher_SBD_distance[i][j]));
 		}
 		printf("\n");
 		*/		
@@ -898,7 +879,7 @@ int** protocol::Classification_B(paillier_ciphertext_t*** data, paillier_ciphert
 	for( s = 0 ; s < k ; s++ ){
 		//printf("\n%dth sMINn start \n", s+1);
 		startTime = clock();
-		ciper_Smin = Smin_n(ciper_SBD_distance, n);	// bit로 표현된 암호화 min 거리 추출
+		cipher_Smin = Smin_n(cipher_SBD_distance, n);	// bit로 표현된 암호화 min 거리 추출
 		endTime = clock();
 		gap = (float)(endTime-startTime)/(CLOCKS_PER_SEC);
 		sMINn_first_time += gap;
@@ -906,7 +887,7 @@ int** protocol::Classification_B(paillier_ciphertext_t*** data, paillier_ciphert
 	
 		/*
 		for( j = 0 ; j < size ; j++ ){
-			gmp_printf("%Zd", paillier_dec(0, pubkey, prvkey, ciper_Smin[j]));
+			gmp_printf("%Zd", paillier_dec(0, pubkey, prvkey, cipher_Smin[j]));
 		}
 		printf("\n");	
 		*/
@@ -914,13 +895,13 @@ int** protocol::Classification_B(paillier_ciphertext_t*** data, paillier_ciphert
 		// bit로 표현된 암호화 min 거리를 암호화 정수로 변환
 		for( j = size ; j > 0 ; j-- ){
 			t = (int)pow(2, j-1);
-			ciper_binary = paillier_create_enc(t);
-			ciper_binary = SM_p1(ciper_binary, ciper_Smin[size-j]);
-			paillier_mul(pubkey, ciper_min, ciper_binary, ciper_min);
-			paillier_freeciphertext(ciper_binary);
-			//paillier_print("min : ", ciper_min);
+			cipher_binary = paillier_create_enc(t);
+			cipher_binary = SM_p1(cipher_binary, cipher_Smin[size-j]);
+			paillier_mul(pubkey, cipher_min, cipher_binary, cipher_min);
+			paillier_freeciphertext(cipher_binary);
+			//paillier_print("min : ", cipher_min);
 		}
-		paillier_print("min dist : ", ciper_min);
+		paillier_print("min dist : ", cipher_min);
 		
 		//printf("\n== recalculate query<->data distances ===\n");
 		// 이전 iteration에서 min값으로 선택된 데이터의 거리가 secure하게 MAX로 변환되었기 때문에, 
@@ -929,45 +910,45 @@ int** protocol::Classification_B(paillier_ciphertext_t*** data, paillier_ciphert
 			for( i = 0 ; i < n ; i++ ){
 				for( j = size ; j > 0 ; j--){
 					t = (int)pow(2, j-1);
-					ciper_binary = paillier_create_enc(t);
-					ciper_binary = SM_p1(ciper_binary, ciper_SBD_distance[i][size-j]);
-					paillier_mul(pubkey, ciper_dist, ciper_binary, ciper_dist);
+					cipher_binary = paillier_create_enc(t);
+					cipher_binary = SM_p1(cipher_binary, cipher_SBD_distance[i][size-j]);
+					paillier_mul(pubkey, cipher_dist, cipher_binary, cipher_dist);
 				}
-				ciper_distance[i] = ciper_dist;
-				ciper_dist = paillier_enc(0, pubkey, plain_zero, paillier_get_rand_devurandom);
+				cipher_distance[i] = cipher_dist;
+				cipher_dist = paillier_enc(0, pubkey, plain_zero, paillier_get_rand_devurandom);
 			}
 		}
 		
 		/*
 		for( i = 0 ; i < n ; i++ ){
-			paillier_print("distance : ", ciper_distance[i]);
+			paillier_print("distance : ", cipher_distance[i]);
 		}
 		*/
 
 		// 질의-데이터 거리와 min 거리와의 차를 구함 (min 데이터의 경우에만 0으로 만들기 위함)
 		for( i = 0 ; i < n ; i++ ){
-			paillier_subtract(pubkey, temp_dist, ciper_distance[i], ciper_min);
-			ciper_mid[i] = SM_p1(temp_dist, ciper_rand);
-			//paillier_print("dist - dist : ",ciper_mid[i]);
+			paillier_subtract(pubkey, temp_dist, cipher_distance[i], cipher_min);
+			cipher_mid[i] = SM_p1(temp_dist, cipher_rand);
+			//paillier_print("dist - dist : ",cipher_mid[i]);
 		}
 
-		ciper_V = SkNNm_sub(ciper_mid, n);
+		cipher_V = SkNNm_sub(cipher_mid, n);
 
 		/*
 		for( i = 0 ; i < n ; i++ ){
 			printf("%d : ", i);
-			paillier_print("ciper_V : ", ciper_V[i]);
+			paillier_print("cipher_V : ", cipher_V[i]);
 		}
 		*/
 
 		// min 데이터 추출
 		for( i = 0 ; i < n ; i++ ){
 			for( j = 0 ; j < dim+1 ; j++ ){
-				ciper_V2[i][j] = SM_p1(ciper_V[i], data[i][j]);
+				cipher_V2[i][j] = SM_p1(cipher_V[i], data[i][j]);
 				if( i == 0 ){
-					min_record[s][j] = ciper_V2[i][j];
+					min_record[s][j] = cipher_V2[i][j];
 				}else{
-					paillier_mul(pubkey, min_record[s][j], ciper_V2[i][j], min_record[s][j]);
+					paillier_mul(pubkey, min_record[s][j], cipher_V2[i][j], min_record[s][j]);
 				}
 			}
 		}
@@ -975,18 +956,18 @@ int** protocol::Classification_B(paillier_ciphertext_t*** data, paillier_ciphert
 		startTime = clock();
 		for( i = 0 ; i < n ; i++ ){
 			for( j = 0; j < size ; j++ ){
-				ciper_SBD_distance[i][j] = SBOR(ciper_V[i], ciper_SBD_distance[i][j]);
+				cipher_SBD_distance[i][j] = SBOR(cipher_V[i], cipher_SBD_distance[i][j]);
 			}
 		}
 		endTime = clock();
 		data_SBOR_time += (float)(endTime-startTime)/(CLOCKS_PER_SEC);
 
-		ciper_min = paillier_enc(0, pubkey, pt, paillier_get_rand_devurandom);	
+		cipher_min = paillier_enc(0, pubkey, pt, paillier_get_rand_devurandom);	
 	}
 
 	protocol_3_printf(min_record, k, dim+1, "min_record", true);
 	for( i = 0 ; i < k ; i++ ){
-		*ciper_rabel_result[i] = *min_record[i][dim];
+		*cipher_rabel_result[i] = *min_record[i][dim];
 	}
 
 	paillier_plaintext_t* A = (paillier_plaintext_t*)malloc(sizeof(paillier_plaintext_t));
@@ -1002,7 +983,7 @@ int** protocol::Classification_B(paillier_ciphertext_t*** data, paillier_ciphert
 	}
 
 	paillier_freeciphertext(temp_dist);	
-	SCMC(Entire_set, ciper_rabel_result, Entire_num, k);
+	SCMC(Entire_set, cipher_rabel_result, Entire_num, k);
 
 	return sknn;
 }
