@@ -1,0 +1,6 @@
+time : 2020-05-31-15-47-10
+query : KNN_B TREE_LEVEL : 7 THREAD : 0 DATA : 2000 DIMENSION : 6 BITS : 22 k : 5 KEY : 512  QUERY : 10 10 10 10 10 10 
+total time : 1756
+# retrieved node : 0
+
+

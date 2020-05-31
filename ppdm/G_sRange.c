@@ -7,6 +7,168 @@
 
 using namespace std;
 
+int** protocol::sRange_G(paillier_ciphertext_t*** data, boundary q, boundary* node, int NumData, int NumNode, int* result_num)
+{
+	printf("\n===== Now sRangeG starts =====\n");
+	//printf("NumNode : %d\n", NumNode);
+	int i=0, j=0, m=0;
+	int rand = 5;
+
+	int NumNodeGroup = 0;
+
+	paillier_ciphertext_t* cipher_rand = paillier_create_enc(rand);
+	paillier_print("rand : ",cipher_rand);
+
+
+	int cnt = 0;	 // 질의 영역과 겹치는 노드 내에 존재하는 총 데이터의 수
+
+	paillier_ciphertext_t*** cand ;
+
+
+
+	cand = GSRO_sNodeRetrievalforRange(data, q.LL, q.RR, node, NumData, NumNode, &cnt, &NumNodeGroup, 1);
+	totalNumOfRetrievedNodes += NumNodeGroup;
+
+	paillier_ciphertext_t** alpha = (paillier_ciphertext_t**)malloc(sizeof(paillier_ciphertext_t*)*cnt);
+	
+	// cand 비트 변환 수행 및 SPE호출
+
+	startTime = std::chrono::system_clock::now(); // startTime check
+	for(i=0; i<cnt; i++) {
+		alpha[i] = GSRO(cand[i], cand[i], q.LL, q.RR);	
+		for(j=0; j<dim; j++){
+			paillier_mul(pubkey,cand[i][j],cand[i][j],cipher_rand);
+		}
+	}	
+	endTime = std::chrono::system_clock::now(); // endTime check
+	duration_sec = endTime - startTime;  // calculate duration 
+	time_variable["SRO_D"] = time_variable.find("SRO_D")->second + duration_sec.count();
+	
+
+	paillier_ciphertext_t*** result;
+	result = sRange_result(alpha, cand, cnt, NumNodeGroup, result_num);
+	
+
+	return FsRange_Bob(result, rand, (*result_num), dim);
+}
+
+paillier_ciphertext_t*** protocol::sRange_result(paillier_ciphertext_t** alpha, paillier_ciphertext_t*** cand, int cnt, int NumNodeGroup, int * result_num){
+	int i,j;
+
+	cout<<"sRange_result NumNodeGroup : "<<NumNodeGroup<<endl;
+	cout<<"sRange_result FanOut : "<<FanOut<<endl;
+
+	paillier_ciphertext_t*** result = (paillier_ciphertext_t***)malloc(sizeof(paillier_ciphertext_t**)*NumNodeGroup*FanOut);
+	for(i=0; i<cnt; i++){
+		if(strcmp( paillier_plaintext_to_str( paillier_dec(0, pub, prv, alpha[i])), paillier_plaintext_to_str(plain_one)) == 0) 
+		{
+			result[(*result_num)]=cand[i]; //result에 삽입
+			(*result_num)++;
+		}
+	}
+	return result;
+}
+
+paillier_ciphertext_t*** protocol::GSRO_sNodeRetrievalforRange(paillier_ciphertext_t*** data, paillier_ciphertext_t** cipher_qLL, paillier_ciphertext_t** cipher_qRR, boundary* node, int NumData, int NumNode, int* cnt, int* NumNodeGroup, int type)
+{
+	printf("\n===== Now GSRO_sNodeRetrievalforRange starts =====\n");
+	printf("NumNode : %d\n", NumNode);
+	int i=0, j=0, m=0;
+
+
+	int** node_group;
+
+	paillier_ciphertext_t** alpha = (paillier_ciphertext_t**) malloc(sizeof(paillier_ciphertext_t*)*NumNode);
+	for(i=0; i<NumNode; i++){
+		alpha[i] = (paillier_ciphertext_t*) malloc(sizeof(paillier_ciphertext_t));
+		mpz_init(alpha[i]->c);
+	}
+
+	startTime = std::chrono::system_clock::now(); // startTime check
+	// 각 노드 GSRO 호출
+	for(i=0; i<NumNode; i++) {	
+		alpha[i] = GSRO(cipher_qLL, cipher_qRR, node[i].LL, node[i].RR);		
+	}
+	endTime = std::chrono::system_clock::now(); // endTime check
+	duration_sec = endTime - startTime;  // calculate duration 
+	time_variable["nodeRetrievalSRO"] = time_variable.find("nodeRetrievalSRO")->second + duration_sec.count();
+	
+	node_group = sRange_sub(alpha, NumNode, NumNodeGroup);
+
+	int nodeId = 0;
+	int dataId = 0;
+	int z = 0;
+	int remained = 0;	  // 노드 그룹 내에서 아직 처리할 데이터가 남아있는 노드가 몇개인지 저장함
+
+	paillier_ciphertext_t** tmp = (paillier_ciphertext_t**)malloc(sizeof(paillier_ciphertext_t*)*dim);
+	for( i = 0 ; i < dim; i++ ){
+		tmp[i] = (paillier_ciphertext_t*) malloc(sizeof(paillier_ciphertext_t));
+		mpz_init(tmp[i]->c);
+	}
+
+	paillier_ciphertext_t*** cand = (paillier_ciphertext_t***)malloc(sizeof(paillier_ciphertext_t**)*(*NumNodeGroup)*FanOut);
+		
+	for( i = 0 ; i < (*NumNodeGroup)*FanOut ; i++ ){
+		cand[i] = (paillier_ciphertext_t**)malloc(sizeof(paillier_ciphertext_t*)*dim);
+		for( j = 0 ; j < dim ; j ++ ){
+			cand[i][j] = (paillier_ciphertext_t*) malloc(sizeof(paillier_ciphertext_t));
+			mpz_init(cand[i][j]->c);
+		}
+	}
+
+
+	startTime = std::chrono::system_clock::now(); // startTime check
+
+
+	// 노드 그룹 별로 데이터 추출을 통해, 질의 영역을 포함하는 노드 내 데이터 추출
+	for(i=0; i<*NumNodeGroup; i++) {
+		remained = node_group[i][0];	 // 해당 노드 그룹 내에서 아직 처리할 데이터가 남아있는 노드가 몇개인지 저장함
+
+		for(j=0; j<FanOut; j++) {
+			if(remained == 0)	// 해당 노드 그룹 내에서 더 이상 처리할 데이터가 없다면, 다음 노드로 넘어감
+				break;
+
+			for(m=1; m<=node_group[i][0]; m++) {	 // 0번지에 해당 노드 그룹에 몇개의 노드가 있는지가 저장되어 있음
+				nodeId = node_group[i][m];	 // 노드 그룹에서 노드 ID를 하나씩 꺼냄
+				if(node[nodeId].NumData >= j+1) 
+				{
+					dataId = node[nodeId].indata_id[j];	// 해당 노드에 저장된 데이터 ID를 하나씩 꺼냄
+					for(z=0; z<dim; z++) {
+						if(m == 1) {
+							cand[*cnt][z] = SM_p1(data[dataId][z], alpha[nodeId]);  // 해당 데이터 ID의 실제 데이터에 접근
+						} else {
+							tmp[z] = SM_p1(data[dataId][z], alpha[nodeId]);  // 해당 데이터 ID의 실제 데이터에 접근
+							paillier_mul(pub, cand[*cnt][z], cand[*cnt][z], tmp[z]);
+						}
+					}
+				
+					if(node[nodeId].NumData == j+1)		// 해당 노드가 마지막 데이터를 처리한다면, remained를 1 감소시킴
+						remained--;
+				}
+				else {		// 해당 노드에는 데이터가 없지만, 동일 노드 그룹 내 다른 노드에는 아직 처리할 데이터가 있는 경우를 핸들링
+					for(z=0; z<dim; z++) {
+						if(m == 1) {
+							cand[*cnt][z] = SM_p1(cipher_MAX, alpha[nodeId]);  // 해당 데이터 ID의 실제 데이터에 접근
+						} else {
+							tmp[z] = SM_p1(cipher_MAX, alpha[nodeId]);  // 해당 데이터 ID의 실제 데이터에 접근
+							paillier_mul(pub, cand[*cnt][z], cand[*cnt][z], tmp[z]);
+						}
+					}
+				}
+			}
+			(*cnt)++;	// 노드 그룹의 노드들을 한바퀴 돌고나면, 데이터 하나가 완성됨
+		}
+	}
+
+	endTime = std::chrono::system_clock::now(); // endTime check
+	duration_sec = endTime - startTime;  // calculate duration 
+	//time_variable.insert(make_pair("sRange_GI_Extract(Data)", duration_sec.count() ));
+	time_variable["nodeRetrieval"] = time_variable.find("nodeRetrieval")->second + duration_sec.count();
+
+	return cand;
+}
+
+
 paillier_ciphertext_t* protocol::GSRO(paillier_ciphertext_t** qLL, paillier_ciphertext_t** qRR, paillier_ciphertext_t** nodeLL, paillier_ciphertext_t** nodeRR){
 	//cout << "\nGSRO start" <<endl;
 	int i = 0;
@@ -75,17 +237,6 @@ paillier_ciphertext_t* protocol::GSRO(paillier_ciphertext_t** qLL, paillier_ciph
 	}
 
 	F1_array = GSRO_sub(F1_array, F2_array, iR1_array, iR2_array);
-
-/*
-	for( i = 0 ; i < dim*2 ; i ++){
-		F1_array[i] = paillier_create_enc(Flag_array[i]);
-		F1_array[i] = SBXOR(F1_array[i],F2_array[i]);
-	} 
-	for( i = 0 ; i < dim*2 ; i ++){
-		F1_array[0] = SM_p1(F1_array[0],F1_array[i]);
-	}
-*/	
-
 
 	for( i = 0 ; i < dim*2 ; i ++){
 		F1_array[0] = SM_p1(F1_array[0], F1_array[i]);
@@ -369,166 +520,5 @@ paillier_ciphertext_t** protocol::unGSRO(paillier_ciphertext_t* A, paillier_ciph
 }	
 
 
-paillier_ciphertext_t*** protocol::GSRO_sNodeRetrievalforRange(paillier_ciphertext_t*** data, paillier_ciphertext_t** cipher_qLL, paillier_ciphertext_t** cipher_qRR, boundary* node, int NumData, int NumNode, int* cnt, int* NumNodeGroup, int type)
-{
-	printf("\n===== Now GSRO_sNodeRetrievalforRange starts =====\n");
-	printf("NumNode : %d\n", NumNode);
-	int i=0, j=0, m=0;
 
 
-	int** node_group;
-
-	paillier_ciphertext_t** alpha = (paillier_ciphertext_t**) malloc(sizeof(paillier_ciphertext_t*)*NumNode);
-	for(i=0; i<NumNode; i++){
-		alpha[i] = (paillier_ciphertext_t*) malloc(sizeof(paillier_ciphertext_t));
-		mpz_init(alpha[i]->c);
-	}
-
-	startTime = std::chrono::system_clock::now(); // startTime check
-	// 각 노드 GSRO 호출
-	for(i=0; i<NumNode; i++) {	
-		alpha[i] = GSRO(cipher_qLL, cipher_qRR, node[i].LL, node[i].RR);		
-	}
-	endTime = std::chrono::system_clock::now(); // endTime check
-	duration_sec = endTime - startTime;  // calculate duration 
-	//time_variable.insert(make_pair("sRange_GI_GSRO(Data, QUERY)", duration_sec.count() ));
-	time_variable["sRange_GI_GSRO(Data, QUERY)"] = time_variable.find("sRange_GI_GSRO(Data, QUERY)")->second + duration_sec.count();
-	
-	node_group = sRange_sub(alpha, NumNode, NumNodeGroup);
-
-	int nodeId = 0;
-	int dataId = 0;
-	int z = 0;
-	int remained = 0;	  // 노드 그룹 내에서 아직 처리할 데이터가 남아있는 노드가 몇개인지 저장함
-
-	paillier_ciphertext_t** tmp = (paillier_ciphertext_t**)malloc(sizeof(paillier_ciphertext_t*)*dim);
-	for( i = 0 ; i < dim; i++ ){
-		tmp[i] = (paillier_ciphertext_t*) malloc(sizeof(paillier_ciphertext_t));
-		mpz_init(tmp[i]->c);
-	}
-
-	paillier_ciphertext_t*** cand = (paillier_ciphertext_t***)malloc(sizeof(paillier_ciphertext_t**)*(*NumNodeGroup)*FanOut);
-		
-	for( i = 0 ; i < (*NumNodeGroup)*FanOut ; i++ ){
-		cand[i] = (paillier_ciphertext_t**)malloc(sizeof(paillier_ciphertext_t*)*dim);
-		for( j = 0 ; j < dim ; j ++ ){
-			cand[i][j] = (paillier_ciphertext_t*) malloc(sizeof(paillier_ciphertext_t));
-			mpz_init(cand[i][j]->c);
-		}
-	}
-
-
-	startTime = std::chrono::system_clock::now(); // startTime check
-
-
-	// 노드 그룹 별로 데이터 추출을 통해, 질의 영역을 포함하는 노드 내 데이터 추출
-	for(i=0; i<*NumNodeGroup; i++) {
-		remained = node_group[i][0];	 // 해당 노드 그룹 내에서 아직 처리할 데이터가 남아있는 노드가 몇개인지 저장함
-
-		for(j=0; j<FanOut; j++) {
-			if(remained == 0)	// 해당 노드 그룹 내에서 더 이상 처리할 데이터가 없다면, 다음 노드로 넘어감
-				break;
-
-			for(m=1; m<=node_group[i][0]; m++) {	 // 0번지에 해당 노드 그룹에 몇개의 노드가 있는지가 저장되어 있음
-				nodeId = node_group[i][m];	 // 노드 그룹에서 노드 ID를 하나씩 꺼냄
-				if(node[nodeId].NumData >= j+1) 
-				{
-					dataId = node[nodeId].indata_id[j];	// 해당 노드에 저장된 데이터 ID를 하나씩 꺼냄
-					for(z=0; z<dim; z++) {
-						if(m == 1) {
-							cand[*cnt][z] = SM_p1(data[dataId][z], alpha[nodeId]);  // 해당 데이터 ID의 실제 데이터에 접근
-						} else {
-							tmp[z] = SM_p1(data[dataId][z], alpha[nodeId]);  // 해당 데이터 ID의 실제 데이터에 접근
-							paillier_mul(pub, cand[*cnt][z], cand[*cnt][z], tmp[z]);
-						}
-					}
-				
-					if(node[nodeId].NumData == j+1)		// 해당 노드가 마지막 데이터를 처리한다면, remained를 1 감소시킴
-						remained--;
-				}
-				else {		// 해당 노드에는 데이터가 없지만, 동일 노드 그룹 내 다른 노드에는 아직 처리할 데이터가 있는 경우를 핸들링
-					for(z=0; z<dim; z++) {
-						if(m == 1) {
-							cand[*cnt][z] = SM_p1(cipher_MAX, alpha[nodeId]);  // 해당 데이터 ID의 실제 데이터에 접근
-						} else {
-							tmp[z] = SM_p1(cipher_MAX, alpha[nodeId]);  // 해당 데이터 ID의 실제 데이터에 접근
-							paillier_mul(pub, cand[*cnt][z], cand[*cnt][z], tmp[z]);
-						}
-					}
-				}
-			}
-			(*cnt)++;	// 노드 그룹의 노드들을 한바퀴 돌고나면, 데이터 하나가 완성됨
-		}
-	}
-
-	endTime = std::chrono::system_clock::now(); // endTime check
-	duration_sec = endTime - startTime;  // calculate duration 
-	//time_variable.insert(make_pair("sRange_GI_Extract(Data)", duration_sec.count() ));
-	time_variable["sRange_GI_Extract(Data)"] = time_variable.find("sRange_GI_Extract(Data)")->second + duration_sec.count();
-
-	return cand;
-}
-
-int** protocol::sRange_G(paillier_ciphertext_t*** data, boundary q, boundary* node, int NumData, int NumNode, int* result_num)
-{
-	printf("\n===== Now sRangeG starts =====\n");
-	//printf("NumNode : %d\n", NumNode);
-	int i=0, j=0, m=0;
-	int rand = 5;
-
-	int NumNodeGroup = 0;
-
-	paillier_ciphertext_t* cipher_rand = paillier_create_enc(rand);
-	paillier_print("rand : ",cipher_rand);
-
-
-	int cnt = 0;	 // 질의 영역과 겹치는 노드 내에 존재하는 총 데이터의 수
-
-	paillier_ciphertext_t*** cand ;
-
-
-
-	cand = GSRO_sNodeRetrievalforRange(data, q.LL, q.RR, node, NumData, NumNode, &cnt, &NumNodeGroup, 1);
-	totalNumOfRetrievedNodes += NumNodeGroup;
-
-	paillier_ciphertext_t** alpha = (paillier_ciphertext_t**)malloc(sizeof(paillier_ciphertext_t*)*cnt);
-	
-	// cand 비트 변환 수행 및 SPE호출
-
-	startTime = std::chrono::system_clock::now(); // startTime check
-	for(i=0; i<cnt; i++) {
-		alpha[i] = GSRO(cand[i], cand[i], q.LL, q.RR);	
-		for(j=0; j<dim; j++){
-			paillier_mul(pubkey,cand[i][j],cand[i][j],cipher_rand);
-		}
-	}	
-	endTime = std::chrono::system_clock::now(); // endTime check
-	duration_sec = endTime - startTime;  // calculate duration 
-	//time_variable.insert(make_pair("sRange_GI_GSRO(filtered_Data, Query)", duration_sec.count() ));
-	time_variable["sRange_GI_GSRO(filtered_Data, Query)"] = time_variable.find("sRange_GI_GSRO(filtered_Data, Query)")->second + duration_sec.count();
-	
-
-	paillier_ciphertext_t*** result;
-	result = sRange_result(alpha, cand, cnt, NumNodeGroup, result_num);
-	
-
-	return FsRange_Bob(result, rand, (*result_num), dim);
-}
-
-
-paillier_ciphertext_t*** protocol::sRange_result(paillier_ciphertext_t** alpha, paillier_ciphertext_t*** cand, int cnt, int NumNodeGroup, int * result_num){
-	int i,j;
-
-	cout<<"sRange_result NumNodeGroup : "<<NumNodeGroup<<endl;
-	cout<<"sRange_result FanOut : "<<FanOut<<endl;
-
-	paillier_ciphertext_t*** result = (paillier_ciphertext_t***)malloc(sizeof(paillier_ciphertext_t**)*NumNodeGroup*FanOut);
-	for(i=0; i<cnt; i++){
-		if(strcmp( paillier_plaintext_to_str( paillier_dec(0, pub, prv, alpha[i])), paillier_plaintext_to_str(plain_one)) == 0) 
-		{
-			result[(*result_num)]=cand[i]; //result에 삽입
-			(*result_num)++;
-		}
-	}
-	return result;
-}

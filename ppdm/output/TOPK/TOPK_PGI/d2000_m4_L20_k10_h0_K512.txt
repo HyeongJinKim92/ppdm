@@ -163,3 +163,55 @@ Result(8) :	489	468	473	395
 Result(9) :	498	492	310	505	
 
 
+time : 2020-05-31-13-48-25
+query : TOPK_PGI TREE_LEVEL : 7 THREAD : 4 DATA : 2000 DIMENSION : 4 BITS : 20 k : 10 KEY : 512  QUERY : 10 10 10 10 10 
+total time : 16
+sTopk_PGI_QUERY 					 0.018887 (0.119030 %) 
+sTopk_PGI_GSRO 					 1.225028 (7.720328 %) 
+sTopk_PGI_filtering 					 2.961776 (18.665592 %) 
+sTopk_PGI_expand 					 2.963036 (18.673533 %) 
+sTopk_PGI_Score 					 0.233818 (1.473559 %) 
+sTopk_PGI_MANn 					 0.535897 (3.377307 %) 
+sTopk_PGI_second_MANn 					 1.585143 (9.989831 %) 
+sTopk_PGI_subtract 					 0.707637 (4.459641 %) 
+sTopk_PGI_topkandupdate 					 3.397708 (21.412907 %) 
+sTopk_PGI_check_expand 					 0.352128 (2.219171 %) 
+# retrieved node : 4
+Result(0) :	477	427	506	501	
+Result(1) :	435	471	472	510	
+Result(2) :	488	437	490	456	
+Result(3) :	349	506	501	507	
+Result(4) :	449	491	472	431	
+Result(5) :	470	491	491	388	
+Result(6) :	463	457	493	425	
+Result(7) :	446	478	482	420	
+Result(8) :	489	468	473	395	
+Result(9) :	498	492	310	505	
+
+
+time : 2020-05-31-21-01-16
+query : TOPK_PGI TREE_LEVEL : 7 THREAD : 4 DATA : 2000 DIMENSION : 4 BITS : 20 k : 10 KEY : 512  QUERY : 10 10 10 10 10 
+total time : 16
+sTopk_PGI_QUERY 					 0.019001 (0.118608 %) 
+sTopk_PGI_GSRO 					 1.269241 (7.922784 %) 
+sTopk_PGI_filtering 					 2.988271 (18.653217 %) 
+sTopk_PGI_expand 					 2.980584 (18.605235 %) 
+sTopk_PGI_Score 					 0.233497 (1.457523 %) 
+sTopk_PGI_MANn 					 0.561418 (3.504450 %) 
+sTopk_PGI_second_MANn 					 1.666716 (10.403879 %) 
+sTopk_PGI_subtract 					 0.660604 (4.123587 %) 
+sTopk_PGI_topkandupdate 					 3.390225 (21.162274 %) 
+sTopk_PGI_check_expand 					 0.355198 (2.217195 %) 
+# retrieved node : 4
+Result(0) :	477	427	506	501	
+Result(1) :	435	471	472	510	
+Result(2) :	488	437	490	456	
+Result(3) :	349	506	501	507	
+Result(4) :	449	491	472	431	
+Result(5) :	470	491	491	388	
+Result(6) :	463	457	493	425	
+Result(7) :	446	478	482	420	
+Result(8) :	489	468	473	395	
+Result(9) :	498	492	310	505	
+
+

@@ -1,0 +1,6 @@
+time : 2020-05-31-16-46-42
+query : CLASSIFICATION_B TREE_LEVEL : 5 THREAD : 0 DATA : 1728 DIMENSION : 6 BITS : 22 k : 5 KEY : 512  QUERY : 0 0 0 0 0 0 
+total time : 1580
+# retrieved node : 0
+
+

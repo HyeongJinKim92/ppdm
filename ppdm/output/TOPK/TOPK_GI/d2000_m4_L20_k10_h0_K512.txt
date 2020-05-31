@@ -155,3 +155,55 @@ Result(8) :	489	468	473	395
 Result(9) :	498	492	310	505	
 
 
+time : 2020-05-31-13-33-47
+query : TOPK_GI TREE_LEVEL : 7 THREAD : 0 DATA : 2000 DIMENSION : 4 BITS : 20 k : 10 KEY : 512  QUERY : 10 10 10 10 10 
+total time : 45
+sTopk_G_preprocessing_query 					 0.023721 (0.052143 %) 
+sTopk_G_GSRO_node_query 					 3.365874 (7.398618 %) 
+sTopk_G_extract_cand 					 11.159307 (24.529569 %) 
+sTopk_G_extract_expand_cand 					 11.162353 (24.536265 %) 
+sTopk_G_computeScore 					 0.863675 (1.898467 %) 
+sTopk_G_sMaxn 					 0.503300 (1.106316 %) 
+sTopk_G_sMaxn_second 					 1.558321 (3.425386 %) 
+sTopk_G_subtract 					 2.228557 (4.898649 %) 
+sTopk_G_extract_topk 					 11.287013 (24.810282 %) 
+sTopk_G_check_expand_cond 					 1.465923 (3.222283 %) 
+# retrieved node : 4
+Result(0) :	477	427	506	501	
+Result(1) :	435	471	472	510	
+Result(2) :	488	437	490	456	
+Result(3) :	349	506	501	507	
+Result(4) :	449	491	472	431	
+Result(5) :	470	491	491	388	
+Result(6) :	463	457	493	425	
+Result(7) :	446	478	482	420	
+Result(8) :	489	468	473	395	
+Result(9) :	498	492	310	505	
+
+
+time : 2020-05-31-20-46-40
+query : TOPK_GI TREE_LEVEL : 7 THREAD : 0 DATA : 2000 DIMENSION : 4 BITS : 20 k : 10 KEY : 512  QUERY : 10 10 10 10 10 
+total time : 45
+sTopk_G_preprocessing_query 					 0.023840 (0.052768 %) 
+sTopk_G_GSRO_node_query 					 3.360041 (7.437099 %) 
+sTopk_G_extract_cand 					 11.097956 (24.564166 %) 
+sTopk_G_extract_expand_cand 					 11.092061 (24.551118 %) 
+sTopk_G_computeScore 					 0.859780 (1.903033 %) 
+sTopk_G_sMaxn 					 0.538084 (1.190992 %) 
+sTopk_G_sMaxn_second 					 1.591284 (3.522141 %) 
+sTopk_G_subtract 					 2.213696 (4.899785 %) 
+sTopk_G_extract_topk 					 11.218278 (24.830485 %) 
+sTopk_G_check_expand_cond 					 1.317018 (2.915082 %) 
+# retrieved node : 4
+Result(0) :	477	427	506	501	
+Result(1) :	435	471	472	510	
+Result(2) :	488	437	490	456	
+Result(3) :	349	506	501	507	
+Result(4) :	449	491	472	431	
+Result(5) :	470	491	491	388	
+Result(6) :	463	457	493	425	
+Result(7) :	446	478	482	420	
+Result(8) :	489	468	473	395	
+Result(9) :	498	492	310	505	
+
+

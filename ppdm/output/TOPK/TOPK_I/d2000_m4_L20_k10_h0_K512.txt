@@ -104,3 +104,63 @@ Result(8) :	489	468	473	395
 Result(9) :	498	492	310	505	
 
 
+time : 2020-05-31-13-32-55
+query : TOPK_I TREE_LEVEL : 7 THREAD : 0 DATA : 2000 DIMENSION : 4 BITS : 20 k : 10 KEY : 512  QUERY : 10 10 10 10 10 
+total time : 337
+sTopk_I_preprocessing_query 					 0.709796 (0.210474 %) 
+sTopk_I_SBD_node 					 39.835741 (11.812381 %) 
+sTopk_I_SBD_query 					 0.626574 (0.185796 %) 
+sTopk_I_SRO_node_query 					 40.304391 (11.951348 %) 
+sTopk_I_extract_cand 					 11.141558 (3.303775 %) 
+sTopk_I_extract_expand_cand 					 11.134212 (3.301597 %) 
+sTopk_I_computescore&SBD 					 8.948973 (2.653614 %) 
+sTopk_I_smax_n 					 23.090392 (6.846929 %) 
+sTopk_I_smax_n_expand 					 77.186614 (22.887931 %) 
+sTopk_I_recovery_score 					 56.809222 (16.845480 %) 
+sTopk_I_subtract 					 2.234016 (0.662447 %) 
+sTopk_I_extract_topk 					 7.498618 (2.223544 %) 
+sTopk_I_updateScore 					 37.681546 (11.173604 %) 
+sTopk_I_check_expand_cond 					 15.390513 (4.563706 %) 
+# retrieved node : 4
+Result(0) :	477	427	506	501	
+Result(1) :	435	471	472	510	
+Result(2) :	488	437	490	456	
+Result(3) :	349	506	501	507	
+Result(4) :	449	491	472	431	
+Result(5) :	470	491	491	388	
+Result(6) :	463	457	493	425	
+Result(7) :	446	478	482	420	
+Result(8) :	489	468	473	395	
+Result(9) :	498	492	310	505	
+
+
+time : 2020-05-31-20-45-47
+query : TOPK_I TREE_LEVEL : 7 THREAD : 0 DATA : 2000 DIMENSION : 4 BITS : 20 k : 10 KEY : 512  QUERY : 10 10 10 10 10 
+total time : 338
+sTopk_I_preprocessing_query 					 0.710935 (0.210223 %) 
+sTopk_I_SBD_node 					 39.899710 (11.798299 %) 
+sTopk_I_SBD_query 					 0.628154 (0.185745 %) 
+sTopk_I_SRO_node_query 					 40.448447 (11.960560 %) 
+sTopk_I_extract_cand 					 11.181801 (3.306446 %) 
+sTopk_I_extract_expand_cand 					 11.182502 (3.306653 %) 
+sTopk_I_computescore&SBD 					 8.966049 (2.651250 %) 
+sTopk_I_smax_n 					 23.155960 (6.847191 %) 
+sTopk_I_smax_n_expand 					 77.426867 (22.895037 %) 
+sTopk_I_recovery_score 					 56.924192 (16.832419 %) 
+sTopk_I_subtract 					 2.239440 (0.662200 %) 
+sTopk_I_extract_topk 					 7.523348 (2.224646 %) 
+sTopk_I_updateScore 					 37.806123 (11.179228 %) 
+sTopk_I_check_expand_cond 					 15.433120 (4.563556 %) 
+# retrieved node : 4
+Result(0) :	477	427	506	501	
+Result(1) :	435	471	472	510	
+Result(2) :	488	437	490	456	
+Result(3) :	349	506	501	507	
+Result(4) :	449	491	472	431	
+Result(5) :	470	491	491	388	
+Result(6) :	463	457	493	425	
+Result(7) :	446	478	482	420	
+Result(8) :	489	468	473	395	
+Result(9) :	498	492	310	505	
+
+

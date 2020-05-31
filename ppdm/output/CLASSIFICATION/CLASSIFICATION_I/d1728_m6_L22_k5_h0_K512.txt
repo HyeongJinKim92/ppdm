@@ -1,0 +1,12 @@
+time : 2020-05-31-16-59-58
+query : CLASSIFICATION_I TREE_LEVEL : 5 THREAD : 0 DATA : 1728 DIMENSION : 6 BITS : 22 k : 5 KEY : 512  QUERY : 0 0 0 0 0 0 
+total time : 786
+# retrieved node : 7
+
+
+time : 2020-05-31-21-52-18
+query : CLASSIFICATION_I TREE_LEVEL : 5 THREAD : 0 DATA : 1728 DIMENSION : 6 BITS : 22 k : 5 KEY : 512  QUERY : 0 0 0 0 0 0 
+total time : 786
+# retrieved node : 7
+
+

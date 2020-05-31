@@ -31,3 +31,14 @@ data_SPE(range) : 0  (0%)
 # retrieved node : 0
 
 
+time : 2020-05-31-17-48-57
+query : KMEANS_PGI TREE_LEVEL : 5 THREAD : 4 DATA : 2000 DIMENSION : 2 BITS : 30 k : 5 KEY : 512  QUERY : 0 0 0 0 0 0 
+total time : 352
+# retrieved node : 0
+Result(0) :	22719	20640	
+Result(1) :	79590	22727	
+Result(2) :	49832	51094	
+Result(3) :	78279	78583	
+Result(4) :	20345	77179	
+
+

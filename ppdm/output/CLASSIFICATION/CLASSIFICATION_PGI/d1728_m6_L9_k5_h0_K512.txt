@@ -31,3 +31,9 @@ data_SPE(range) : 0  (0%)
 # retrieved node : 7
 
 
+time : 2020-05-31-16-16-36
+query : CLASSIFICATION_PGI TREE_LEVEL : 5 THREAD : 4 DATA : 1728 DIMENSION : 6 BITS : 9 k : 5 KEY : 512  QUERY : 0 0 0 0 0 0 
+total time : 34
+# retrieved node : 7
+
+

@@ -4,3 +4,9 @@ total time : 102
 # retrieved node : 7
 
 
+time : 2020-05-31-16-11-23
+query : CLASSIFICATION_GI TREE_LEVEL : 5 THREAD : 0 DATA : 1728 DIMENSION : 6 BITS : 9 k : 5 KEY : 512  QUERY : 0 0 0 0 0 0 
+total time : 101
+# retrieved node : 7
+
+

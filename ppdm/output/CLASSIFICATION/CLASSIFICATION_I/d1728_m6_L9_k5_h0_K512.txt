@@ -43,3 +43,9 @@ total time : 375
 # retrieved node : 7
 
 
+time : 2020-05-31-16-09-32
+query : CLASSIFICATION_I TREE_LEVEL : 5 THREAD : 0 DATA : 1728 DIMENSION : 6 BITS : 9 k : 5 KEY : 512  QUERY : 0 0 0 0 0 0 
+total time : 380
+# retrieved node : 7
+
+

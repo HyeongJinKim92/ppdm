@@ -325,3 +325,102 @@ Result(2) :	0	1
 Result(3) :	1	1	
 
 
+time : 2020-05-31-12-28-52
+query : RANGE_GI TREE_LEVEL : 7 THREAD : 0 DATA : 2000 DIMENSION : 2 BITS : 12 k : 10 KEY : 512  QUERY : 0 0 2 2 
+total time : 7
+sRange_GI_GSRO(Data, QUERY) 					 1.261024 (16.899331 %) 
+sRange_GI_Extract(Data) 					 5.537845 (74.214196 %) 
+sRange_GI_GSRO(filtered_Data, Query) 					 0.626147 (8.391175 %) 
+# retrieved node : 1
+Result(0) :	0	0	
+Result(1) :	0	0	
+Result(2) :	2	0	
+Result(3) :	2	0	
+Result(4) :	2	0	
+Result(5) :	2	0	
+Result(6) :	2	0	
+Result(7) :	0	0	
+Result(8) :	1	0	
+Result(9) :	0	0	
+Result(10) :	0	0	
+Result(11) :	2	1	
+Result(12) :	1	1	
+Result(13) :	2	1	
+Result(14) :	2	1	
+Result(15) :	0	1	
+Result(16) :	0	1	
+Result(17) :	1	1	
+Result(18) :	2	2	
+Result(19) :	2	2	
+Result(20) :	0	2	
+Result(21) :	1	2	
+Result(22) :	1	2	
+Result(23) :	1	2	
+
+
+time : 2020-05-31-19-53-20
+query : RANGE_GI TREE_LEVEL : 7 THREAD : 0 DATA : 2000 DIMENSION : 2 BITS : 12 k : 10 KEY : 512  QUERY : 0 0 2 2 
+total time : 7
+sRange_GI_GSRO(Data, QUERY) 					 1.287840 (17.201635 %) 
+sRange_GI_Extract(Data) 					 5.538334 (73.975334 %) 
+sRange_GI_GSRO(filtered_Data, Query) 					 0.623644 (8.329992 %) 
+# retrieved node : 1
+Result(0) :	0	0	
+Result(1) :	0	0	
+Result(2) :	2	0	
+Result(3) :	2	0	
+Result(4) :	2	0	
+Result(5) :	2	0	
+Result(6) :	2	0	
+Result(7) :	0	0	
+Result(8) :	1	0	
+Result(9) :	0	0	
+Result(10) :	0	0	
+Result(11) :	2	1	
+Result(12) :	1	1	
+Result(13) :	2	1	
+Result(14) :	2	1	
+Result(15) :	0	1	
+Result(16) :	0	1	
+Result(17) :	1	1	
+Result(18) :	2	2	
+Result(19) :	2	2	
+Result(20) :	0	2	
+Result(21) :	1	2	
+Result(22) :	1	2	
+Result(23) :	1	2	
+
+
+time : 2020-06-01-00-09-38
+query : RANGE_GI TREE_LEVEL : 7 THREAD : 0 DATA : 2000 DIMENSION : 2 BITS : 12 k : 10 KEY : 512  QUERY : 0 0 2 2 
+total time : 8
+SRO_D 					 0.677338 (8.951768 %) 
+nodeRetrievalSRO 					 1.289630 (17.043867 %) 
+nodeRetrieval 					 5.562134 (73.509685 %) 
+# retrieved node : 1
+Result(0) :	0	0	
+Result(1) :	0	0	
+Result(2) :	2	0	
+Result(3) :	2	0	
+Result(4) :	2	0	
+Result(5) :	2	0	
+Result(6) :	2	0	
+Result(7) :	0	0	
+Result(8) :	1	0	
+Result(9) :	0	0	
+Result(10) :	0	0	
+Result(11) :	2	1	
+Result(12) :	1	1	
+Result(13) :	2	1	
+Result(14) :	2	1	
+Result(15) :	0	1	
+Result(16) :	0	1	
+Result(17) :	1	1	
+Result(18) :	2	2	
+Result(19) :	2	2	
+Result(20) :	0	2	
+Result(21) :	1	2	
+Result(22) :	1	2	
+Result(23) :	1	2	
+
+

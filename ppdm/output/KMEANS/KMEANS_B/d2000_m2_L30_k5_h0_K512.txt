@@ -1,0 +1,11 @@
+time : 2020-05-31-22-25-08
+query : KMEANS_B TREE_LEVEL : 5 THREAD : 0 DATA : 2000 DIMENSION : 2 BITS : 30 k : 5 KEY : 512  QUERY : 0 0 0 0 0 0 
+total time : 1303
+# retrieved node : 0
+Result(0) :	78279	17817	
+Result(1) :	24032	22177	
+Result(2) :	21778	73210	
+Result(3) :	66790	51805	
+Result(4) :	76094	83453	
+
+

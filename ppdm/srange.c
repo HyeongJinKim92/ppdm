@@ -7,6 +7,157 @@
 
 using namespace std;
 
+int** protocol::sRange_B(paillier_ciphertext_t*** data, boundary q, boundary* node, int NumData, int NumNode,int* result_num)
+{
+	printf("\n=====now sRange_B start=====\n");
+
+	int i=0, j=0, m=0;
+	
+	int rand = 5;
+	int NumNodeGroup = 0;
+
+	paillier_ciphertext_t*** cipher_qLL_bit = (paillier_ciphertext_t***)malloc(sizeof(paillier_ciphertext_t**)*dim);
+	paillier_ciphertext_t*** cipher_qRR_bit = (paillier_ciphertext_t***)malloc(sizeof(paillier_ciphertext_t**)*dim);
+
+	paillier_ciphertext_t* cipher_rand = paillier_create_enc(rand);
+	
+	cout << "\n=====================SBD QUERY=====================\n";
+	// query 비트 변환 수행
+	startTime = std::chrono::system_clock::now(); // startTime check
+	for( i = 0 ; i < dim ; i++ ) {
+		cipher_qLL_bit[i] = SBD_for_SRO(q.LL[i], 0);		// query LL bound 변환
+		cipher_qRR_bit[i] = SBD_for_SRO(q.RR[i], 1);		// query RR bound 변환
+	}
+	endTime = std::chrono::system_clock::now(); // endTime check
+	duration_sec = endTime - startTime;  // calculate duration 
+	//time_variable.insert(make_pair("sRange_B_SBD_for_SRO(QUERY)", duration_sec.count() ));
+	time_variable["SBD_Q"] = time_variable.find("SBD_Q")->second + duration_sec.count();
+
+
+
+	paillier_ciphertext_t** alpha = (paillier_ciphertext_t**) malloc(sizeof(paillier_ciphertext_t*)*NumData);
+	paillier_ciphertext_t*** candLL_bit = (paillier_ciphertext_t***)malloc(sizeof(paillier_ciphertext_t**)*dim);
+	paillier_ciphertext_t*** candRR_bit = (paillier_ciphertext_t***)malloc(sizeof(paillier_ciphertext_t**)*dim);
+	cout << "\n=====================SRO===================\n";
+
+	for( i = 0 ; i < NumData ; i++ ) {
+		startTime = std::chrono::system_clock::now(); // startTime check
+		for( j = 0 ; j < dim ; j++ ) {
+			candLL_bit[j] = SBD_for_SRO(data[i][j], 0);			// query cand 변환
+			candRR_bit[j] = SBD_for_SRO(data[i][j], 1);		
+		}		
+		endTime = std::chrono::system_clock::now();  // endTime check
+		duration_sec = endTime - startTime;  // calculate duration 
+		time_variable["SBD_D"] = time_variable.find("SBD_D")->second + duration_sec.count();
+		startTime = std::chrono::system_clock::now(); // startTime check
+		alpha[i] = SRO(candLL_bit, candRR_bit, cipher_qLL_bit, cipher_qRR_bit);
+		endTime = std::chrono::system_clock::now();  // endTime check
+		duration_sec = endTime - startTime;  // calculate duration 
+		time_variable["SRO_D"] = time_variable.find("SRO_D")->second + duration_sec.count();
+	}
+	cout << endl;
+	paillier_ciphertext_t*** result = (paillier_ciphertext_t***)malloc(sizeof(paillier_ciphertext_t**)*NumData); //할당방법 변경해야하고
+
+	//값 확인 && If αi = 1, E(t’i)를 result에 삽입
+	for( i = 0 ; i < NumData ; i++ ){
+		if(strcmp( paillier_plaintext_to_str( paillier_dec(0, pub, prv, alpha[i])), paillier_plaintext_to_str(plain_one)) == 0) 
+		{
+			result[(*result_num)]=data[i]; //result에 삽입
+			(*result_num)++;
+		}	
+	}
+
+	// user(Bob)에게 결과 전송을 위해 random 값 삽입
+	for( i = 0 ; i < (*result_num) ; i++ )
+	{
+		for( j = 0 ; j < dim ; j++ ) 
+		{	
+				paillier_mul(pubkey, result[i][j], result[i][j], cipher_rand);
+		}
+	}
+	
+	return FsRange_Bob(result, rand, (*result_num), dim);
+}
+
+int** protocol::sRange_I(paillier_ciphertext_t*** data, boundary q, boundary* node, int NumData, int NumNode, int* result_num)
+{
+	printf("\n===== Now sRange_I starts =====\n");
+	int i=0, j=0, m=0;
+
+	float gap = 0.0;
+	int rand = 5;
+	int NumNodeGroup = 0;
+
+	paillier_ciphertext_t*** cipher_qLL_bit = (paillier_ciphertext_t***)malloc(sizeof(paillier_ciphertext_t**)*dim);
+	paillier_ciphertext_t*** cipher_qRR_bit = (paillier_ciphertext_t***)malloc(sizeof(paillier_ciphertext_t**)*dim);
+
+	paillier_ciphertext_t* cipher_rand = paillier_create_enc(rand);
+	
+	startTime = std::chrono::system_clock::now(); // check startTime
+	// query 비트 변환 수행
+	for(i=0; i<dim; i++) {
+		cipher_qLL_bit[i] = SBD_for_SRO(q.LL[i], 0);			// query LL bound 변환
+		cipher_qRR_bit[i] = SBD_for_SRO(q.RR[i], 1);		// query RR bound 변환
+	}
+	endTime = std::chrono::system_clock::now(); // check endTime
+	duration_sec = endTime - startTime;
+	time_variable["SBD_Q"] = time_variable.find("SBD_Q")->second + duration_sec.count();
+
+	int cnt = 0;	 // 질의 영역과 겹치는 노드 내에 존재하는 총 데이터의 수
+
+	paillier_ciphertext_t*** cand ;
+	
+	cand = sNodeRetrievalforRange(data, cipher_qLL_bit, cipher_qRR_bit, node, NumData, NumNode, &cnt, &NumNodeGroup, 0);
+	totalNumOfRetrievedNodes += NumNodeGroup;
+
+
+	paillier_ciphertext_t*** candLL_bit = (paillier_ciphertext_t***)malloc(sizeof(paillier_ciphertext_t**)*dim);
+	paillier_ciphertext_t*** candRR_bit = (paillier_ciphertext_t***)malloc(sizeof(paillier_ciphertext_t**)*dim);
+
+	paillier_ciphertext_t** alpha = (paillier_ciphertext_t**)malloc(sizeof(paillier_ciphertext_t*)*cnt);
+
+	startTime = std::chrono::system_clock::now();
+	for( i = 0 ; i < cnt ; i++ ) {
+		startTime = std::chrono::system_clock::now();
+		for(j=0; j<dim; j++) {
+			candLL_bit[j] = SBD_for_SRO(cand[i][j], 0);			// query cand 변환
+			candRR_bit[j] = SBD_for_SRO(cand[i][j], 1);		
+		}
+		endTime = std::chrono::system_clock::now();
+		duration_sec = endTime - startTime;
+		time_variable["SBD_D"] = time_variable.find("SBD_D")->second + duration_sec.count();
+
+		startTime = std::chrono::system_clock::now();
+		alpha[i] = SRO(candLL_bit, candRR_bit, cipher_qLL_bit, cipher_qRR_bit);		
+		endTime = std::chrono::system_clock::now();
+		duration_sec = endTime - startTime;
+		time_variable["SRO_D"] = time_variable.find("SRO_D")->second + duration_sec.count();
+
+	}
+
+
+	paillier_ciphertext_t*** result = (paillier_ciphertext_t***)malloc(sizeof(paillier_ciphertext_t**)*NumNodeGroup*FanOut); //할당방법 변경해야하고
+
+	//값 확인 && If αi = 1, E(t’i)를 result에 삽입
+	for(i=0; i<cnt; i++){
+		if(strcmp( paillier_plaintext_to_str( paillier_dec(0, pub, prv, alpha[i])), paillier_plaintext_to_str(plain_one)) == 0) 
+		{
+			result[(*result_num)]=cand[i]; //result에 삽입
+			(*result_num)++;
+		}	
+	}
+
+
+	// user(Bob)에게 결과 전송을 위해 random 값 삽입
+	for(i=0;i<(*result_num);i++){
+		for(j=0; j<dim; j++){
+			paillier_mul(pubkey,result[i][j],result[i][j],cipher_rand);
+			
+		}
+	}
+
+	return FsRange_Bob(result, rand, (*result_num), dim);
+}
 
 paillier_ciphertext_t*** protocol::sNodeRetrievalforRange(paillier_ciphertext_t*** data, paillier_ciphertext_t*** cipher_qLL_bit, paillier_ciphertext_t*** cipher_qRR_bit, boundary* node, int NumData, int NumNode, int* cnt, int* NumNodeGroup, int type)
 {
@@ -37,22 +188,27 @@ paillier_ciphertext_t*** protocol::sNodeRetrievalforRange(paillier_ciphertext_t*
 	printf("\n=== Node SBD & SRO start ===\n");
 	startTime = std::chrono::system_clock::now();
 	// 각 노드 비트 변환 수행 및 SRO 호출
-	for( i = 0 ; i < NumNode ; i++ ) {	
+	for( i = 0 ; i < NumNode ; i++ ) {
+		startTime = std::chrono::system_clock::now();	
 		for( j = 0 ; j < dim ; j++ ) {
 			cipher_nodeLL_bit[j] = SBD_for_SRO(node[i].LL[j], 0);				// node LL bound 변환
 			cipher_nodeRR_bit[j] = SBD_for_SRO(node[i].RR[j], 1);	 			// node RR bound 변환
 		}
+		endTime = std::chrono::system_clock::now();
+		duration_sec = endTime - startTime;
+		time_variable["nodeRetrievalSBD"] = time_variable.find("nodeRetrievalSBD")->second + duration_sec.count();
+
+		startTime = std::chrono::system_clock::now();	
 		if(type == 0) {
 			alpha[i] = SRO(cipher_qLL_bit, cipher_qRR_bit, cipher_nodeLL_bit, cipher_nodeRR_bit);		
 		}
 		else if(type == 1) {
 			alpha[i] = faster_SRO(cipher_qLL_bit, cipher_qRR_bit, cipher_nodeLL_bit, cipher_nodeRR_bit);		
 		}
+		endTime = std::chrono::system_clock::now();
+		duration_sec = endTime - startTime;
+		time_variable["nodeRetrievalSRO"] = time_variable.find("nodeRetrievalSRO")->second + duration_sec.count();
 	}
-	endTime = std::chrono::system_clock::now();
-	duration_sec = endTime - startTime;
-	//time_variable.insert(make_pair("sRange_I_SBD_for_SRO(node)", duration_sec.count()));
-	time_variable["sRange_I_SBD_for_SRO(node)"] = time_variable.find("sRange_I_SBD_for_SRO(node)")->second + duration_sec.count();
 
 	node_group = sRange_sub(alpha, NumNode, NumNodeGroup);
 	
@@ -130,88 +286,8 @@ paillier_ciphertext_t*** protocol::sNodeRetrievalforRange(paillier_ciphertext_t*
 	}
 	endTime = std::chrono::system_clock::now();
 	duration_sec = endTime - startTime;
-	data_extract_first_time += duration_sec.count();
-	//time_variable.insert(make_pair("sRange_I_extract_data", data_extract_first_time));
-	time_variable["sRange_I_extract_data"] = time_variable.find("sRange_I_extract_data")->second + duration_sec.count();
+	time_variable["nodeRetrieval"] = time_variable.find("nodeRetrieval")->second + duration_sec.count();
 	return cand;
-}
-
-
-int** protocol::sRange_I(paillier_ciphertext_t*** data, boundary q, boundary* node, int NumData, int NumNode, int* result_num)
-{
-	printf("\n===== Now sRange_I starts =====\n");
-	int i=0, j=0, m=0;
-
-	float gap = 0.0;
-	int rand = 5;
-	int NumNodeGroup = 0;
-
-	paillier_ciphertext_t*** cipher_qLL_bit = (paillier_ciphertext_t***)malloc(sizeof(paillier_ciphertext_t**)*dim);
-	paillier_ciphertext_t*** cipher_qRR_bit = (paillier_ciphertext_t***)malloc(sizeof(paillier_ciphertext_t**)*dim);
-
-	paillier_ciphertext_t* cipher_rand = paillier_create_enc(rand);
-	
-	startTime = std::chrono::system_clock::now(); // check startTime
-	// query 비트 변환 수행
-	for(i=0; i<dim; i++) {
-		cipher_qLL_bit[i] = SBD_for_SRO(q.LL[i], 0);			// query LL bound 변환
-		cipher_qRR_bit[i] = SBD_for_SRO(q.RR[i], 1);		// query RR bound 변환
-	}
-	endTime = std::chrono::system_clock::now(); // check endTime
-	duration_sec = endTime - startTime;
-	//time_variable.insert(make_pair("sRange_I_SBD_for_SRO(query)", duration_sec.count()));
-	time_variable["sRange_I_SBD_for_SRO(query)"] = time_variable.find("sRange_I_SBD_for_SRO(query)")->second + duration_sec.count();
-
-	int cnt = 0;	 // 질의 영역과 겹치는 노드 내에 존재하는 총 데이터의 수
-
-	paillier_ciphertext_t*** cand ;
-	
-	cand = sNodeRetrievalforRange(data, cipher_qLL_bit, cipher_qRR_bit, node, NumData, NumNode, &cnt, &NumNodeGroup, 0);
-	totalNumOfRetrievedNodes += NumNodeGroup;
-
-
-	paillier_ciphertext_t*** candLL_bit = (paillier_ciphertext_t***)malloc(sizeof(paillier_ciphertext_t**)*dim);
-	paillier_ciphertext_t*** candRR_bit = (paillier_ciphertext_t***)malloc(sizeof(paillier_ciphertext_t**)*dim);
-
-	paillier_ciphertext_t** alpha = (paillier_ciphertext_t**)malloc(sizeof(paillier_ciphertext_t*)*cnt);
-
-	startTime = std::chrono::system_clock::now();
-	for( i = 0 ; i < cnt ; i++ ) {
-		for(j=0; j<dim; j++) {
-			candLL_bit[j] = SBD_for_SRO(cand[i][j], 0);			// query cand 변환
-			candRR_bit[j] = SBD_for_SRO(cand[i][j], 1);		
-		}
-		
-		alpha[i] = SRO(candLL_bit, candRR_bit, cipher_qLL_bit, cipher_qRR_bit);		
-	}
-	endTime = std::chrono::system_clock::now();
-	duration_sec = endTime - startTime;
-	//time_variable.insert(make_pair("sRange_I_SBD and SRO(filtered_data, query)", duration_sec.count()));
-	time_variable["sRange_I_SBD and SRO(filtered_data, query)"] = time_variable.find("sRange_I_SBD and SRO(filtered_data, query)")->second + duration_sec.count();
-
-
-
-	paillier_ciphertext_t*** result = (paillier_ciphertext_t***)malloc(sizeof(paillier_ciphertext_t**)*NumNodeGroup*FanOut); //할당방법 변경해야하고
-
-	//값 확인 && If αi = 1, E(t’i)를 result에 삽입
-	for(i=0; i<cnt; i++){
-		if(strcmp( paillier_plaintext_to_str( paillier_dec(0, pub, prv, alpha[i])), paillier_plaintext_to_str(plain_one)) == 0) 
-		{
-			result[(*result_num)]=cand[i]; //result에 삽입
-			(*result_num)++;
-		}	
-	}
-
-
-	// user(Bob)에게 결과 전송을 위해 random 값 삽입
-	for(i=0;i<(*result_num);i++){
-		for(j=0; j<dim; j++){
-			paillier_mul(pubkey,result[i][j],result[i][j],cipher_rand);
-			
-		}
-	}
-
-	return FsRange_Bob(result, rand, (*result_num), dim);
 }
 
 //KHJ 
@@ -283,77 +359,7 @@ int ** protocol::sRange_sub(paillier_ciphertext_t** alpha, int node_num, int * s
 	return sRange_sub_result;
 }
 
-int** protocol::sRange_B(paillier_ciphertext_t*** data, boundary q, boundary* node, int NumData, int NumNode,int* result_num)
-{
-	printf("\n=====now sRange_B start=====\n");
 
-	int i=0, j=0, m=0;
-	
-	int rand = 5;
-	int NumNodeGroup = 0;
-
-	paillier_ciphertext_t*** cipher_qLL_bit = (paillier_ciphertext_t***)malloc(sizeof(paillier_ciphertext_t**)*dim);
-	paillier_ciphertext_t*** cipher_qRR_bit = (paillier_ciphertext_t***)malloc(sizeof(paillier_ciphertext_t**)*dim);
-
-	paillier_ciphertext_t* cipher_rand = paillier_create_enc(rand);
-	
-	cout << "\n=====================SBD QUERY=====================\n" << endl;
-	// query 비트 변환 수행
-	startTime = std::chrono::system_clock::now(); // startTime check
-	for( i = 0 ; i < dim ; i++ ) {
-		cipher_qLL_bit[i] = SBD_for_SRO(q.LL[i], 0);		// query LL bound 변환
-		cipher_qRR_bit[i] = SBD_for_SRO(q.RR[i], 1);		// query RR bound 변환
-	}
-	endTime = std::chrono::system_clock::now(); // endTime check
-	duration_sec = endTime - startTime;  // calculate duration 
-	//time_variable.insert(make_pair("sRange_B_SBD_for_SRO(QUERY)", duration_sec.count() ));
-	time_variable["sRange_B_SBD_for_SRO(QUERY)"] = time_variable.find("sRange_B_SBD_for_SRO(QUERY)")->second + duration_sec.count();
-
-
-
-	paillier_ciphertext_t** alpha = (paillier_ciphertext_t**) malloc(sizeof(paillier_ciphertext_t*)*NumData);
-	paillier_ciphertext_t*** candLL_bit = (paillier_ciphertext_t***)malloc(sizeof(paillier_ciphertext_t**)*dim);
-	paillier_ciphertext_t*** candRR_bit = (paillier_ciphertext_t***)malloc(sizeof(paillier_ciphertext_t**)*dim);
-
-
-	cout << "\n=====================SBD DATA and SRO=====================\n" << endl;
-
-	startTime = std::chrono::system_clock::now(); // startTime check
-	for( i = 0 ; i < NumData ; i++ ) {
-		for( j = 0 ; j < dim ; j++ ) {
-			candLL_bit[j] = SBD_for_SRO(data[i][j], 0);			// query cand 변환
-			candRR_bit[j] = SBD_for_SRO(data[i][j], 1);		
-		}		
-		alpha[i] = SRO(candLL_bit, candRR_bit, cipher_qLL_bit, cipher_qRR_bit);
-	}
-	endTime = std::chrono::system_clock::now();  // endTime check
-	duration_sec = endTime - startTime;  // calculate duration 
-	//time_variable.insert(make_pair("sRange_B_SBD, SRO(DATA, QUERY)", duration_sec.count() ));
-	time_variable["sRange_B_SBD, SRO(DATA, QUERY)"] = time_variable.find("sRange_B_SBD, SRO(DATA, QUERY)")->second + duration_sec.count();
-	cout << "\n=======================EXTRACT RESULT=====================\n" << endl;
-
-	paillier_ciphertext_t*** result = (paillier_ciphertext_t***)malloc(sizeof(paillier_ciphertext_t**)*NumData); //할당방법 변경해야하고
-
-	//값 확인 && If αi = 1, E(t’i)를 result에 삽입
-	for( i = 0 ; i < NumData ; i++ ){
-		if(strcmp( paillier_plaintext_to_str( paillier_dec(0, pub, prv, alpha[i])), paillier_plaintext_to_str(plain_one)) == 0) 
-		{
-			result[(*result_num)]=data[i]; //result에 삽입
-			(*result_num)++;
-		}	
-	}
-
-	// user(Bob)에게 결과 전송을 위해 random 값 삽입
-	for( i = 0 ; i < (*result_num) ; i++ )
-	{
-		for( j = 0 ; j < dim ; j++ ) 
-		{	
-				paillier_mul(pubkey, result[i][j], result[i][j], cipher_rand);
-		}
-	}
-	
-	return FsRange_Bob(result, rand, (*result_num), dim);
-}
 
 int ** protocol::FsRange_Bob(paillier_ciphertext_t*** cipher_result, int rand, int result_num, int col_num){
 	int i = 0 , j = 0;

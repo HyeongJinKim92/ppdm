@@ -4,3 +4,21 @@ total time : 20
 # retrieved node : 7
 
 
+time : 2020-05-31-15-10-09
+query : KNN_PGI TREE_LEVEL : 7 THREAD : 4 DATA : 2000 DIMENSION : 6 BITS : 22 k : 5 KEY : 512  QUERY : 10 10 10 10 10 10 
+total time : 22
+# retrieved node : 8
+
+
+time : 2020-05-31-15-58-34
+query : KNN_PGI TREE_LEVEL : 7 THREAD : 4 DATA : 2000 DIMENSION : 6 BITS : 22 k : 5 KEY : 512  QUERY : 10 10 10 10 10 10 
+total time : 22
+# retrieved node : 8
+
+
+time : 2020-05-31-21-23-00
+query : KNN_PGI TREE_LEVEL : 7 THREAD : 4 DATA : 2000 DIMENSION : 6 BITS : 22 k : 5 KEY : 512  QUERY : 10 10 10 10 10 10 
+total time : 22
+# retrieved node : 8
+
+

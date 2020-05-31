@@ -1,0 +1,12 @@
+time : 2020-05-31-17-11-01
+query : CLASSIFICATION_PGI TREE_LEVEL : 5 THREAD : 4 DATA : 1728 DIMENSION : 6 BITS : 22 k : 5 KEY : 512  QUERY : 0 0 0 0 0 0 
+total time : 36
+# retrieved node : 7
+
+
+time : 2020-05-31-22-03-22
+query : CLASSIFICATION_PGI TREE_LEVEL : 5 THREAD : 4 DATA : 1728 DIMENSION : 6 BITS : 22 k : 5 KEY : 512  QUERY : 0 0 0 0 0 0 
+total time : 36
+# retrieved node : 7
+
+

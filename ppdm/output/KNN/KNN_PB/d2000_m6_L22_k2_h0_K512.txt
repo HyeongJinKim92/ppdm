@@ -1,0 +1,6 @@
+time : 2020-05-31-15-09-36
+query : KNN_PB TREE_LEVEL : 7 THREAD : 4 DATA : 2000 DIMENSION : 6 BITS : 22 k : 2 KEY : 512  QUERY : 10 10 10 10 10 10 
+total time : 210
+# retrieved node : 0
+
+

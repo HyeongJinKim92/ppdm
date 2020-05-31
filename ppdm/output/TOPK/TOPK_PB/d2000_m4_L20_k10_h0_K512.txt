@@ -91,3 +91,47 @@ Result(8) :	489	468	473	395
 Result(9) :	498	492	310	505	
 
 
+time : 2020-05-31-13-48-03
+query : TOPK_PB TREE_LEVEL : 7 THREAD : 4 DATA : 2000 DIMENSION : 4 BITS : 20 k : 10 KEY : 512  QUERY : 10 10 10 10 10 
+total time : 848
+sTopk_PB_SBD 					 44.776280 (5.278748 %) 
+sTopk_PB_SMAXN 					 386.937931 (45.616740 %) 
+sTopk_PB_Recompute_Score 					 212.393251 (25.039385 %) 
+sTopk_PB_subtract 					 8.618610 (1.016062 %) 
+sTopk_PB_extract_topk 					 29.042401 (3.423856 %) 
+sTopk_PB_update_score 					 145.244110 (17.123064 %) 
+# retrieved node : 0
+Result(0) :	477	427	506	501	
+Result(1) :	435	471	472	510	
+Result(2) :	488	437	490	456	
+Result(3) :	349	506	501	507	
+Result(4) :	449	491	472	431	
+Result(5) :	470	491	491	388	
+Result(6) :	463	457	493	425	
+Result(7) :	446	478	482	420	
+Result(8) :	489	468	473	395	
+Result(9) :	498	492	310	505	
+
+
+time : 2020-05-31-21-00-53
+query : TOPK_PB TREE_LEVEL : 7 THREAD : 4 DATA : 2000 DIMENSION : 4 BITS : 20 k : 10 KEY : 512  QUERY : 10 10 10 10 10 
+total time : 847
+sTopk_PB_SBD 					 44.611992 (5.269899 %) 
+sTopk_PB_SMAXN 					 386.414854 (45.646189 %) 
+sTopk_PB_Recompute_Score 					 211.795009 (25.018798 %) 
+sTopk_PB_subtract 					 8.603049 (1.016256 %) 
+sTopk_PB_extract_topk 					 28.981951 (3.423563 %) 
+sTopk_PB_update_score 					 144.978499 (17.125936 %) 
+# retrieved node : 0
+Result(0) :	477	427	506	501	
+Result(1) :	435	471	472	510	
+Result(2) :	488	437	490	456	
+Result(3) :	349	506	501	507	
+Result(4) :	449	491	472	431	
+Result(5) :	470	491	491	388	
+Result(6) :	463	457	493	425	
+Result(7) :	446	478	482	420	
+Result(8) :	489	468	473	395	
+Result(9) :	498	492	310	505	
+
+

@@ -165,3 +165,107 @@ Result(22) :	1	2
 Result(23) :	1	2	
 
 
+time : 2020-05-31-12-28-41
+query : RANGE_I TREE_LEVEL : 7 THREAD : 0 DATA : 2000 DIMENSION : 2 BITS : 12 k : 10 KEY : 512  QUERY : 0 0 2 2 
+total time : 42
+sRange_I_SBD_for_SRO(node) 					 24.339630 (57.330563 %) 
+sRange_I_extract_data 					 5.539228 (13.047326 %) 
+sRange_I_SBD_for_SRO(query) 					 0.187683 (0.442076 %) 
+sRange_I_SBD and SRO(filtered_data, query) 					 12.351418 (29.093037 %) 
+# retrieved node : 1
+Result(0) :	0	0	
+Result(1) :	0	0	
+Result(2) :	2	0	
+Result(3) :	2	0	
+Result(4) :	2	0	
+Result(5) :	2	0	
+Result(6) :	2	0	
+Result(7) :	0	0	
+Result(8) :	1	0	
+Result(9) :	0	0	
+Result(10) :	0	0	
+Result(11) :	2	1	
+Result(12) :	1	1	
+Result(13) :	2	1	
+Result(14) :	2	1	
+Result(15) :	0	1	
+Result(16) :	0	1	
+Result(17) :	1	1	
+Result(18) :	2	2	
+Result(19) :	2	2	
+Result(20) :	0	2	
+Result(21) :	1	2	
+Result(22) :	1	2	
+Result(23) :	1	2	
+
+
+time : 2020-05-31-19-53-09
+query : RANGE_I TREE_LEVEL : 7 THREAD : 0 DATA : 2000 DIMENSION : 2 BITS : 12 k : 10 KEY : 512  QUERY : 0 0 2 2 
+total time : 43
+sRange_I_SBD_for_SRO(node) 					 24.367796 (57.317989 %) 
+sRange_I_extract_data 					 5.546512 (13.046518 %) 
+sRange_I_SBD_for_SRO(query) 					 0.187954 (0.442106 %) 
+sRange_I_SBD and SRO(filtered_data, query) 					 12.373850 (29.105801 %) 
+# retrieved node : 1
+Result(0) :	0	0	
+Result(1) :	0	0	
+Result(2) :	2	0	
+Result(3) :	2	0	
+Result(4) :	2	0	
+Result(5) :	2	0	
+Result(6) :	2	0	
+Result(7) :	0	0	
+Result(8) :	1	0	
+Result(9) :	0	0	
+Result(10) :	0	0	
+Result(11) :	2	1	
+Result(12) :	1	1	
+Result(13) :	2	1	
+Result(14) :	2	1	
+Result(15) :	0	1	
+Result(16) :	0	1	
+Result(17) :	1	1	
+Result(18) :	2	2	
+Result(19) :	2	2	
+Result(20) :	0	2	
+Result(21) :	1	2	
+Result(22) :	1	2	
+Result(23) :	1	2	
+
+
+time : 2020-06-01-00-09-27
+query : RANGE_I TREE_LEVEL : 7 THREAD : 0 DATA : 2000 DIMENSION : 2 BITS : 12 k : 10 KEY : 512  QUERY : 0 0 2 2 
+total time : 43
+SBD_Q 					 0.188833 (0.442287 %) 
+SBD_D 					 6.018784 (14.097287 %) 
+SRO_D 					 6.405035 (15.001968 %) 
+nodeRetrievalSBD 					 11.953661 (27.998043 %) 
+nodeRetrievalSRO 					 12.528879 (29.345327 %) 
+nodeRetrieval 					 5.561946 (13.027274 %) 
+# retrieved node : 1
+Result(0) :	0	0	
+Result(1) :	0	0	
+Result(2) :	2	0	
+Result(3) :	2	0	
+Result(4) :	2	0	
+Result(5) :	2	0	
+Result(6) :	2	0	
+Result(7) :	0	0	
+Result(8) :	1	0	
+Result(9) :	0	0	
+Result(10) :	0	0	
+Result(11) :	2	1	
+Result(12) :	1	1	
+Result(13) :	2	1	
+Result(14) :	2	1	
+Result(15) :	0	1	
+Result(16) :	0	1	
+Result(17) :	1	1	
+Result(18) :	2	2	
+Result(19) :	2	2	
+Result(20) :	0	2	
+Result(21) :	1	2	
+Result(22) :	1	2	
+Result(23) :	1	2	
+
+

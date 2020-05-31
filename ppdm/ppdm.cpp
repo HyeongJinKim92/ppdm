@@ -405,7 +405,7 @@ int classification_main(parsed_query* user_query)
 	endTime = std::chrono::system_clock::now();
 	duration_sec = endTime - startTime;
 	proto.total_time = duration_sec.count();
-	std::cout << "RANGE TIME : " << proto.total_time << " sec" << std::endl; 
+	std::cout << "CLASSIFICATION TIME : " << proto.total_time << " sec" << std::endl; 
 
 
 

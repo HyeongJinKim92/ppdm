@@ -31,3 +31,25 @@ Result(8) :	489	468	473	395
 Result(9) :	498	492	310	505	
 
 
+time : 2020-05-31-13-27-11
+query : TOPK_B TREE_LEVEL : 7 THREAD : 0 DATA : 2000 DIMENSION : 4 BITS : 20 k : 10 KEY : 512  QUERY : 10 10 10 10 10 
+total time : 3101
+sTopk_B_SBD(CS(score)) 					 167.070684 (5.388301 %) 
+sTopk_B_smax(score)) 					 1437.129414 (46.349760 %) 
+sTopk_B_recover_MAX_Score 					 792.388799 (25.555827 %) 
+sTopk_B_subtract_Score(SBD_score)) 					 32.153530 (1.037004 %) 
+sTopk_B_extract_result 					 107.996629 (3.483067 %) 
+sTopk_B_update_score 					 542.845997 (17.507666 %) 
+# retrieved node : 0
+Result(0) :	477	427	506	501	
+Result(1) :	435	471	472	510	
+Result(2) :	488	437	490	456	
+Result(3) :	349	506	501	507	
+Result(4) :	449	491	472	431	
+Result(5) :	470	491	491	388	
+Result(6) :	463	457	493	425	
+Result(7) :	446	478	482	420	
+Result(8) :	489	468	473	395	
+Result(9) :	498	492	310	505	
+
+
