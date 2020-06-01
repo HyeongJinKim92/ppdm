@@ -166,16 +166,40 @@ void setting::TimeResult_write_map(char* query, int** result, int result_num, ch
 	char file_name[128]; 
 	sprintf(file_name, "output/%s/d%d_m%d_L%d_k%d_h%d_K%d.txt", app, proto.NumData, proto.dim, proto.size, proto.k, proto.tree_level, proto.modul); 
 	fp_output=fopen(file_name,"a");
+	cout.precision(6);
+  
 
 	for(auto it = proto.time_variable.begin() ; it != proto.time_variable.end() ; it++ ){
-		cout <<  it->first << " " << "time : " << it->second << " "<< (it->second/proto.total_time)*100 << endl;
+		cout.width(20);
+		cout <<  it->first << " ";
 	}
+	cout << endl;
+	for(auto it = proto.time_variable.begin() ; it != proto.time_variable.end() ; it++ ){
+		cout.width(20);
+		cout <<  it->second << " ";
+	}
+	cout << endl;
+	for(auto it = proto.time_variable.begin() ; it != proto.time_variable.end() ; it++ ){
+		cout.width(20);
+		cout <<  (it->second/proto.total_time)*100 << " ";
+	}
+	cout << endl;
+
 	fprintf(fp_output,"time : %s\n", buffer);
 	fprintf(fp_output,"query : %s\n", query);
-	fprintf(fp_output,"total time : %.0f\n", proto.total_time);
+	fprintf(fp_output,"total time : %.6f\n", proto.total_time);
 	for(auto it = proto.time_variable.begin() ; it != proto.time_variable.end() ; it++ ){
-		fprintf(fp_output,"%s \t\t\t\t\t %f (%f %%) \n", it->first, it->second, (it->second/proto.total_time)*100);
+		fprintf(fp_output,"%20s", it->first);
 	}
+	fprintf(fp_output,"\n");
+	for(auto it = proto.time_variable.begin() ; it != proto.time_variable.end() ; it++ ){
+		fprintf(fp_output,"%20.6f", it->second);
+	}
+	fprintf(fp_output,"\n");
+	for(auto it = proto.time_variable.begin() ; it != proto.time_variable.end() ; it++ ){
+		fprintf(fp_output,"%20.6f", (it->second/proto.total_time)*100);
+	}
+	fprintf(fp_output,"\n");
 
 	fprintf(fp_output,"# retrieved node : %d\n", proto.totalNumOfRetrievedNodes); // 탐색한 총 노드의 개수 기록
 

@@ -1,28 +1,47 @@
-query : ./PPDM  2  1  7  0  2000  6  12  5  512  10  10  10  10  10  10  
-total time : 1200
-node_SBD : 36  (3%)
-node_SRO : 38  (3%) 	 node_expansion(verify) : 48 (4%)
-node_retrieval : 17  (1%) 	 node_retrieval(verify) : 16 (1%)
-data_SSED_SBD : 114  (9%) 	 data_SBOR : 164 (14%)
-sMINn : 7  (1%) 	 sMINn (verify): 430 (36%)
-data_SPE(range) : 0  (0%) 
-# retrieved node : 64
-
-
-query : ./PPDM  2  1  7  0  2000  6  12  5  512  10  10  10  10  10  10  
-total time : 1201
-node_SBD : 36  (3%)
-node_SRO : 38  (3%) 	 node_expansion(verify) : 48 (4%)
-node_retrieval : 17  (1%) 	 node_retrieval(verify) : 16 (1%)
-data_SSED_SBD : 114  (9%) 	 data_SBOR : 164 (14%)
-sMINn : 7  (1%) 	 sMINn (verify): 430 (36%)
-data_SPE(range) : 0  (0%) 
-# retrieved node : 64
-
-
-time : 2020-05-31-02-12-32
+time : 2020-06-01-06-11-05
 query : KNN_I TREE_LEVEL : 7 THREAD : 0 DATA : 2000 DIMENSION : 6 BITS : 12 k : 5 KEY : 512  QUERY : 10 10 10 10 10 10 
-total time : 327
+total time : 322
+SSED&SBD 					 18.955395 (5.888852 %) 
+SMIN 					 7.003240 (2.175689 %) 
+Bi to De 					 34.918311 (10.848033 %) 
+subtract 					 2.215042 (0.688145 %) 
+kNN 					 13.156147 (4.087206 %) 
+update 					 26.488460 (8.229141 %) 
+SBD_Q 					 0.561436 (0.174421 %) 
+nodeRetrievalSBD 					 35.726743 (11.099188 %) 
+nodeRetrievalSRO 					 36.696575 (11.400484 %) 
+excheck 					 47.655560 (14.805100 %) 
+nodeRetrieval 					 16.635474 (5.168124 %) 
+exnodeRetrieval 					 16.581081 (5.151226 %) 
+exSMIN 					 62.081855 (19.286901 %) 
+# retrieved node : 10
+
+
+time : 2020-06-01-07-40-40
+query : KNN_I TREE_LEVEL : 7 THREAD : 0 DATA : 2000 DIMENSION : 6 BITS : 12 k : 5 KEY : 512  QUERY : 10 10 10 10 10 10 
+total time : 322
+SSED&SBD 					 18.955792 (5.881832 %) 
+SMIN 					 7.012596 (2.175953 %) 
+Bi to De 					 34.962497 (10.848586 %) 
+subtract 					 2.219296 (0.688630 %) 
+kNN 					 13.182183 (4.090327 %) 
+update 					 26.547274 (8.237409 %) 
+SBD_Q 					 0.561373 (0.174189 %) 
+nodeRetrievalSBD 					 35.721758 (11.084178 %) 
+nodeRetrievalSRO 					 36.752668 (11.404061 %) 
+excheck 					 47.721957 (14.807745 %) 
+nodeRetrieval 					 16.675584 (5.174301 %) 
+exnodeRetrieval 					 16.620416 (5.157183 %) 
+exSMIN 					 62.133798 (19.279625 %) 
+# retrieved node : 10
+
+
+time : 2020-06-01-16-17-30
+query : KNN_I TREE_LEVEL : 7 THREAD : 0 DATA : 2000 DIMENSION : 6 BITS : 12 k : 5 KEY : 512  QUERY : 10 10 10 10 10 10 
+total time : 322.912689
+                 SSED&SBD                     SMIN                 Bi to De                 subtract                      kNN                   update                    SBD_Q         nodeRetrievalSBD         nodeRetrievalSRO                  excheck            nodeRetrieval          exnodeRetrieval                   exSMIN
+                18.981581                 7.026632                35.019868                 2.223101                13.214375                26.606277                 0.562906                35.788486                36.826083                47.819445                16.713209                16.653638                62.260076
+                 5.878240                 2.176016                10.844996                 0.688453                 4.092244                 8.239465                 0.174321                11.083023                11.404347                14.808785                 5.175767                 5.157319                19.280777
 # retrieved node : 10
 
 

@@ -161,12 +161,6 @@ void UPDATE_SBD_SCORE_InKNN_PB_inThread(std::vector<int>input, paillier_cipherte
 
 
 
-
-
-
-
-
-
 void GSCMPforTopk_inThread(std::vector<int> input, boundary* node, paillier_ciphertext_t** psi, paillier_ciphertext_t* kth_score, paillier_ciphertext_t** q, paillier_ciphertext_t** alpha, protocol proto)
 {
 	//cout << "GSCMPforTopk_inThread" << endl;
@@ -212,6 +206,11 @@ void GSRO_Multithread(paillier_ciphertext_t **qLL, paillier_ciphertext_t **qRR, 
 	{
 		int num = input[i];
 		alpha[num] = proto.GSRO_inThread(qLL, qRR, node[num].LL, node[num].RR, 0);
+		/*
+		mtx.lock();
+		gmp_printf("%d : %Zd \n", num, paillier_dec(0, proto.pubkey, proto.prvkey, alpha[num]));
+		mtx.unlock();
+		*/
 	}
 }
 
@@ -386,7 +385,6 @@ void SMSnInThread3_2_v2(int index, int offset, int record_size, int dim, paillie
 		{
 			V2[i][j] = proto.SM_p1(V[i], cand[i][j], index);
 			paillier_mul(proto.pubkey, sub_result[j], V2[i][j], sub_result[j]);
-			//paillier_mul(proto.pubkey, Result[s][j], V2[cnt][j], Result[s][j]);
 		}
 	}
 }
@@ -456,7 +454,7 @@ void NodeExpansion_Multithread(paillier_ciphertext_t **q, paillier_ciphertext_t 
 	
 	//std::cout << "idx = " << idx << std::endl;
 	paillier_ciphertext_t **psi = new paillier_ciphertext_t *[3];
-	paillier_ciphertext_t *cipher_Max = paillier_create_enc(10000);
+	paillier_ciphertext_t *cipher_Max = paillier_create_enc(1048575);	
 	paillier_ciphertext_t *temp_coord1;
 	paillier_ciphertext_t *temp_coord2;
 	paillier_ciphertext_t *temp_coord3;
@@ -573,6 +571,20 @@ void caldistanceInThread(int index, std::vector<int> inputIdx, paillier_cipherte
 		}
 		cipher_distance[inputIdx[i]] = cipher_dist;
 		cipher_dist = paillier_enc(0, proto.pubkey, proto.plain_zero, paillier_get_rand_devurandom);
+	}
+}
+
+void ExtractKNNInCLASSIFICATION_PB_inThread(std::vector<int>input, paillier_ciphertext_t*** data, paillier_ciphertext_t** cipher_V, paillier_ciphertext_t ** cipher_thread_result, protocol proto, int dim)
+{
+	paillier_ciphertext_t * temp_value = new paillier_ciphertext_t;
+	mpz_init(temp_value->c);
+
+	for( int i = 0 ; i < input.size() ; i++ ){
+		int num = input[i];
+		for( int j = 0 ; j < dim; j++ ){
+			temp_value = proto.SM_p1(cipher_V[num], data[num][j]);
+			paillier_mul(proto.pubkey, cipher_thread_result[j], temp_value, cipher_thread_result[j]);
+		}
 	}
 }
 

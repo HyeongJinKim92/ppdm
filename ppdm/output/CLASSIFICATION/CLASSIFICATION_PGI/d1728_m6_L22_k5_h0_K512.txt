@@ -1,12 +1,18 @@
-time : 2020-05-31-17-11-01
+time : 2020-06-01-18-11-50
 query : CLASSIFICATION_PGI TREE_LEVEL : 5 THREAD : 4 DATA : 1728 DIMENSION : 6 BITS : 22 k : 5 KEY : 512  QUERY : 0 0 0 0 0 0 
-total time : 36
+total time : 36.441460
+
+
+
 # retrieved node : 7
 
 
-time : 2020-05-31-22-03-22
+time : 2020-06-01-21-23-05
 query : CLASSIFICATION_PGI TREE_LEVEL : 5 THREAD : 4 DATA : 1728 DIMENSION : 6 BITS : 22 k : 5 KEY : 512  QUERY : 0 0 0 0 0 0 
-total time : 36
+total time : 36.646099
+                SMIN            subtract                 kNN            classify    nodeRetrievalSRO             excheck       nodeRetrieval     exnodeRetrieval                SSED
+            5.990023            1.447482           13.001147            0.132863            0.494645            0.440696            4.651696            4.555153            1.851746
+           16.345596            3.949893           35.477573            0.362556            1.349788            1.202572           12.693565           12.430118            5.053051
 # retrieved node : 7
 
 

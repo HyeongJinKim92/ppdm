@@ -251,7 +251,6 @@ class protocol
 		//SSED
 		//paillier_ciphertext_t* SSEDm(paillier_ciphertext_t** cipher1, paillier_ciphertext_t** cipher2, int col_num);
 		paillier_ciphertext_t* unSSEDm(paillier_ciphertext_t* cipher1, int col_num);
-		int ** SSED_test(paillier_ciphertext_t*** data, paillier_ciphertext_t** query, boundary* node, int k, int NumData, int NumNode);
 		paillier_ciphertext_t* OP_SSED(paillier_ciphertext_t** data, paillier_ciphertext_t** Cluster_Center, paillier_ciphertext_t** Center_cnt, int tmp_k, int k);
 
 		//knn_m
@@ -304,10 +303,8 @@ class protocol
 		void UPDATE_SBD_SCORE_InTOPK_PB_inMultithread(paillier_ciphertext_t*** cipher_SBD_distance, paillier_ciphertext_t** cipher_V, int NumData);
 		void TOPK_CS_SBD_inMultithread(paillier_ciphertext_t*** data, paillier_ciphertext_t** q, paillier_ciphertext_t*** cipher_SBD_distance, paillier_ciphertext_t** cipher_distance);
 
-
-		int** STopk(paillier_ciphertext_t*** data, paillier_ciphertext_t** query, boundary* node, paillier_ciphertext_t** max_val, int NumData, int NumNode);
 		paillier_ciphertext_t* computeScore(paillier_ciphertext_t** cipher1, paillier_ciphertext_t** cipher2);
-		paillier_ciphertext_t* computeScore2(paillier_ciphertext_t** cipher1, paillier_ciphertext_t** cipher2, paillier_ciphertext_t** coeff, paillier_ciphertext_t* hint);
+		//paillier_ciphertext_t* computeScore2(paillier_ciphertext_t** cipher1, paillier_ciphertext_t** cipher2, paillier_ciphertext_t** coeff, paillier_ciphertext_t* hint);
 		paillier_ciphertext_t** Smax_n(paillier_ciphertext_t*** cipher, int number);
 		paillier_ciphertext_t** Smax_basic1(paillier_ciphertext_t** cipher1, paillier_ciphertext_t** cipher2);
 		paillier_ciphertext_t* Smax_basic2(paillier_ciphertext_t** cipher_R, paillier_ciphertext_t** cipher_L, paillier_ciphertext_t** cipher_M, paillier_ciphertext_t* alpha);
@@ -336,6 +333,7 @@ class protocol
 
 		//Classification parallel
 		paillier_ciphertext_t** Smin_n_Multithread(paillier_ciphertext_t*** cipher, int number);
+		void ExtractKNNInCLASSIFICATION_PB_inMultithread(paillier_ciphertext_t*** data, paillier_ciphertext_t** cipher_V, paillier_ciphertext_t*** cipher_result, int NumData, int serialKNN);
 
 
 		void SSEDMultiThread(paillier_ciphertext_t **DIST, paillier_ciphertext_t ***cand, paillier_ciphertext_t **q, int cnt);

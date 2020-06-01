@@ -1,190 +1,8 @@
-query : ./PPDM  0  3  7  4  2000  2  12  10  512  0  0  2  2  
-total time : 203
-node_SBD : 0  (0%)
-node_SRO : 0  (0%) 	 node_expansion(verify) : 0 (0%)
-node_retrieval : 0  (0%) 	 node_retrieval(verify) : 0 (0%)
-data_SSED_SBD : 0  (0%) 	 data_SBOR : 0 (0%)
-sMINn : 0  (0%) 	 sMINn (verify): 0 (0%)
-data_SPE(range) : 0  (0%) 
-# retrieved node : 0
-1	2	
-1	2	
-2	0	
-2	1	
-0	0	
-0	1	
-2	1	
-2	0	
-1	0	
-1	1	
-1	2	
-0	0	
-0	1	
-2	0	
-2	0	
-2	2	
-1	1	
-2	2	
-2	1	
-0	0	
-0	0	
-0	0	
-0	2	
-2	0	
-
-
-query : ./PPDM  0  3  7  4  2000  2  12  10  512  0  0  2  2  
-total time : 203
-node_SBD : 0  (0%)
-node_SRO : 0  (0%) 	 node_expansion(verify) : 0 (0%)
-node_retrieval : 0  (0%) 	 node_retrieval(verify) : 0 (0%)
-data_SSED_SBD : 0  (0%) 	 data_SBOR : 0 (0%)
-sMINn : 0  (0%) 	 sMINn (verify): 0 (0%)
-data_SPE(range) : 0  (0%) 
-# retrieved node : 0
-1	2	
-1	2	
-2	0	
-2	1	
-0	0	
-0	1	
-2	1	
-2	0	
-1	0	
-1	1	
-1	2	
-0	0	
-0	1	
-2	0	
-2	0	
-2	2	
-1	1	
-2	2	
-2	1	
-0	0	
-0	0	
-0	0	
-0	2	
-2	0	
-
-
-query : ./PPDM  0  3  7  4  2000  2  12  10  512  0  0  2  2  
-total time : 203
-node_SBD : 0  (0%)
-node_SRO : 0  (0%) 	 node_expansion(verify) : 0 (0%)
-node_retrieval : 0  (0%) 	 node_retrieval(verify) : 0 (0%)
-data_SSED_SBD : 0  (0%) 	 data_SBOR : 0 (0%)
-sMINn : 0  (0%) 	 sMINn (verify): 0 (0%)
-data_SPE(range) : 0  (0%) 
-# retrieved node : 0
-1	2	
-1	2	
-2	0	
-2	1	
-0	0	
-0	1	
-2	1	
-2	0	
-1	0	
-1	1	
-1	2	
-0	0	
-0	1	
-2	0	
-2	0	
-2	2	
-1	1	
-2	2	
-2	1	
-0	0	
-0	0	
-0	0	
-0	2	
-2	0	
-
-
-query : ./PPDM  0  3  7  4  2000  2  12  10  512  2  2  2  2  
-total time : 203
-query_Processing_time : 0  (0%)
-node_SBD : 0  (0%)
-node_SRO : 0  (0%) 	 node_expansion(verify) : 0 (0%)
-node_retrieval : 0  (0%) 	 node_retrieval(verify) : 0 (0%)
-sMINn : 0  (0%) 	 sMINn (verify): 0 (0%)
-data_SPE(range) : 0  (0%) 
-# retrieved node : 0
-0 = 2	0 = 2	
-1 = 2	1 = 2	
-
-
-query : ./PPDM  0  3  7  4  2000  2  12  10  512  0  0  2  2  
-total time : 203
-sRange_PB_SBD(QUERY) 
-0.187941 (0.092606 %) 
-sRange_PB_SBD, SRO(Data, QUERY) 
-202.241138 (99.652835 %) 
-# retrieved node : 0
-Result(0) :	1	2	
-Result(1) :	1	2	
-Result(2) :	2	0	
-Result(3) :	2	1	
-Result(4) :	0	0	
-Result(5) :	0	1	
-Result(6) :	2	1	
-Result(7) :	2	0	
-Result(8) :	1	0	
-Result(9) :	1	1	
-Result(10) :	1	2	
-Result(11) :	0	0	
-Result(12) :	0	1	
-Result(13) :	2	0	
-Result(14) :	2	0	
-Result(15) :	2	2	
-Result(16) :	1	1	
-Result(17) :	2	2	
-Result(18) :	2	1	
-Result(19) :	0	0	
-Result(20) :	0	0	
-Result(21) :	0	0	
-Result(22) :	0	2	
-Result(23) :	2	0	
-
-
-query : ./PPDM  0  3  7  4  2000  2  12  10  512  0  0  2  2  
-total time : 203
-sRange_PB_SBD(QUERY) 
-0.187988 (0.092493 %) 
-sRange_PB_SBD, SRO(Data, QUERY) 
-202.540782 (99.653201 %) 
-# retrieved node : 0
-Result(0) :	1	2	
-Result(1) :	1	2	
-Result(2) :	2	0	
-Result(3) :	2	1	
-Result(4) :	0	0	
-Result(5) :	0	1	
-Result(6) :	2	1	
-Result(7) :	2	0	
-Result(8) :	1	0	
-Result(9) :	1	1	
-Result(10) :	1	2	
-Result(11) :	0	0	
-Result(12) :	0	1	
-Result(13) :	2	0	
-Result(14) :	2	0	
-Result(15) :	2	2	
-Result(16) :	1	1	
-Result(17) :	2	2	
-Result(18) :	2	1	
-Result(19) :	0	0	
-Result(20) :	0	0	
-Result(21) :	0	0	
-Result(22) :	0	2	
-Result(23) :	2	0	
-
-
-time : 2020-05-30-19-59-35
+time : 2020-06-01-07-13-46
 query : RANGE_PB TREE_LEVEL : 7 THREAD : 4 DATA : 2000 DIMENSION : 2 BITS : 12 k : 10 KEY : 512  QUERY : 0 0 2 2 
 total time : 203
+SBD_Q 					 0.188394 (0.092648 %) 
+SBD_D + SRO_D 					 202.638107 (99.653608 %) 
 # retrieved node : 0
 Result(0) :	1	2	
 Result(1) :	1	2	
@@ -212,9 +30,12 @@ Result(22) :	0	2
 Result(23) :	2	0	
 
 
-time : 2020-05-31-19-56-47
+time : 2020-06-01-15-50-40
 query : RANGE_PB TREE_LEVEL : 7 THREAD : 4 DATA : 2000 DIMENSION : 2 BITS : 12 k : 10 KEY : 512  QUERY : 0 0 2 2 
-total time : 204
+total time : 202.655380
+                    SBD_Q            SBD_D + SRO_D
+                 0.187869               201.956627
+                 0.092704                99.655201
 # retrieved node : 0
 Result(0) :	1	2	
 Result(1) :	1	2	
@@ -242,11 +63,12 @@ Result(22) :	0	2
 Result(23) :	2	0	
 
 
-time : 2020-06-01-00-13-05
+time : 2020-06-01-17-16-46
 query : RANGE_PB TREE_LEVEL : 7 THREAD : 4 DATA : 2000 DIMENSION : 2 BITS : 12 k : 10 KEY : 512  QUERY : 0 0 2 2 
-total time : 203
-SBD_Q 					 0.188215 (0.092567 %) 
-SBD_D + SRO_D 					 202.624679 (99.653922 %) 
+total time : 203.660843
+               SBD_Q       SBD_D + SRO_D
+            0.188435          202.954187
+            0.092524           99.653023
 # retrieved node : 0
 Result(0) :	1	2	
 Result(1) :	1	2	

@@ -1,173 +1,16 @@
-query : ./PPDM  1  2  7  0  2000  4  20  10  512  10  10  10  10  10  
-total time : 46
-node_SBD : 0  (0%)
-node_SRO : 4  (8%) 	 node_expansion(verify) : 1 (3%)
-node_retrieval : 11  (24%) 	 node_retrieval(verify) : 11 (24%)
-data_SSED_SBD : 1  (2%) 	 data_SBOR : 0 (0%)
-sMINn : 0  (1%) 	 sMINn (verify): 1 (3%)
-data_SPE(range) : 0  (0%) 
-# retrieved node : 4
-
-
-query : ./PPDM  1  2  7  0  2000  4  20  10  512  10  10  10  10  10  
-total time : 45
-node_SBD : 0  (0%)
-node_SRO : 4  (8%) 	 node_expansion(verify) : 1 (3%)
-node_retrieval : 11  (24%) 	 node_retrieval(verify) : 11 (24%)
-data_SSED_SBD : 1  (2%) 	 data_SBOR : 0 (0%)
-sMINn : 0  (1%) 	 sMINn (verify): 1 (3%)
-data_SPE(range) : 0  (0%) 
-# retrieved node : 4
-
-
-query : ./PPDM  1  2  7  0  2000  4  20  10  512  10  10  10  10  10  
-total time : 45
-node_SBD : 0  (0%)
-node_SRO : 4  (8%) 	 node_expansion(verify) : 1 (3%)
-node_retrieval : 11  (24%) 	 node_retrieval(verify) : 11 (24%)
-data_SSED_SBD : 1  (2%) 	 data_SBOR : 0 (0%)
-sMINn : 0  (1%) 	 sMINn (verify): 1 (3%)
-data_SPE(range) : 0  (0%) 
-# retrieved node : 4
-
-
-query : ./PPDM  1  2  7  0  2000  4  20  10  512  10  10  10  10  10  
-total time : 46
-node_SBD : 0  (0%)
-node_SRO : 4  (8%) 	 node_expansion(verify) : 1 (3%)
-node_retrieval : 11  (24%) 	 node_retrieval(verify) : 11 (24%)
-data_SSED_SBD : 1  (2%) 	 data_SBOR : 0 (0%)
-sMINn : 0  (1%) 	 sMINn (verify): 1 (3%)
-data_SPE(range) : 0  (0%) 
-# retrieved node : 4
-
-
-query : ./PPDM  1  2  7  0  2000  4  20  10  512  10  10  10  10  10  
-total time : 46
-sTopk_G_preprocessing_query 
-0.019004 (0.041319 %) 
-sTopk_G_GSRO_node_query 
-3.634006 (7.901186 %) 
-sTopk_G_extract_cand 
-11.225461 (24.406800 %) 
-sTopk_G_extract_expand_cand 
-11.225890 (24.407731 %) 
-sTopk_G_computeScore 
-0.868405 (1.888118 %) 
-sTopk_G_sMaxn 
-0.568775 (1.236650 %) 
-sTopk_G_sMaxn_second 
-1.631844 (3.548014 %) 
-sTopk_G_subtract 
-2.252489 (4.897443 %) 
-sTopk_G_extract_topk 
-11.352015 (24.681958 %) 
-sTopk_G_check_expand_cond 
-1.328918 (2.889381 %) 
-# retrieved node : 4
-Result(0) :	477	427	506	501	
-Result(1) :	435	471	472	510	
-Result(2) :	488	437	490	456	
-Result(3) :	349	506	501	507	
-Result(4) :	449	491	472	431	
-Result(5) :	470	491	491	388	
-Result(6) :	463	457	493	425	
-Result(7) :	446	478	482	420	
-Result(8) :	489	468	473	395	
-Result(9) :	498	492	310	505	
-
-
-time : 2020-05-30-23-59-23
-query : TOPK_GI TREE_LEVEL : 7 THREAD : 0 DATA : 2000 DIMENSION : 4 BITS : 20 k : 10 KEY : 512  QUERY : 10 10 10 10 10 
-total time : 46
-sTopk_G_preprocessing_query 					 0.023488 (0.051324 %) 
-sTopk_G_GSRO_node_query 					 3.452892 (7.544779 %) 
-sTopk_G_extract_cand 					 11.349139 (24.798556 %) 
-sTopk_G_extract_expand_cand 					 11.347141 (24.794190 %) 
-sTopk_G_computeScore 					 0.860260 (1.879720 %) 
-sTopk_G_sMaxn 					 0.574448 (1.255204 %) 
-sTopk_G_sMaxn_second 					 1.562083 (3.413245 %) 
-sTopk_G_subtract 					 2.214222 (4.838209 %) 
-sTopk_G_extract_topk 					 11.203885 (24.481166 %) 
-sTopk_G_check_expand_cond 					 1.314458 (2.872171 %) 
-# retrieved node : 4
-Result(0) :	477	427	506	501	
-Result(1) :	435	471	472	510	
-Result(2) :	488	437	490	456	
-Result(3) :	349	506	501	507	
-Result(4) :	449	491	472	431	
-Result(5) :	470	491	491	388	
-Result(6) :	463	457	493	425	
-Result(7) :	446	478	482	420	
-Result(8) :	489	468	473	395	
-Result(9) :	498	492	310	505	
-
-
-time : 2020-05-31-01-54-57
-query : TOPK_GI TREE_LEVEL : 7 THREAD : 0 DATA : 2000 DIMENSION : 4 BITS : 20 k : 10 KEY : 512  QUERY : 10 10 10 10 10 
-total time : 46
-sTopk_G_preprocessing_query 					 0.045146 (0.098445 %) 
-sTopk_G_GSRO_node_query 					 3.671682 (8.006465 %) 
-sTopk_G_extract_cand 					 11.167302 (24.351403 %) 
-sTopk_G_extract_expand_cand 					 11.168645 (24.354333 %) 
-sTopk_G_computeScore 					 0.865265 (1.886795 %) 
-sTopk_G_sMaxn 					 0.536851 (1.170656 %) 
-sTopk_G_sMaxn_second 					 1.670710 (3.643149 %) 
-sTopk_G_subtract 					 2.235017 (4.873675 %) 
-sTopk_G_extract_topk 					 11.295346 (24.630616 %) 
-sTopk_G_check_expand_cond 					 1.324075 (2.887277 %) 
-# retrieved node : 4
-Result(0) :	477	427	506	501	
-Result(1) :	435	471	472	510	
-Result(2) :	488	437	490	456	
-Result(3) :	349	506	501	507	
-Result(4) :	449	491	472	431	
-Result(5) :	470	491	491	388	
-Result(6) :	463	457	493	425	
-Result(7) :	446	478	482	420	
-Result(8) :	489	468	473	395	
-Result(9) :	498	492	310	505	
-
-
-time : 2020-05-31-01-56-31
-query : TOPK_GI TREE_LEVEL : 7 THREAD : 0 DATA : 2000 DIMENSION : 4 BITS : 20 k : 10 KEY : 512  QUERY : 10 10 10 10 10 
-total time : 46
-sTopk_G_preprocessing_query 					 0.023826 (0.052204 %) 
-sTopk_G_GSRO_node_query 					 3.391939 (7.432045 %) 
-sTopk_G_extract_cand 					 11.206514 (24.554487 %) 
-sTopk_G_extract_expand_cand 					 11.198260 (24.536401 %) 
-sTopk_G_computeScore 					 0.866071 (1.897639 %) 
-sTopk_G_sMaxn 					 0.569504 (1.247835 %) 
-sTopk_G_sMaxn_second 					 1.604313 (3.515196 %) 
-sTopk_G_subtract 					 2.240416 (4.908954 %) 
-sTopk_G_extract_topk 					 11.330264 (24.825635 %) 
-sTopk_G_check_expand_cond 					 1.327868 (2.909479 %) 
-# retrieved node : 4
-Result(0) :	477	427	506	501	
-Result(1) :	435	471	472	510	
-Result(2) :	488	437	490	456	
-Result(3) :	349	506	501	507	
-Result(4) :	449	491	472	431	
-Result(5) :	470	491	491	388	
-Result(6) :	463	457	493	425	
-Result(7) :	446	478	482	420	
-Result(8) :	489	468	473	395	
-Result(9) :	498	492	310	505	
-
-
-time : 2020-05-31-13-33-47
+time : 2020-06-01-05-50-54
 query : TOPK_GI TREE_LEVEL : 7 THREAD : 0 DATA : 2000 DIMENSION : 4 BITS : 20 k : 10 KEY : 512  QUERY : 10 10 10 10 10 
 total time : 45
-sTopk_G_preprocessing_query 					 0.023721 (0.052143 %) 
-sTopk_G_GSRO_node_query 					 3.365874 (7.398618 %) 
-sTopk_G_extract_cand 					 11.159307 (24.529569 %) 
-sTopk_G_extract_expand_cand 					 11.162353 (24.536265 %) 
-sTopk_G_computeScore 					 0.863675 (1.898467 %) 
-sTopk_G_sMaxn 					 0.503300 (1.106316 %) 
-sTopk_G_sMaxn_second 					 1.558321 (3.425386 %) 
-sTopk_G_subtract 					 2.228557 (4.898649 %) 
-sTopk_G_extract_topk 					 11.287013 (24.810282 %) 
-sTopk_G_check_expand_cond 					 1.465923 (3.222283 %) 
+SMAX 					 0.512526 (1.135395 %) 
+subtract 					 2.216089 (4.909289 %) 
+Query 					 0.023572 (0.052218 %) 
+nodeRetrievalSRO 					 3.390150 (7.510181 %) 
+nodeRetrieval 					 11.089177 (24.565791 %) 
+exnodeRetrieval 					 11.090717 (24.569202 %) 
+exSMAX 					 1.563222 (3.462996 %) 
+excheck 					 1.314525 (2.912059 %) 
+CS 					 0.858278 (1.901339 %) 
+Topk&update 					 11.217087 (24.849150 %) 
 # retrieved node : 4
 Result(0) :	477	427	506	501	
 Result(1) :	435	471	472	510	
@@ -181,19 +24,57 @@ Result(8) :	489	468	473	395
 Result(9) :	498	492	310	505	
 
 
-time : 2020-05-31-20-46-40
+time : 2020-06-01-07-20-27
 query : TOPK_GI TREE_LEVEL : 7 THREAD : 0 DATA : 2000 DIMENSION : 4 BITS : 20 k : 10 KEY : 512  QUERY : 10 10 10 10 10 
 total time : 45
-sTopk_G_preprocessing_query 					 0.023840 (0.052768 %) 
-sTopk_G_GSRO_node_query 					 3.360041 (7.437099 %) 
-sTopk_G_extract_cand 					 11.097956 (24.564166 %) 
-sTopk_G_extract_expand_cand 					 11.092061 (24.551118 %) 
-sTopk_G_computeScore 					 0.859780 (1.903033 %) 
-sTopk_G_sMaxn 					 0.538084 (1.190992 %) 
-sTopk_G_sMaxn_second 					 1.591284 (3.522141 %) 
-sTopk_G_subtract 					 2.213696 (4.899785 %) 
-sTopk_G_extract_topk 					 11.218278 (24.830485 %) 
-sTopk_G_check_expand_cond 					 1.317018 (2.915082 %) 
+SMAX 					 0.510910 (1.125341 %) 
+subtract 					 2.240011 (4.933899 %) 
+Query 					 0.023656 (0.052105 %) 
+nodeRetrievalSRO 					 3.376762 (7.437733 %) 
+nodeRetrieval 					 11.157247 (24.575205 %) 
+exnodeRetrieval 					 11.156691 (24.573979 %) 
+exSMAX 					 1.591320 (3.505078 %) 
+excheck 					 1.321276 (2.910272 %) 
+CS 					 0.863284 (1.901488 %) 
+Topk&update 					 11.284347 (24.855157 %) 
+# retrieved node : 4
+Result(0) :	477	427	506	501	
+Result(1) :	435	471	472	510	
+Result(2) :	488	437	490	456	
+Result(3) :	349	506	501	507	
+Result(4) :	449	491	472	431	
+Result(5) :	470	491	491	388	
+Result(6) :	463	457	493	425	
+Result(7) :	446	478	482	420	
+Result(8) :	489	468	473	395	
+Result(9) :	498	492	310	505	
+
+
+time : 2020-06-01-15-57-23
+query : TOPK_GI TREE_LEVEL : 7 THREAD : 0 DATA : 2000 DIMENSION : 4 BITS : 20 k : 10 KEY : 512  QUERY : 10 10 10 10 10 
+total time : 45.524895
+                     SMAX                 subtract                    Query         nodeRetrievalSRO            nodeRetrieval          exnodeRetrieval                   exSMAX                  excheck                       CS              Topk&update
+                 0.593977                 2.234400                 0.023672                 3.406506                11.165651                11.170111                 1.575207                 1.322650                 0.864246                11.292477
+                 1.304730                 4.908084                 0.051997                 7.482731                24.526474                24.536271                 3.460099                 2.905333                 1.898403                24.805058
+# retrieved node : 4
+Result(0) :	477	427	506	501	
+Result(1) :	435	471	472	510	
+Result(2) :	488	437	490	456	
+Result(3) :	349	506	501	507	
+Result(4) :	449	491	472	431	
+Result(5) :	470	491	491	388	
+Result(6) :	463	457	493	425	
+Result(7) :	446	478	482	420	
+Result(8) :	489	468	473	395	
+Result(9) :	498	492	310	505	
+
+
+time : 2020-06-01-17-23-29
+query : TOPK_GI TREE_LEVEL : 7 THREAD : 0 DATA : 2000 DIMENSION : 4 BITS : 20 k : 10 KEY : 512  QUERY : 10 10 10 10 10 
+total time : 45.287334
+                SMAX            subtract               Query    nodeRetrievalSRO       nodeRetrieval     exnodeRetrieval              exSMAX             excheck                  CS         Topk&update
+            0.538323            2.217098            0.023549            3.421772           11.096583           11.097274            1.630287            1.315377            0.858936           11.221997
+            1.188684            4.895625            0.051998            7.555693           24.502619           24.504146            3.599874            2.904515            1.896635           24.779548
 # retrieved node : 4
 Result(0) :	477	427	506	501	
 Result(1) :	435	471	472	510	

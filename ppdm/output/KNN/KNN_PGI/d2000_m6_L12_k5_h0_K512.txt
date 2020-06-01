@@ -1,36 +1,37 @@
-query : ./PPDM  2  4  7  4  2000  6  12  5  512  10  10  10  10  10  10  
-total time : 71
-node_SBD : 0  (0%)
-node_SRO : 0  (0%) 	 node_expansion(verify) : 0 (0%)
-node_retrieval : 0  (0%) 	 node_retrieval(verify) : 0 (0%)
-data_SSED_SBD : 0  (0%) 	 data_SBOR : 0 (0%)
-sMINn : 0  (0%) 	 sMINn (verify): 0 (0%)
-data_SPE(range) : 0  (0%) 
-# retrieved node : 64
-
-
-query : ./PPDM  2  4  7  4  2000  6  12  5  512  10  10  10  10  10  10  
-total time : 71
-node_SBD : 0  (0%)
-node_SRO : 0  (0%) 	 node_expansion(verify) : 0 (0%)
-node_retrieval : 0  (0%) 	 node_retrieval(verify) : 0 (0%)
-data_SSED_SBD : 0  (0%) 	 data_SBOR : 0 (0%)
-sMINn : 0  (0%) 	 sMINn (verify): 0 (0%)
-data_SPE(range) : 0  (0%) 
-# retrieved node : 64
-
-
-time : 2020-05-29-23-05-35
+time : 2020-06-01-06-16-22
 query : KNN_PGI TREE_LEVEL : 7 THREAD : 4 DATA : 2000 DIMENSION : 6 BITS : 12 k : 5 KEY : 512  QUERY : 10 10 10 10 10 10 
-total time : 71
-PGSRO 					 1.214557 (1.709579 %) 
-CheckExpand 					 1.602873 (2.256163 %) 
-Filter 					 4.446516 (6.258799 %) 
-Expand 					 4.443028 (6.253890 %) 
-SSED 					 5.268445 (7.415726 %) 
-SMINn 					 9.525889 (13.408393 %) 
-Subtract 					 3.772160 (5.309594 %) 
-ExtractkNN 					 29.910898 (42.101799 %) 
-# retrieved node : 64
+total time : 69
+SMIN 					 9.062314 (13.175530 %) 
+subtract 					 3.925736 (5.707555 %) 
+nodeRetrievalSRO 					 1.591100 (2.313271 %) 
+excheck 					 1.615526 (2.348784 %) 
+nodeRetrieval 					 4.453884 (6.475420 %) 
+exnodeRetrieval 					 4.460095 (6.484449 %) 
+SSED 					 4.730003 (6.876864 %) 
+kNN&update 					 28.591647 (41.568868 %) 
+# retrieved node : 61
+
+
+time : 2020-06-01-07-45-20
+query : KNN_PGI TREE_LEVEL : 7 THREAD : 4 DATA : 2000 DIMENSION : 6 BITS : 12 k : 5 KEY : 512  QUERY : 10 10 10 10 10 10 
+total time : 15
+SMIN 					 0.589972 (3.815426 %) 
+subtract 					 0.251177 (1.624396 %) 
+nodeRetrievalSRO 					 1.565736 (10.125826 %) 
+excheck 					 1.616368 (10.453267 %) 
+nodeRetrieval 					 4.444421 (28.742673 %) 
+exnodeRetrieval 					 4.446607 (28.756809 %) 
+SSED 					 0.250726 (1.621482 %) 
+kNN&update 					 1.735740 (11.225266 %) 
+# retrieved node : 3
+
+
+time : 2020-06-01-16-21-58
+query : KNN_PGI TREE_LEVEL : 7 THREAD : 4 DATA : 2000 DIMENSION : 6 BITS : 12 k : 5 KEY : 512  QUERY : 10 10 10 10 10 10 
+total time : 19.282576
+                     SMIN                 subtract         nodeRetrievalSRO                  excheck            nodeRetrieval          exnodeRetrieval                     SSED               kNN&update
+                 1.265141                 0.491847                 1.558846                 1.619780                 4.469241                 4.466146                 0.560432                 3.608539
+                 6.561060                 2.550734                 8.084221                 8.400224                23.177615                23.161564                 2.906417                18.713986
+# retrieved node : 7
 
 

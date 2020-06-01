@@ -1,0 +1,11 @@
+time : 2020-06-01-06-57-13
+query : KMEANS_GI TREE_LEVEL : 5 THREAD : 0 DATA : 2000 DIMENSION : 2 BITS : 30 k : 5 KEY : 512  QUERY : 0 0 0 0 0 0 
+total time : 842
+# retrieved node : 0
+Result(0) :	22124	76496	
+Result(1) :	81731	23080	
+Result(2) :	75790	76607	
+Result(3) :	18222	21387	
+Result(4) :	48395	38362	
+
+

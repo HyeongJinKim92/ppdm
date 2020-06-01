@@ -62,7 +62,7 @@ void caldistanceInThread(int index, std::vector<int> inputIdx, paillier_cipherte
 void classipmInThread1(int index, std::vector<int> inputIdx, paillier_ciphertext_t **cipher_distance, paillier_ciphertext_t *cipher_min, paillier_ciphertext_t *cipher_rand, paillier_ciphertext_t **cipher_mid, protocol proto);
 void classipmInThread2(int index, std::vector<int> inputIdx, paillier_ciphertext_t **cipher_V, paillier_ciphertext_t **cipher_V2, paillier_ciphertext_t ***data, paillier_ciphertext_t **cipher_rabel_result, int s, protocol proto);
 void SBOR_inThread(int index, std::vector<int> inputIdx, paillier_ciphertext_t **cipher_V, paillier_ciphertext_t ***cipher_SBD_distance, protocol proto);
-
+void ExtractKNNInCLASSIFICATION_PB_inThread(std::vector<int> inputIdx, paillier_ciphertext_t *** data, paillier_ciphertext_t ** cipher_V, paillier_ciphertext_t ** cipher_thread_result, protocol proto, int dimension);
 
 //CLUSTERING_PB
 void ComputeNEWCLUSTER_forKMEANS_PBinThread( std::vector<int> input, paillier_ciphertext_t *** data, paillier_ciphertext_t *** formerSumCluster, paillier_ciphertext_t *** NewSumCluster, paillier_ciphertext_t ** NewSumCntCluster, protocol proto);

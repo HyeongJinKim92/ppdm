@@ -1,18 +1,27 @@
-time : 2020-05-31-15-05-56
+time : 2020-06-01-16-55-11
 query : KNN_GI TREE_LEVEL : 7 THREAD : 0 DATA : 2000 DIMENSION : 6 BITS : 22 k : 5 KEY : 512  QUERY : 10 10 10 10 10 10 
-total time : 64
+total time : 64.145126
+                     SMIN                 subtract                      kNN         nodeRetrievalSRO                  excheck            nodeRetrieval          exnodeRetrieval                   exSMIN                     SSED
+                 0.297685                 1.578363                12.493016                 4.102278                 6.400711                16.734477                16.735384                 1.528526                 2.092317
+                 0.464081                 2.460612                19.476173                 6.395308                 9.978483                26.088463                26.089876                 2.382918                 3.261848
 # retrieved node : 7
 
 
-time : 2020-05-31-15-50-16
+time : 2020-06-01-17-43-20
 query : KNN_GI TREE_LEVEL : 7 THREAD : 0 DATA : 2000 DIMENSION : 6 BITS : 22 k : 5 KEY : 512  QUERY : 10 10 10 10 10 10 
-total time : 64
+total time : 63.928307
+                SMIN            subtract                 kNN    nodeRetrievalSRO             excheck       nodeRetrieval     exnodeRetrieval              exSMIN                SSED
+            0.270073            1.574036           12.465607            4.080673            6.374978           16.697167           16.700465            1.500128            2.087642
+            0.422462            2.462189           19.499355            6.383201            9.972074           26.118582           26.123741            2.346579            3.265599
 # retrieved node : 7
 
 
-time : 2020-05-31-21-14-16
+time : 2020-06-01-19-03-32
 query : KNN_GI TREE_LEVEL : 7 THREAD : 0 DATA : 2000 DIMENSION : 6 BITS : 22 k : 5 KEY : 512  QUERY : 10 10 10 10 10 10 
-total time : 64
+total time : 64.229538
+                SMIN            subtract                 kNN    nodeRetrievalSRO             excheck       nodeRetrieval     exnodeRetrieval              exSMIN                SSED
+            0.311994            1.815205           12.464513            4.136332            6.393316           16.649555           16.655756            1.526734            2.082758
+            0.485748            2.826122           19.406201            6.439922            9.953856           25.921959           25.931614            2.376997            3.242679
 # retrieved node : 7
 
 

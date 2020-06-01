@@ -1,96 +1,20 @@
-query : ./PPDM  1  1  7  0  2000  4  20  10  512  10  10  10  10  10  
-total time : 338
-node_SBD : 40  (12%)
-node_SRO : 40  (12%) 	 node_expansion(verify) : 16 (5%)
-node_retrieval : 11  (3%) 	 node_retrieval(verify) : 11 (3%)
-data_SSED_SBD : 9  (3%) 	 data_SBOR : 38 (11%)
-sMINn : 23  (7%) 	 sMINn (verify): 77 (23%)
-data_SPE(range) : 0  (0%) 
-# retrieved node : 4
-
-
-query : ./PPDM  1  1  7  0  2000  4  20  10  512  10  10  10  10  10  
-total time : 339
-node_SBD : 40  (12%)
-node_SRO : 41  (12%) 	 node_expansion(verify) : 16 (5%)
-node_retrieval : 11  (3%) 	 node_retrieval(verify) : 11 (3%)
-data_SSED_SBD : 9  (3%) 	 data_SBOR : 38 (11%)
-sMINn : 23  (7%) 	 sMINn (verify): 78 (23%)
-data_SPE(range) : 0  (0%) 
-# retrieved node : 4
-
-
-query : ./PPDM  1  1  7  0  2000  4  20  10  512  10  10  10  10  10  
-total time : 337
-node_SBD : 40  (12%)
-node_SRO : 40  (12%) 	 node_expansion(verify) : 16 (5%)
-node_retrieval : 11  (3%) 	 node_retrieval(verify) : 11 (3%)
-data_SSED_SBD : 9  (3%) 	 data_SBOR : 38 (11%)
-sMINn : 23  (7%) 	 sMINn (verify): 77 (23%)
-data_SPE(range) : 0  (0%) 
-# retrieved node : 4
-
-
-query : ./PPDM  1  1  7  0  2000  4  20  10  512  10  10  10  10  10  
-total time : 341
-sTopk_I_preprocessing_query 
-0.726073 (0.212984 %) 
-sTopk_I_SBD_node 
-40.803094 (11.969023 %) 
-sTopk_I_SBD_query 
-0.641380 (0.188140 %) 
-sTopk_I_SRO_node_query 
-41.080958 (12.050531 %) 
-sTopk_I_extract_cand 
-11.456179 (3.360512 %) 
-sTopk_I_extract_expand_cand 
-11.450454 (3.358832 %) 
-sTopk_I_computescore&SBD 
-9.128598 (2.677748 %) 
-sTopk_I_smax_n 
-23.153720 (6.791824 %) 
-sTopk_I_smax_n_expand 
-77.386929 (22.700386 %) 
-sTopk_I_recovery_score 
-56.944541 (16.703894 %) 
-sTopk_I_subtract 
-2.246143 (0.658875 %) 
-sTopk_I_extract_topk 
-7.542266 (2.212419 %) 
-sTopk_I_updateScore 
-37.895696 (11.116178 %) 
-sTopk_I_check_expand_cond 
-15.744239 (4.618355 %) 
-# retrieved node : 4
-Result(0) :	477	427	506	501	
-Result(1) :	435	471	472	510	
-Result(2) :	488	437	490	456	
-Result(3) :	349	506	501	507	
-Result(4) :	449	491	472	431	
-Result(5) :	470	491	491	388	
-Result(6) :	463	457	493	425	
-Result(7) :	446	478	482	420	
-Result(8) :	489	468	473	395	
-Result(9) :	498	492	310	505	
-
-
-time : 2020-05-30-21-30-18
+time : 2020-06-01-07-19-34
 query : TOPK_I TREE_LEVEL : 7 THREAD : 0 DATA : 2000 DIMENSION : 4 BITS : 20 k : 10 KEY : 512  QUERY : 10 10 10 10 10 
 total time : 336
-sTopk_I_preprocessing_query 					 0.706413 (0.210117 %) 
-sTopk_I_SBD_node 					 39.612477 (11.782397 %) 
-sTopk_I_SBD_query 					 0.622972 (0.185298 %) 
-sTopk_I_SRO_node_query 					 40.211718 (11.960636 %) 
-sTopk_I_extract_cand 					 11.117655 (3.306853 %) 
-sTopk_I_extract_expand_cand 					 11.116691 (3.306566 %) 
-sTopk_I_computescore&SBD 					 8.903565 (2.648290 %) 
-sTopk_I_smax_n 					 23.033102 (6.851002 %) 
-sTopk_I_smax_n_expand 					 77.012809 (22.906810 %) 
-sTopk_I_recovery_score 					 56.611104 (16.838495 %) 
-sTopk_I_subtract 					 2.217378 (0.659540 %) 
-sTopk_I_extract_topk 					 7.481668 (2.225359 %) 
-sTopk_I_updateScore 					 37.597295 (11.182998 %) 
-sTopk_I_check_expand_cond 					 15.330602 (4.559958 %) 
+CS&SBD 					 11.607531 (3.458039 %) 
+SMAX 					 22.975118 (6.844596 %) 
+Bi to De 					 56.588821 (16.858569 %) 
+subtract 					 2.211915 (0.658959 %) 
+Topk 					 7.458895 (2.222105 %) 
+update 					 37.473407 (11.163831 %) 
+Query 					 0.706627 (0.210514 %) 
+nodeRetrievalSBD 					 39.671772 (11.818753 %) 
+SBD_Q 					 0.624817 (0.186141 %) 
+nodeRetrievalSRO 					 40.112369 (11.950013 %) 
+nodeRetrieval 					 11.085339 (3.302471 %) 
+exnodeRetrieval 					 11.083607 (3.301955 %) 
+exSMAX 					 76.803860 (22.880900 %) 
+excheck 					 15.330101 (4.567043 %) 
 # retrieved node : 4
 Result(0) :	477	427	506	501	
 Result(1) :	435	471	472	510	
@@ -104,23 +28,12 @@ Result(8) :	489	468	473	395
 Result(9) :	498	492	310	505	
 
 
-time : 2020-05-31-13-32-55
+time : 2020-06-01-15-56-31
 query : TOPK_I TREE_LEVEL : 7 THREAD : 0 DATA : 2000 DIMENSION : 4 BITS : 20 k : 10 KEY : 512  QUERY : 10 10 10 10 10 
-total time : 337
-sTopk_I_preprocessing_query 					 0.709796 (0.210474 %) 
-sTopk_I_SBD_node 					 39.835741 (11.812381 %) 
-sTopk_I_SBD_query 					 0.626574 (0.185796 %) 
-sTopk_I_SRO_node_query 					 40.304391 (11.951348 %) 
-sTopk_I_extract_cand 					 11.141558 (3.303775 %) 
-sTopk_I_extract_expand_cand 					 11.134212 (3.301597 %) 
-sTopk_I_computescore&SBD 					 8.948973 (2.653614 %) 
-sTopk_I_smax_n 					 23.090392 (6.846929 %) 
-sTopk_I_smax_n_expand 					 77.186614 (22.887931 %) 
-sTopk_I_recovery_score 					 56.809222 (16.845480 %) 
-sTopk_I_subtract 					 2.234016 (0.662447 %) 
-sTopk_I_extract_topk 					 7.498618 (2.223544 %) 
-sTopk_I_updateScore 					 37.681546 (11.173604 %) 
-sTopk_I_check_expand_cond 					 15.390513 (4.563706 %) 
+total time : 338.648468
+                   CS&SBD                     SMAX                 Bi to De                 subtract                     Topk                   update                    Query         nodeRetrievalSBD                    SBD_Q         nodeRetrievalSRO            nodeRetrieval          exnodeRetrieval                   exSMAX                  excheck
+                11.684082                23.194580                57.009966                 2.242773                 7.536387                37.878674                 0.712433                39.925398                 0.627848                40.491792                11.192321                11.197505                77.559112                15.447650
+                 3.450210                 6.849161                16.834556                 0.662272                 2.225431                11.185249                 0.210375                11.789629                 0.185398                11.956880                 3.304997                 3.306528                22.902543                 4.561559
 # retrieved node : 4
 Result(0) :	477	427	506	501	
 Result(1) :	435	471	472	510	
@@ -134,23 +47,12 @@ Result(8) :	489	468	473	395
 Result(9) :	498	492	310	505	
 
 
-time : 2020-05-31-20-45-47
+time : 2020-06-01-17-22-37
 query : TOPK_I TREE_LEVEL : 7 THREAD : 0 DATA : 2000 DIMENSION : 4 BITS : 20 k : 10 KEY : 512  QUERY : 10 10 10 10 10 
-total time : 338
-sTopk_I_preprocessing_query 					 0.710935 (0.210223 %) 
-sTopk_I_SBD_node 					 39.899710 (11.798299 %) 
-sTopk_I_SBD_query 					 0.628154 (0.185745 %) 
-sTopk_I_SRO_node_query 					 40.448447 (11.960560 %) 
-sTopk_I_extract_cand 					 11.181801 (3.306446 %) 
-sTopk_I_extract_expand_cand 					 11.182502 (3.306653 %) 
-sTopk_I_computescore&SBD 					 8.966049 (2.651250 %) 
-sTopk_I_smax_n 					 23.155960 (6.847191 %) 
-sTopk_I_smax_n_expand 					 77.426867 (22.895037 %) 
-sTopk_I_recovery_score 					 56.924192 (16.832419 %) 
-sTopk_I_subtract 					 2.239440 (0.662200 %) 
-sTopk_I_extract_topk 					 7.523348 (2.224646 %) 
-sTopk_I_updateScore 					 37.806123 (11.179228 %) 
-sTopk_I_check_expand_cond 					 15.433120 (4.563556 %) 
+total time : 338.051697
+              CS&SBD                SMAX            Bi to De            subtract                Topk              update               Query    nodeRetrievalSBD               SBD_Q    nodeRetrievalSRO       nodeRetrieval     exnodeRetrieval              exSMAX             excheck
+           11.650767           23.161590           56.922659            2.229026            7.523513           37.816712            0.710133           39.829006            0.625814           40.436773           11.177052           11.176117           77.436239           15.412013
+            3.446445            6.851493           16.838448            0.659374            2.225551           11.186665            0.210066           11.781927            0.185124           11.961713            3.306314            3.306038           22.906626            4.559070
 # retrieved node : 4
 Result(0) :	477	427	506	501	
 Result(1) :	435	471	472	510	

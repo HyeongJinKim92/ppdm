@@ -1,22 +1,33 @@
-query : ./PPDM  2  3  7  4  2000  6  12  2  512  10  10  10  10  10  10  
-total time : 124
-node_SBD : 0  (0%)
-node_SRO : 0  (0%) 	 node_expansion(verify) : 0 (0%)
-node_retrieval : 0  (0%) 	 node_retrieval(verify) : 0 (0%)
-data_SSED_SBD : 0  (0%) 	 data_SBOR : 0 (0%)
-sMINn : 187  (150%) 	 sMINn (verify): 0 (0%)
-data_SPE(range) : 0  (0%) 
+time : 2020-06-01-06-15-03
+query : KNN_PB TREE_LEVEL : 7 THREAD : 4 DATA : 2000 DIMENSION : 6 BITS : 12 k : 2 KEY : 512  QUERY : 10 10 10 10 10 10 
+total time : 123
+SSED&SBD 					 31.212032 (25.327787 %) 
+SMIN 					 45.720222 (37.100822 %) 
+Bi to De 					 14.330429 (11.628786 %) 
+subtract 					 1.470437 (1.193223 %) 
+kNN 					 8.733292 (7.086849 %) 
+update 					 17.525490 (14.221499 %) 
 # retrieved node : 0
 
 
-query : ./PPDM  2  3  7  4  2000  6  12  2  512  10  10  10  10  10  10  
+time : 2020-06-01-07-44-55
+query : KNN_PB TREE_LEVEL : 7 THREAD : 4 DATA : 2000 DIMENSION : 6 BITS : 12 k : 2 KEY : 512  QUERY : 10 10 10 10 10 10 
 total time : 124
-node_SBD : 0  (0%)
-node_SRO : 0  (0%) 	 node_expansion(verify) : 0 (0%)
-node_retrieval : 0  (0%) 	 node_retrieval(verify) : 0 (0%)
-data_SSED_SBD : 0  (0%) 	 data_SBOR : 0 (0%)
-sMINn : 186  (150%) 	 sMINn (verify): 0 (0%)
-data_SPE(range) : 0  (0%) 
+SSED&SBD 					 31.376530 (25.397584 %) 
+SMIN 					 45.786111 (37.061351 %) 
+Bi to De 					 14.378194 (11.638361 %) 
+subtract 					 1.472709 (1.192078 %) 
+kNN 					 8.754831 (7.086556 %) 
+update 					 17.520526 (14.181907 %) 
+# retrieved node : 0
+
+
+time : 2020-06-01-16-21-29
+query : KNN_PB TREE_LEVEL : 7 THREAD : 4 DATA : 2000 DIMENSION : 6 BITS : 12 k : 2 KEY : 512  QUERY : 10 10 10 10 10 10 
+total time : 122.288849
+                 SSED&SBD                     SMIN                 Bi to De                 subtract                      kNN                   update
+                30.968753                45.374104                14.257541                 1.459768                 8.659689                17.354780
+                25.324266                37.104040                11.658906                 1.193705                 7.081340                14.191629
 # retrieved node : 0
 
 

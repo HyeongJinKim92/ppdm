@@ -94,7 +94,7 @@ void protocol::SSEDMultiThread(paillier_ciphertext_t **DIST, paillier_ciphertext
 
 paillier_ciphertext_t*** protocol::sNodeRetrievalforClassificationMultiThread(paillier_ciphertext_t*** data, boundary* node, paillier_ciphertext_t** alpha,	int NumData, int NumNode, int* cnt, int* NumNodeGroup)
 {
-	printf("\n===== Now sNodeRetrievalforClassification starts =====\n");
+	printf("\n===== Now sNodeRetrievalforClassificationMultiThread starts =====\n");
 	
 	int **node_group;
 
@@ -224,7 +224,6 @@ void protocol::SMSnMultithread3(int cnt, int s, paillier_ciphertext_t **V, paill
 		SMSThread[i].join();
 	}
 	delete[] SMSThread;
-
 	delete[] inputCnt;
 
 	SMSThread = new std::thread[numThread];
@@ -256,8 +255,7 @@ void protocol::SMSnMultithread3(int cnt, int s, paillier_ciphertext_t **V, paill
 
 	for(int i = 0; i < numThread; i++)
 	{
-		SMSThread[i] = std::thread(SMSnInThread3_2_v2, i, offset[i], record_size[i], dimension, std::ref(thread_result[i]), std::ref(V), std::ref(V2), std::ref(DIST), std::ref(cand),
-			std::ref(MAX), std::ref(*this));
+		SMSThread[i] = std::thread(SMSnInThread3_2_v2, i, offset[i], record_size[i], dimension, std::ref(thread_result[i]), std::ref(V), std::ref(V2), std::ref(DIST), std::ref(cand), std::ref(MAX), std::ref(*this));
 	}
 	for(int i = 0; i < numThread; i++)
 	{
@@ -298,14 +296,6 @@ int** protocol::Classification_PB(paillier_ciphertext_t*** data, paillier_cipher
 
 	int n = 0, t = 0;
 	int rand = 5;
-	n = NumData;
-
-	std::chrono::system_clock::time_point start;
-    std::chrono::system_clock::time_point end;
-
-	float gap = 0.0;
-
-
 
 	paillier_plaintext_t * pt = paillier_plaintext_from_ui(0);
 
@@ -315,19 +305,19 @@ int** protocol::Classification_PB(paillier_ciphertext_t*** data, paillier_cipher
 	paillier_ciphertext_t* cipher_rand	= paillier_create_enc(rand);
 	paillier_ciphertext_t* temp_dist = paillier_create_enc_zero();
 
-	paillier_ciphertext_t** cipher_distance = (paillier_ciphertext_t**)malloc(sizeof(paillier_ciphertext_t*)*n);
-	paillier_ciphertext_t*** cipher_SBD_distance = (paillier_ciphertext_t***)malloc(sizeof(paillier_ciphertext_t**)*n);
-	paillier_ciphertext_t** cipher_mid = (paillier_ciphertext_t**)malloc(sizeof(paillier_ciphertext_t*)*n);
-	paillier_ciphertext_t** cipher_Smin = (paillier_ciphertext_t**)malloc(sizeof(paillier_ciphertext_t*)*n);
-	paillier_ciphertext_t** cipher_V=(paillier_ciphertext_t**)malloc(sizeof(paillier_ciphertext_t*)*n);
-	paillier_ciphertext_t*** cipher_V2 = (paillier_ciphertext_t***)malloc(sizeof(paillier_ciphertext_t**)*n);
+	paillier_ciphertext_t** cipher_distance = (paillier_ciphertext_t**)malloc(sizeof(paillier_ciphertext_t*)*NumData);
+	paillier_ciphertext_t*** cipher_SBD_distance = (paillier_ciphertext_t***)malloc(sizeof(paillier_ciphertext_t**)*NumData);
+	paillier_ciphertext_t** cipher_mid = (paillier_ciphertext_t**)malloc(sizeof(paillier_ciphertext_t*)*NumData);
+	paillier_ciphertext_t** cipher_Smin = (paillier_ciphertext_t**)malloc(sizeof(paillier_ciphertext_t*)*NumData);
+	paillier_ciphertext_t** cipher_V=(paillier_ciphertext_t**)malloc(sizeof(paillier_ciphertext_t*)*NumData);
+	paillier_ciphertext_t*** cipher_V2 = (paillier_ciphertext_t***)malloc(sizeof(paillier_ciphertext_t**)*NumData);
 
 	paillier_ciphertext_t*** cipher_rabel_result = (paillier_ciphertext_t***)malloc(sizeof(paillier_ciphertext_t**)*k);
 	for(int i = 0 ; i < size; i++ ){
 		cipher_Smin[i] = cipher_zero;
 	}
 
-	for(int i = 0 ; i < n ; i++ ){
+	for(int i = 0 ; i < NumData ; i++ ){
 		cipher_distance[i] 	= cipher_zero;
 		cipher_SBD_distance[i] = (paillier_ciphertext_t**)malloc(sizeof(paillier_ciphertext_t*)*size);
 		cipher_V[i]	= cipher_zero;
@@ -350,19 +340,20 @@ int** protocol::Classification_PB(paillier_ciphertext_t*** data, paillier_cipher
 	
 	printf("\n=== Data SSED & SBD start ===\n");
 
-	start = std::chrono::system_clock::now();
-	
+
+
+	startTime = std::chrono::system_clock::now(); // startTime check			
 	
 	int threadNum = thread_num;
-	if(threadNum > n)
+	if(threadNum > NumData)
 	{
-		threadNum = n;
+		threadNum = NumData;
 	}
 
 	std::vector<int> *inputIdx = new std::vector<int>[threadNum];
 	int count = 0;
 
-	for(int i = 0; i < n; i++)
+	for(int i = 0; i < NumData; i++)
 	{
 		inputIdx[count++].push_back(i);
 		count %= threadNum;
@@ -384,22 +375,20 @@ int** protocol::Classification_PB(paillier_ciphertext_t*** data, paillier_cipher
 	delete[] SSED_SBD_thread;
 	delete[] inputIdx;
 	
-	end = std::chrono::system_clock::now();
-	std::chrono::duration<float> SSED_SBD_time = end - start;
-	data_SSED_SBD_time += SSED_SBD_time.count();
-	//data_SSED_SBD_time += (float)(endTime-startTime)/(CLOCKS_PER_SEC);
-	printf("data SSED & SBD time : %f\n", SSED_SBD_time.count());
+	endTime = std::chrono::system_clock::now(); // endTime check
+	duration_sec = endTime - startTime;  // calculate duration 
+	time_variable["SSED&SBD"] = time_variable.find("SSED&SBD")->second + duration_sec.count();
+
 
 	for(int s = 0; s < k; s++ )
 	{
-		start = std::chrono::system_clock::now();
+		startTime = std::chrono::system_clock::now(); // startTime check			
 
-		cipher_Smin = Smin_n_Multithread(cipher_SBD_distance, n);
-		end = std::chrono::system_clock::now();
-		std::chrono::duration<float> gaptime = end - start;
-		gap = gaptime.count();
-		sMINn_first_time += gap;
-		printf("%dth sMINn time : %f\n", s+1, gap);
+		cipher_Smin = Smin_n_Multithread(cipher_SBD_distance, NumData);
+
+		endTime = std::chrono::system_clock::now(); // endTime check
+		duration_sec = endTime - startTime;  // calculate duration 
+		time_variable["SMIN"] = time_variable.find("SMIN")->second + duration_sec.count();
 		
 		for(int j = size; j > 0; j--)
 		{
@@ -412,18 +401,19 @@ int** protocol::Classification_PB(paillier_ciphertext_t*** data, paillier_cipher
 		}
 		paillier_print("min dist : ", cipher_min);
 		
-		
+
+		startTime = std::chrono::system_clock::now(); // startTime check			
 		if(s != 0)
 		{
 			threadNum = thread_num;
-			if(threadNum > n)
+			if(threadNum > NumData)
 			{
-				threadNum = n;
+				threadNum = NumData;
 			}
 
 			inputIdx = new std::vector<int>[threadNum];
 			count = 0;
-			for(int i = 0; i < n; i++)
+			for(int i = 0; i < NumData; i++)
 			{
 				inputIdx[count++].push_back(i);
 				count %= threadNum;
@@ -444,19 +434,22 @@ int** protocol::Classification_PB(paillier_ciphertext_t*** data, paillier_cipher
 			delete[] inputIdx;
 			delete[] calcdistanceThread;
 		}
+		endTime = std::chrono::system_clock::now(); // endTime check
+		duration_sec = endTime - startTime;  // calculate duration 
+		time_variable["Bi to De"] = time_variable.find("Bi to De")->second + duration_sec.count();
 
 
-		
+		startTime = std::chrono::system_clock::now(); // startTime check					
 		threadNum = thread_num;
-		if(threadNum > n)
+		if(threadNum > NumData)
 		{
-			threadNum = n;
+			threadNum = NumData;
 		}
 
 		inputIdx = new std::vector<int>[threadNum];
 		std::thread *classipmThread = new std::thread[threadNum];
 		count = 0;
-		for(int i = 0; i < n; i++)
+		for(int i = 0; i < NumData; i++)
 		{
 			inputIdx[count++].push_back(i);
 			count %= threadNum;
@@ -475,38 +468,38 @@ int** protocol::Classification_PB(paillier_ciphertext_t*** data, paillier_cipher
 		
 		delete[] classipmThread;
 		delete[] inputIdx;
-		
 
-		cipher_V = SkNNm_sub(cipher_mid, n);
+		endTime = std::chrono::system_clock::now(); // endTime check
+		duration_sec = endTime - startTime;  // calculate duration 
+		time_variable["subtract"] = time_variable.find("subtract")->second + duration_sec.count();
+
+
+		cipher_V = SkNNm_sub(cipher_mid, NumData);
 
 
 
-		
-		for(int i = 0; i < n; i++ )
-		{
-			for (int j = 0 ; j < dim+1 ; j++)
-			{
-				cipher_V2[i][j] = SM_p1(cipher_V[i], data[i][j], 0);
-				//paillier_print("cipher_V2 : ", cipher_V2[i]);
-				paillier_mul(pubkey, cipher_rabel_result[s][j], cipher_V2[i][j], cipher_rabel_result[s][j]);
-			}
-		}
+		startTime = std::chrono::system_clock::now(); // startTime check					
+		ExtractKNNInCLASSIFICATION_PB_inMultithread(data, cipher_V, cipher_rabel_result, NumData, s);
+		endTime = std::chrono::system_clock::now(); // endTime check
+		duration_sec = endTime - startTime;  // calculate duration 
+		time_variable["kNN"] = time_variable.find("kNN")->second + duration_sec.count();
+
 
 		printf("cipher_rabel_result : ");	
-		gmp_printf("%Zd ", paillier_dec(0, pubkey, prvkey, cipher_rabel_result[s][dim]));
+		gmp_printf("%Zd \n", paillier_dec(0, pubkey, prvkey, cipher_rabel_result[s][dim]));
 		
 		
-		start = std::chrono::system_clock::now();
+		startTime = std::chrono::system_clock::now(); // startTime check					
 		threadNum = thread_num;
-		if(threadNum > n)
+		if(threadNum > NumData)
 		{
-			threadNum = n;
+			threadNum = NumData;
 		}
 
 		inputIdx = new std::vector<int>[threadNum];
 		classipmThread = new std::thread[threadNum];
 		count = 0;
-		for(int i = 0; i < n; i++)
+		for(int i = 0; i < NumData; i++)
 		{
 			inputIdx[count++].push_back(i);
 			count %= threadNum;
@@ -524,11 +517,10 @@ int** protocol::Classification_PB(paillier_ciphertext_t*** data, paillier_cipher
 		
 		delete[] classipmThread;
 		delete[] inputIdx;
-		
 
-		end = std::chrono::system_clock::now();
-		std::chrono::duration<float> SBOR_time = end - start;
-		data_SBOR_time += SBOR_time.count();
+		endTime = std::chrono::system_clock::now(); // endTime check
+		duration_sec = endTime - startTime;  // calculate duration 
+		time_variable["update"] = time_variable.find("update")->second + duration_sec.count();
 
 		cipher_min = paillier_enc(0, pubkey, pt, paillier_get_rand_devurandom);	
 	}
@@ -551,7 +543,15 @@ int** protocol::Classification_PB(paillier_ciphertext_t*** data, paillier_cipher
 	}
 
 	paillier_freeciphertext(temp_dist);	
+
+
+	startTime = std::chrono::system_clock::now(); // startTime check					
 	SCMC(Entire_set, cipher_rabel, Entire_num, k);
+	endTime = std::chrono::system_clock::now(); // endTime check
+	duration_sec = endTime - startTime;  // calculate duration 
+	time_variable["classify"] = time_variable.find("classify")->second + duration_sec.count();
+
+
 	return sknn;
 }	
 
@@ -571,15 +571,6 @@ int** protocol::Classification_PGI(paillier_ciphertext_t*** data, paillier_ciphe
 	int cnt = 0;	 
 	int NumNodeGroup = 0;
 	bool verify_flag = false;
-
-	std::chrono::system_clock::time_point start;
-    std::chrono::system_clock::time_point end;
-	
-	float progress;
-	
-	time_t startTime = 0;
-	time_t endTime = 0;
-	float gap = 0.0;
 
 	paillier_ciphertext_t **alpha = new paillier_ciphertext_t *[NumNode];
 	for(int i = 0; i < NumNode; i++)
@@ -612,9 +603,8 @@ int** protocol::Classification_PGI(paillier_ciphertext_t*** data, paillier_ciphe
 
 	while(1)
 	{
-		progress = 0.1;
-		startTime = clock();
-		start = std::chrono::system_clock::now();
+
+		startTime = std::chrono::system_clock::now(); // startTime check					
 
 		if(!verify_flag)
 		{	
@@ -693,40 +683,35 @@ int** protocol::Classification_PGI(paillier_ciphertext_t*** data, paillier_ciphe
 		
 		if(!verify_flag)	
 		{
-			//endTime = clock();
-			//node_SRO_time = (float)(endTime-startTime)/(CLOCKS_PER_SEC);
-			end = std::chrono::system_clock::now();
-			std::chrono::duration<float> SRO_time = end - start;
-			node_SRO_time = SRO_time.count();
-			printf("GSRO time : %f\n", node_SRO_time);
+			endTime = std::chrono::system_clock::now(); // endTime check
+			duration_sec = endTime - startTime;  // calculate duration 
+			time_variable["nodeRetrievalSRO"] = time_variable.find("nodeRetrievalSRO")->second + duration_sec.count();
 		}
 		else 
 		{
-			//endTime = clock();
-			//node_expansion_time = (float)(endTime-startTime)/(CLOCKS_PER_SEC);
-			end = std::chrono::system_clock::now();
-			std::chrono::duration<float> SRO_time = end - start;
-			node_expansion_time = SRO_time.count();
-			printf("Node expansion time : %f\n", node_expansion_time);
+			endTime = std::chrono::system_clock::now(); // endTime check
+			duration_sec = endTime - startTime;  // calculate duration 
+			time_variable["excheck"] = time_variable.find("excheck")->second + duration_sec.count();
 		}
 		
 		cnt = 0;
 
 		if(!verify_flag)
 		{	
+			startTime = std::chrono::system_clock::now(); // startTime check						
 			cand = sNodeRetrievalforClassificationMultiThread(data, node, alpha, NumData, NumNode, &cnt, &NumNodeGroup);
 			totalNumOfRetrievedNodes += NumNodeGroup;
-			printf("Node Retrieval time : %f\n", data_extract_first_time);
+			endTime = std::chrono::system_clock::now(); // endTime check
+			duration_sec = endTime - startTime;  // calculate duration 
+			time_variable["nodeRetrieval"] = time_variable.find("nodeRetrieval")->second + duration_sec.count();
 		}else{
-			start = std::chrono::system_clock::now();
+			startTime = std::chrono::system_clock::now(); // startTime check						
 			std::cout << "second GSRO_sNodeRetrievalforkNN start" << std::endl;
 			temp_cand = sNodeRetrievalforClassificationMultiThread(data, node, alpha, NumData, NumNode, &cnt, &NumNodeGroup);
 			totalNumOfRetrievedNodes += NumNodeGroup;
-
-			end = std::chrono::system_clock::now();
-			std::chrono::duration<float> SRO_time = end - start;
-			data_extract_second_time = SRO_time.count();
-			printf("Node Retrieval time : %f\n", data_extract_second_time);
+			endTime = std::chrono::system_clock::now(); // endTime check
+			duration_sec = endTime - startTime;  // calculate duration 
+			time_variable["exnodeRetrieval"] = time_variable.find("exnodeRetrieval")->second + duration_sec.count();
 
 			if(cnt == 0)
 			{	
@@ -789,33 +774,38 @@ int** protocol::Classification_PGI(paillier_ciphertext_t*** data, paillier_ciphe
 			}
 			
 		}
-		
-		SSEDMultiThread(DIST, cand, query, cnt);
 	
+		startTime = std::chrono::system_clock::now(); // startTime check						
+		SSEDMultiThread(DIST, cand, query, cnt);
+		endTime = std::chrono::system_clock::now(); // endTime check
+		duration_sec = endTime - startTime;  // calculate duration 
+		time_variable["SSED"] = time_variable.find("SSED")->second + duration_sec.count();
+
 		for(int s = 0 ; s < k ; s ++ )
 		{
 			std::cout << s+1 <<" th Classification Start !!!!!!!!!!!!"<<std::endl;
-			
-			idx = SMSn(DIST, cnt);			
+			startTime = std::chrono::system_clock::now(); // startTime check						
+			idx = SMSn(DIST, cnt);
+			endTime = std::chrono::system_clock::now(); // endTime check
+			duration_sec = endTime - startTime;  // calculate duration 
+			time_variable["SMIN"] = time_variable.find("SMIN")->second + duration_sec.count();
 			MIN = DIST[idx];
+
+			startTime = std::chrono::system_clock::now(); // startTime check						
 			SMSnMultithread2(cnt, DIST_MINUS_MIN, DIST, MIN, C_RAND);
+			endTime = std::chrono::system_clock::now(); // endTime check
+			duration_sec = endTime - startTime;  // calculate duration 
+			time_variable["subtract"] = time_variable.find("subtract")->second + duration_sec.count();
 
 			V = SkNNm_sub(DIST_MINUS_MIN, cnt);
 
+			startTime = std::chrono::system_clock::now(); // startTime check						
 			SMSnMultithread3(cnt, s, V, V2, DIST, cand, MAX, Result);
+			endTime = std::chrono::system_clock::now(); // endTime check
+			duration_sec = endTime - startTime;  // calculate duration 
+			time_variable["kNN"] = time_variable.find("kNN")->second + duration_sec.count();
 		}
-		if(Print)
-		{
-			for(int i = 0 ; i < k ; i++ )
-			{
-				std::cout << "MIDDLE RESULT : ";
-				for(int j = 0 ; j < dim+1 ; j++ )
-				{
-					gmp_printf("%Zd ", paillier_dec(0, pubkey, prvkey, Result[i][j]));
-				}
-				std::cout << std::endl;
-			}
-		}
+
 		if(!verify_flag)
 		{	
 			K_DIST = SSEDm(query, Result[k-1], dim); 
@@ -830,17 +820,33 @@ int** protocol::Classification_PGI(paillier_ciphertext_t*** data, paillier_ciphe
 		*Rabel_Result[i] = *Result[i][dim];
 	}
 	
+
+	paillier_ciphertext_t**	cipher_rabel = new paillier_ciphertext_t*[k];
 	paillier_plaintext_t* A = (paillier_plaintext_t*)malloc(sizeof(paillier_plaintext_t));
 	int** sknn = (int**)malloc(sizeof(int*)*k);
 	for(int i = 0 ; i < k ; i++ ){
+		cipher_rabel[i] = new paillier_ciphertext_t;
+		mpz_init(cipher_rabel[i]->c);
 		sknn[i] = (int*)malloc(sizeof(int)*(dim+1));
 		for(int j = 0 ; j < dim+1 ; j++ ){
 			A = paillier_dec(0, pubkey, prvkey, Result[i][j]);
 			sknn[i][j] = mpz_get_ui(A->m);
 			printf("%d ", sknn[i][j]);
+			if ( j == dim)
+			{
+				cipher_rabel[i] = Result[i][j];
+			}
 		}
 		printf("\n");
 	}
+
+	startTime = std::chrono::system_clock::now(); // startTime check					
+	SCMC(Entire_set, cipher_rabel, Entire_num, k);
+	endTime = std::chrono::system_clock::now(); // endTime check
+	duration_sec = endTime - startTime;  // calculate duration 
+	time_variable["classify"] = time_variable.find("classify")->second + duration_sec.count();
+
+
 
 	return sknn;
 }
@@ -853,4 +859,58 @@ int** protocol::Classification_PAI(paillier_ciphertext_t*** data, paillier_ciphe
 		exit(1);
 	}
 
+}
+
+
+void protocol::ExtractKNNInCLASSIFICATION_PB_inMultithread(paillier_ciphertext_t*** data, paillier_ciphertext_t** cipher_V, paillier_ciphertext_t*** cipher_result, int NumData, int serialKNN)
+{
+	cout << "ExtractKNNInCLASSIFICATION_PB_inMultithread" << endl;
+	int threadNum = thread_num;
+	if(threadNum > NumData)
+	{
+		threadNum = NumData;
+	}
+
+	int dimension = dim + 1;
+
+	paillier_ciphertext_t*** cipher_thread_result = new paillier_ciphertext_t**[threadNum];
+	for( int i = 0 ; i < threadNum ; i++ )
+	{
+		cipher_thread_result[i] = new paillier_ciphertext_t*[dimension];
+		for( int j = 0 ; j < dimension ; j++ )
+		{
+			cipher_thread_result[i][j] = paillier_create_enc(0);
+		}
+	}
+
+	std::vector<int> *inputIdx = new std::vector<int>[threadNum];
+	int count = 0;
+
+	for(int i = 0; i < NumData; i++)
+	{
+		inputIdx[count++].push_back(i);
+		count %= threadNum;
+	}
+	std::thread *ExtractKNNInCLASSIFICATION_PB_Thread = new std::thread[threadNum];
+	for(int i = 0; i < threadNum; i++)
+	{
+		ExtractKNNInCLASSIFICATION_PB_Thread[i] = std::thread(ExtractKNNInCLASSIFICATION_PB_inThread, std::ref(inputIdx[i]), std::ref(data), std::ref(cipher_V), std::ref(cipher_thread_result[i]), std::ref(*this), dimension);
+	}
+	for(int i = 0; i < threadNum; i++)
+	{
+		ExtractKNNInCLASSIFICATION_PB_Thread[i].join();
+	}
+
+
+	for( int i = 0 ; i < threadNum ; i++ )
+	{
+		for( int j = 0 ; j < dimension ; j++ )
+		{
+			paillier_mul(pubkey, cipher_result[serialKNN][j], cipher_result[serialKNN][j], cipher_thread_result[i][j]);
+		}
+	}
+
+	delete[] cipher_thread_result;
+	delete[] ExtractKNNInCLASSIFICATION_PB_Thread;
+	delete[] inputIdx;
 }

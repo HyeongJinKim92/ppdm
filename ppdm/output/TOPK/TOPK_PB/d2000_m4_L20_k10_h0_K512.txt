@@ -1,61 +1,12 @@
-query : ./PPDM  1  3  7  4  2000  4  20  10  512  10  10  10  10  10  
+time : 2020-06-01-06-05-10
+query : TOPK_PB TREE_LEVEL : 7 THREAD : 4 DATA : 2000 DIMENSION : 4 BITS : 20 k : 10 KEY : 512  QUERY : 10 10 10 10 10 
 total time : 849
-node_SBD : 0  (0%)
-node_SRO : 0  (0%) 	 node_expansion(verify) : 0 (0%)
-node_retrieval : 0  (0%) 	 node_retrieval(verify) : 0 (0%)
-data_SSED_SBD : 0  (0%) 	 data_SBOR : 0 (0%)
-sMINn : 1535  (181%) 	 sMINn (verify): 0 (0%)
-data_SPE(range) : 0  (0%) 
-# retrieved node : 0
-
-
-query : ./PPDM  1  3  7  4  2000  4  20  10  512  10  10  10  10  10  
-total time : 849
-node_SBD : 0  (0%)
-node_SRO : 0  (0%) 	 node_expansion(verify) : 0 (0%)
-node_retrieval : 0  (0%) 	 node_retrieval(verify) : 0 (0%)
-data_SSED_SBD : 0  (0%) 	 data_SBOR : 0 (0%)
-sMINn : 1533  (181%) 	 sMINn (verify): 0 (0%)
-data_SPE(range) : 0  (0%) 
-# retrieved node : 0
-
-
-query : ./PPDM  1  3  7  4  2000  4  20  10  512  10  10  10  10  10  
-total time : 844
-node_SBD : 0  (0%)
-node_SRO : 0  (0%) 	 node_expansion(verify) : 0 (0%)
-node_retrieval : 0  (0%) 	 node_retrieval(verify) : 0 (0%)
-data_SSED_SBD : 0  (0%) 	 data_SBOR : 0 (0%)
-sMINn : 1526  (181%) 	 sMINn (verify): 0 (0%)
-data_SPE(range) : 0  (0%) 
-# retrieved node : 0
-
-
-query : ./PPDM  1  3  7  4  2000  4  20  10  512  10  10  10  10  10  
-total time : 845
-node_SBD : 0  (0%)
-node_SRO : 0  (0%) 	 node_expansion(verify) : 0 (0%)
-node_retrieval : 0  (0%) 	 node_retrieval(verify) : 0 (0%)
-data_SSED_SBD : 0  (0%) 	 data_SBOR : 0 (0%)
-sMINn : 1526  (181%) 	 sMINn (verify): 0 (0%)
-data_SPE(range) : 0  (0%) 
-# retrieved node : 0
-
-
-query : ./PPDM  1  3  7  10  2000  4  20  10  512  10  10  10  10  10  
-total time : 911
-sTopk_PB_SBD 
-45.558494 (5.003184 %) 
-sTopk_PB_SMAXN 
-423.285733 (46.484773 %) 
-sTopk_PB_Recompute_Score 
-220.451183 (24.209706 %) 
-sTopk_PB_subtract 
-8.723208 (0.957973 %) 
-sTopk_PB_extract_topk 
-30.975203 (3.401663 %) 
-sTopk_PB_update_score 
-160.501620 (17.626111 %) 
+CS&SBD 					 44.668252 (5.261008 %) 
+SMAX 					 387.511115 (45.640901 %) 
+Bi to De 					 212.438046 (25.020867 %) 
+subtract 					 8.620532 (1.015323 %) 
+Topk 					 29.101292 (3.427538 %) 
+update 					 145.481496 (17.134751 %) 
 # retrieved node : 0
 Result(0) :	477	427	506	501	
 Result(1) :	435	471	472	510	
@@ -69,15 +20,15 @@ Result(8) :	489	468	473	395
 Result(9) :	498	492	310	505	
 
 
-time : 2020-05-30-21-44-46
+time : 2020-06-01-07-34-44
 query : TOPK_PB TREE_LEVEL : 7 THREAD : 4 DATA : 2000 DIMENSION : 4 BITS : 20 k : 10 KEY : 512  QUERY : 10 10 10 10 10 
-total time : 851
-sTopk_PB_SBD 					 44.884685 (5.272422 %) 
-sTopk_PB_SMAXN 					 388.483210 (45.633548 %) 
-sTopk_PB_Recompute_Score 					 212.920881 (25.010953 %) 
-sTopk_PB_subtract 					 8.672037 (1.018669 %) 
-sTopk_PB_extract_topk 					 29.166566 (3.426078 %) 
-sTopk_PB_update_score 					 145.891283 (17.137258 %) 
+total time : 850
+CS&SBD 					 44.892525 (5.279597 %) 
+SMAX 					 387.879022 (45.616609 %) 
+Bi to De 					 212.865812 (25.034137 %) 
+subtract 					 8.641633 (1.016301 %) 
+Topk 					 29.120916 (3.424773 %) 
+update 					 145.622567 (17.125978 %) 
 # retrieved node : 0
 Result(0) :	477	427	506	501	
 Result(1) :	435	471	472	510	
@@ -91,37 +42,12 @@ Result(8) :	489	468	473	395
 Result(9) :	498	492	310	505	
 
 
-time : 2020-05-31-13-48-03
+time : 2020-06-01-16-11-34
 query : TOPK_PB TREE_LEVEL : 7 THREAD : 4 DATA : 2000 DIMENSION : 4 BITS : 20 k : 10 KEY : 512  QUERY : 10 10 10 10 10 
-total time : 848
-sTopk_PB_SBD 					 44.776280 (5.278748 %) 
-sTopk_PB_SMAXN 					 386.937931 (45.616740 %) 
-sTopk_PB_Recompute_Score 					 212.393251 (25.039385 %) 
-sTopk_PB_subtract 					 8.618610 (1.016062 %) 
-sTopk_PB_extract_topk 					 29.042401 (3.423856 %) 
-sTopk_PB_update_score 					 145.244110 (17.123064 %) 
-# retrieved node : 0
-Result(0) :	477	427	506	501	
-Result(1) :	435	471	472	510	
-Result(2) :	488	437	490	456	
-Result(3) :	349	506	501	507	
-Result(4) :	449	491	472	431	
-Result(5) :	470	491	491	388	
-Result(6) :	463	457	493	425	
-Result(7) :	446	478	482	420	
-Result(8) :	489	468	473	395	
-Result(9) :	498	492	310	505	
-
-
-time : 2020-05-31-21-00-53
-query : TOPK_PB TREE_LEVEL : 7 THREAD : 4 DATA : 2000 DIMENSION : 4 BITS : 20 k : 10 KEY : 512  QUERY : 10 10 10 10 10 
-total time : 847
-sTopk_PB_SBD 					 44.611992 (5.269899 %) 
-sTopk_PB_SMAXN 					 386.414854 (45.646189 %) 
-sTopk_PB_Recompute_Score 					 211.795009 (25.018798 %) 
-sTopk_PB_subtract 					 8.603049 (1.016256 %) 
-sTopk_PB_extract_topk 					 28.981951 (3.423563 %) 
-sTopk_PB_update_score 					 144.978499 (17.125936 %) 
+total time : 844.003601
+                   CS&SBD                     SMAX                 Bi to De                 subtract                     Topk                   update
+                44.487448               385.014230               211.389275                 8.552413                28.896685               144.529807
+                 5.271002                45.617605                25.046016                 1.013315                 3.423763                17.124312
 # retrieved node : 0
 Result(0) :	477	427	506	501	
 Result(1) :	435	471	472	510	

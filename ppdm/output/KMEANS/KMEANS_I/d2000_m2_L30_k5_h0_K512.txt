@@ -1,33 +1,11 @@
-query : ./PPDM  4  1  5  0  2000  2  30  5  512  0  0  0  0  0  0  
-total time : 566
-node_SBD : 0  (0%)
-node_SRO : 0  (0%) 	 node_expansion(verify) : 0 (0%)
-node_retrieval : 0  (0%) 	 node_retrieval(verify) : 0 (0%)
-data_SSED_SBD : 0  (0%) 	 data_SBOR : 0 (0%)
-sMINn : 0  (0%) 	 sMINn (verify): 0 (0%)
-data_SPE(range) : 0  (0%) 
+time : 2020-06-01-06-43-08
+query : KMEANS_I TREE_LEVEL : 5 THREAD : 0 DATA : 2000 DIMENSION : 2 BITS : 30 k : 5 KEY : 512  QUERY : 0 0 0 0 0 0 
+total time : 788
 # retrieved node : 0
-
-
-query : ./PPDM  4  1  5  0  2000  2  30  5  512  0  0  0  0  0  0  
-total time : 884
-node_SBD : 0  (0%)
-node_SRO : 0  (0%) 	 node_expansion(verify) : 0 (0%)
-node_retrieval : 0  (0%) 	 node_retrieval(verify) : 0 (0%)
-data_SSED_SBD : 0  (0%) 	 data_SBOR : 0 (0%)
-sMINn : 0  (0%) 	 sMINn (verify): 0 (0%)
-data_SPE(range) : 0  (0%) 
-# retrieved node : 0
-
-
-query : ./PPDM  4  1  5  0  2000  2  30  5  512  0  0  0  0  0  0  
-total time : 828
-node_SBD : 0  (0%)
-node_SRO : 0  (0%) 	 node_expansion(verify) : 0 (0%)
-node_retrieval : 0  (0%) 	 node_retrieval(verify) : 0 (0%)
-data_SSED_SBD : 0  (0%) 	 data_SBOR : 0 (0%)
-sMINn : 0  (0%) 	 sMINn (verify): 0 (0%)
-data_SPE(range) : 0  (0%) 
-# retrieved node : 0
+Result(0) :	24100	85338	
+Result(1) :	75484	75221	
+Result(2) :	26431	16497	
+Result(3) :	26110	51537	
+Result(4) :	77158	25897	
 
 

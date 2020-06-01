@@ -1,24 +1,54 @@
-time : 2020-05-31-03-03-06
-query : KNN_PGI TREE_LEVEL : 7 THREAD : 4 DATA : 2000 DIMENSION : 6 BITS : 22 k : 5 KEY : 512  QUERY : 184 23 37 177 33 7 
-total time : 20
+time : 2020-06-01-16-56-34
+query : KNN_PGI TREE_LEVEL : 7 THREAD : 4 DATA : 2000 DIMENSION : 6 BITS : 22 k : 5 KEY : 512  QUERY : 10 10 10 10 10 10 
+total time : 20.617992
+                     SMIN                 subtract         nodeRetrievalSRO                  excheck            nodeRetrieval          exnodeRetrieval                     SSED               kNN&update
+                 1.827894                 0.458844                 1.869581                 1.759303                 4.603300                 4.602159                 0.563244                 3.666022
+                 8.865529                 2.225453                 9.067716                 8.532855                22.326616                22.321081                 2.731808                17.780695
 # retrieved node : 7
 
 
-time : 2020-05-31-15-10-09
+time : 2020-06-01-17-47-30
 query : KNN_PGI TREE_LEVEL : 7 THREAD : 4 DATA : 2000 DIMENSION : 6 BITS : 22 k : 5 KEY : 512  QUERY : 10 10 10 10 10 10 
-total time : 22
-# retrieved node : 8
+total time : 20.729656
+                SMIN            subtract    nodeRetrievalSRO             excheck       nodeRetrieval     exnodeRetrieval                SSED          kNN&update
+            1.956675            0.442247            1.873072            1.762479            4.614622            4.607937            0.563500            3.671173
+            9.439013            2.133402            9.035711            8.502211           22.260967           22.228719            2.718328           17.709764
+# retrieved node : 7
 
 
-time : 2020-05-31-15-58-34
+time : 2020-06-01-19-07-41
 query : KNN_PGI TREE_LEVEL : 7 THREAD : 4 DATA : 2000 DIMENSION : 6 BITS : 22 k : 5 KEY : 512  QUERY : 10 10 10 10 10 10 
-total time : 22
-# retrieved node : 8
+total time : 20.660318
+                SMIN            subtract    nodeRetrievalSRO             excheck       nodeRetrieval     exnodeRetrieval                SSED          kNN&update
+            1.901739            0.517728            1.914620            1.719323            4.582183            4.572653            0.560199            3.659481
+            9.204788            2.505906            9.267135            8.321859           22.178668           22.132540            2.711472           17.712609
+# retrieved node : 7
 
 
-time : 2020-05-31-21-23-00
+time : 2020-06-01-19-37-13
 query : KNN_PGI TREE_LEVEL : 7 THREAD : 4 DATA : 2000 DIMENSION : 6 BITS : 22 k : 5 KEY : 512  QUERY : 10 10 10 10 10 10 
-total time : 22
-# retrieved node : 8
+total time : 20.797203
+                SMIN            subtract    nodeRetrievalSRO             excheck       nodeRetrieval     exnodeRetrieval                SSED          kNN&update
+            1.873071            0.521383            1.871834            1.806618            4.623821            4.639738            0.562043            3.659613
+            9.006359            2.506985            9.000414            8.686833           22.232898           22.309435            2.702493           17.596659
+# retrieved node : 7
+
+
+time : 2020-06-01-19-51-39
+query : KNN_PGI TREE_LEVEL : 7 THREAD : 4 DATA : 2000 DIMENSION : 6 BITS : 22 k : 5 KEY : 512  QUERY : 10 10 10 10 10 10 
+total time : 20.650562
+                SMIN            subtract    nodeRetrievalSRO             excheck       nodeRetrieval     exnodeRetrieval                SSED          kNN&update
+            1.847014            0.530721            1.906046            1.719383            4.602721            4.597126            0.562509            3.644906
+            8.944133            2.570008            9.229994            8.326081           22.288599           22.261506            2.723941           17.650396
+# retrieved node : 7
+
+
+time : 2020-06-01-20-00-53
+query : KNN_PGI TREE_LEVEL : 7 THREAD : 4 DATA : 2000 DIMENSION : 6 BITS : 22 k : 5 KEY : 512  QUERY : 10 10 10 10 10 10 
+total time : 21.018339
+                SMIN            subtract    nodeRetrievalSRO             excheck       nodeRetrieval     exnodeRetrieval                SSED          kNN&update
+            1.859715            0.459711            1.904357            1.719920            4.628936            4.630202            0.562175            3.659062
+            8.848057            2.187192            9.060452            8.182948           22.023318           22.029342            2.674689           17.408901
+# retrieved node : 7
 
 

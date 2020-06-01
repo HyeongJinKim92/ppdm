@@ -1,12 +1,9 @@
-time : 2020-05-31-16-59-58
+time : 2020-06-01-18-00-48
 query : CLASSIFICATION_I TREE_LEVEL : 5 THREAD : 0 DATA : 1728 DIMENSION : 6 BITS : 22 k : 5 KEY : 512  QUERY : 0 0 0 0 0 0 
-total time : 786
-# retrieved node : 7
-
-
-time : 2020-05-31-21-52-18
-query : CLASSIFICATION_I TREE_LEVEL : 5 THREAD : 0 DATA : 1728 DIMENSION : 6 BITS : 22 k : 5 KEY : 512  QUERY : 0 0 0 0 0 0 
-total time : 786
+total time : 788.052551
+            SSED&SBD                SMIN            Bi to De            subtract                 kNN              update            classify               SBD_Q    nodeRetrievalSBD    nodeRetrievalSRO             excheck       nodeRetrieval     exnodeRetrieval
+           71.839795          319.960977          148.283821            5.206777           36.113142          114.467122            0.132869            1.024922           16.380631           16.827768           20.889503           16.397563           16.395339
+            9.116117           40.601477           18.816489            0.660714            4.582580           14.525316            0.016860            0.130058            2.078622            2.135361            2.650775            2.080770            2.080488
 # retrieved node : 7
 
 
