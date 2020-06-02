@@ -16,3 +16,12 @@ total time : 207.717148
 # retrieved node : 0
 
 
+time : 2020-06-02-19-39-57
+query : KNN_PB TREE_LEVEL : 7 THREAD : 4 DATA : 2000 DIMENSION : 6 BITS : 22 k : 2 KEY : 512  QUERY : 10 10 10 10 10 10 
+total time : 209.987198
+            SSED&SBD                SMIN            Bi to De            subtract                 kNN              update
+           52.393471           84.762180           26.108546            1.475514            8.774788           32.210247
+           24.950793           40.365404           12.433399            0.702669            4.178725           15.339148
+# retrieved node : 0
+
+

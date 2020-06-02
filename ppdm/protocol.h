@@ -291,7 +291,7 @@ class protocol
 
 		// topk parallel
 		void Parallel_GSRO_Topk(paillier_ciphertext_t** cipher_qLL, paillier_ciphertext_t** cipher_qRR, paillier_ciphertext_t** alpha, boundary* node, int NumNode, int* cnt, int* NumNodeGroup, bool type);
-		paillier_ciphertext_t*** Parallel_GSRO_sNodeRetrievalforTopk(paillier_ciphertext_t*** data, boundary* node, paillier_ciphertext_t** alpha, int NumData, int NumNode, int* cnt, int* NumNodeGroup);
+		paillier_ciphertext_t*** PARALLEL_sNodeRetrievalforTopk(paillier_ciphertext_t*** data, boundary* node, paillier_ciphertext_t** alpha, int NumData, int NumNode, int* cnt, int* NumNodeGroup);
 		void ComputeScoreinMultithread(paillier_ciphertext_t*** data, paillier_ciphertext_t** q, paillier_ciphertext_t** SCORE, int * cnt, bool type);
 		void MAXnMultithread2(int cnt, paillier_ciphertext_t** DIST_MINUS_MIN, paillier_ciphertext_t** DIST, paillier_ciphertext_t* MIN, paillier_ciphertext_t* C_RAND);
 		void MAXnMultithread3(int cnt, int s, paillier_ciphertext_t **V, paillier_ciphertext_t ***V2, paillier_ciphertext_t **SCORE, paillier_ciphertext_t ***cand, paillier_ciphertext_t *MIN, paillier_ciphertext_t ***Result);
@@ -366,8 +366,36 @@ class protocol
 
 
 		//Proposed Compare
-		paillier_ciphertext_t * AS_CMP(paillier_ciphertext_t* u, paillier_ciphertext_t* v);
-		paillier_ciphertext_t * AS_CMP_sub(paillier_ciphertext_t* u, paillier_ciphertext_t* v);
+		paillier_ciphertext_t * AS_CMP_MIN_BOOL(paillier_ciphertext_t* u, paillier_ciphertext_t* v);
+		paillier_ciphertext_t * AS_CMP_MIN_BOOL_sub(paillier_ciphertext_t* u, paillier_ciphertext_t* v);
+
+		paillier_ciphertext_t * AS_CMP_MIN_VALUE(paillier_ciphertext_t* u, paillier_ciphertext_t* v);
+		paillier_ciphertext_t * AS_CMP_MIN_VALUE_sub(paillier_ciphertext_t* u, paillier_ciphertext_t* v);
+
+
+		paillier_ciphertext_t * AS_CMP_MAX_BOOL(paillier_ciphertext_t* u, paillier_ciphertext_t* v);
+		paillier_ciphertext_t * AS_CMP_MAX_BOOL_sub(paillier_ciphertext_t* u, paillier_ciphertext_t* v);
+
+		paillier_ciphertext_t * AS_CMP_MAX_VALUE(paillier_ciphertext_t* u, paillier_ciphertext_t* v);
+		paillier_ciphertext_t * AS_CMP_MAX_VALUE_sub(paillier_ciphertext_t* u, paillier_ciphertext_t* v);
+
+
+		paillier_ciphertext_t * AS_CMP_SRO(paillier_ciphertext_t** qLL, paillier_ciphertext_t** qRR, paillier_ciphertext_t** nodeLL, paillier_ciphertext_t** nodeRR);
+		paillier_ciphertext_t * AS_CMP_MAXn(paillier_ciphertext_t** cipher, int cnt);
+		paillier_ciphertext_t * AS_CMP_MINn(paillier_ciphertext_t** cipher, int cnt);
+
+
+		//Proposed SRO, nodeRetrieval
+		paillier_ciphertext_t*** PARALLEL_AS_CMP_SRO_inMultithread(int cnt, paillier_ciphertext_t*** cand, boundary q, paillier_ciphertext_t** alpha, paillier_ciphertext_t* cipher_rand);
+		paillier_ciphertext_t*** PARALLEL_ASCMP_SRO_sNodeRetrieval(paillier_ciphertext_t*** data, paillier_ciphertext_t** cipher_qLL, paillier_ciphertext_t** cipher_qRR, boundary* node, int NumData, int NumNode, int* cnt, int* NumNodeGroup, int type);
+
+		void PARALLEL_AS_CMP_SRO_Topk(paillier_ciphertext_t** cipher_qLL, paillier_ciphertext_t** cipher_qRR, paillier_ciphertext_t** alpha, boundary* node, int NumNode, int* cnt, int* NumNodeGroup, bool type);
+		paillier_ciphertext_t*** PARALLEL_AS_CMP_sNodeRetrievalforTopk(paillier_ciphertext_t*** data, boundary* node, paillier_ciphertext_t** alpha, int NumData, int NumNode, int* cnt, int* NumNodeGroup);
+		void PARALLEL_AS_CMP_MIN_BOOL_kNN(paillier_ciphertext_t** cipher_qLL, paillier_ciphertext_t** cipher_qRR, paillier_ciphertext_t** alpha, boundary* node, int NumNode, int* cnt, int* NumNodeGroup, bool type);
+
+		paillier_ciphertext_t * AS_CMP_MINn_VALUE_kNNinMultithread(paillier_ciphertext_t** cipher, int cnt, bool type);
+
+
 
 };
 

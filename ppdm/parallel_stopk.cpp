@@ -221,6 +221,7 @@ int** protocol::STopk_PGI(paillier_ciphertext_t*** data, paillier_ciphertext_t**
 
 
 	startTime = std::chrono::system_clock::now(); // startTime check	
+
 	Parallel_GSRO_Topk(Q, Q, alpha, node, NumNode, &cnt, &NumNodeGroup, true);
 	endTime = std::chrono::system_clock::now(); // endTime check
 	duration_sec = endTime - startTime;  // calculate duration 
@@ -232,7 +233,7 @@ int** protocol::STopk_PGI(paillier_ciphertext_t*** data, paillier_ciphertext_t**
 		if(!verify_flag)
 		{	
 			startTime = std::chrono::system_clock::now(); // startTime check	
-			cand = Parallel_GSRO_sNodeRetrievalforTopk(data, node, alpha, NumData, NumNode, &cnt, &NumNodeGroup);
+			cand = PARALLEL_sNodeRetrievalforTopk(data, node, alpha, NumData, NumNode, &cnt, &NumNodeGroup);
 			totalNumOfRetrievedNodes += NumNodeGroup;
 			cout << "NumNodeGroup : " << NumNodeGroup << endl;
 			endTime = std::chrono::system_clock::now(); // endTime check
@@ -242,7 +243,7 @@ int** protocol::STopk_PGI(paillier_ciphertext_t*** data, paillier_ciphertext_t**
 		else
 		{
 			startTime = std::chrono::system_clock::now(); // startTime check	
-			temp_cand = Parallel_GSRO_sNodeRetrievalforTopk(data, node, alpha, NumData, NumNode, &cnt, &NumNodeGroup);
+			temp_cand = PARALLEL_sNodeRetrievalforTopk(data, node, alpha, NumData, NumNode, &cnt, &NumNodeGroup);
 			totalNumOfRetrievedNodes += NumNodeGroup;
 			cout << "Expand NumNodeGroup : " << NumNodeGroup << endl;
 			endTime = std::chrono::system_clock::now(); // endTime check
@@ -407,7 +408,270 @@ int** protocol::STopk_PGI(paillier_ciphertext_t*** data, paillier_ciphertext_t**
 
 int** protocol::STopk_PAI(paillier_ciphertext_t*** data, paillier_ciphertext_t** q, boundary* node, paillier_ciphertext_t** max_val, int NumData, int NumNode)
 {
-	return 0;
+	printf("\n=== STopk_PAI start ===\n");
+	int i=0, s=0, n=0, t=0, j=0, m=0;
+	int rand = 5;
+	int cnt = 0;	 // 질의 영역과 겹치는 노드 내에 존재하는 총 데이터의 수
+	int NumNodeGroup = 0;
+	Print = false;
+	bool verify_flag = false;
+
+
+	if( thread_num < 1 ) 
+	{
+		cout << "THREAD NUM IS ERROR" << endl;
+		exit(1);
+	}
+
+
+	//쿼리 및 hint 세팅
+	paillier_ciphertext_t*	MIN				= paillier_create_enc(0);
+	paillier_ciphertext_t*	TMP_alpha		= (paillier_ciphertext_t*)malloc(sizeof(paillier_ciphertext_t));
+	mpz_init(TMP_alpha->c);
+	paillier_ciphertext_t*	C_RAND			= paillier_create_enc(rand);
+	paillier_ciphertext_t*	hint			= (paillier_ciphertext_t*)malloc(sizeof(paillier_ciphertext_t));
+	mpz_init(hint->c);
+	paillier_ciphertext_t* kth_score		= (paillier_ciphertext_t*)malloc(sizeof(paillier_ciphertext_t));
+	mpz_init(kth_score->c);	
+	
+	paillier_ciphertext_t** Q				= (paillier_ciphertext_t**)malloc(sizeof(paillier_ciphertext_t*)*dim);
+	paillier_ciphertext_t** coeff			= (paillier_ciphertext_t**)malloc(sizeof(paillier_ciphertext_t*)*dim);
+	paillier_ciphertext_t** psi				= (paillier_ciphertext_t**) malloc(sizeof(paillier_ciphertext_t*)*dim);	 // 프사이
+	paillier_ciphertext_t** alpha			= (paillier_ciphertext_t**) malloc(sizeof(paillier_ciphertext_t*)*NumNode);
+	paillier_ciphertext_t***RESULT			= (paillier_ciphertext_t***)malloc(sizeof(paillier_ciphertext_t**)*k);
+	paillier_ciphertext_t***cand;
+	paillier_ciphertext_t***temp_cand ;
+
+	for( i = 0 ; i < dim ; i++ )
+	{
+		Q[i]		= (paillier_ciphertext_t*)malloc(sizeof(paillier_ciphertext_t));
+		psi[i]		= (paillier_ciphertext_t*)malloc(sizeof(paillier_ciphertext_t));
+		coeff[i]	= (paillier_ciphertext_t*)malloc(sizeof(paillier_ciphertext_t));
+		mpz_init(Q[i]->c);
+		mpz_init(psi[i]->c);
+		mpz_init(coeff[i]->c);
+	}
+	for( i = 0 ; i < k ; i++ )
+	{
+		RESULT[i] = (paillier_ciphertext_t**)malloc(sizeof(paillier_ciphertext_t*)*dim);
+		for( j = 0 ; j < dim ; j++ )
+		{
+			RESULT[i][j] = (paillier_ciphertext_t*)malloc(sizeof(paillier_ciphertext_t));
+			mpz_init(RESULT[i][j]->c);
+		}
+	}
+	for( i = 0 ; i < NumNode ; i++ )
+	{
+		alpha[i] = (paillier_ciphertext_t*) malloc(sizeof(paillier_ciphertext_t));
+		mpz_init(alpha[i]->c);
+	}
+	
+	startTime = std::chrono::system_clock::now(); // startTime check	
+	hint = q[dim];
+
+	for( i = 0 ; i < dim ; i++ )
+	{
+		paillier_mul(pubkey, coeff[i], q[i], hint);
+	}
+	for( i = 0 ; i < dim ; i++ )
+	{
+		psi[i] = AS_CMP_MIN_BOOL(hint, coeff[i]);
+	}
+	for( i = 0 ; i < dim ; i++ )
+	{	
+		Q[i] = SM_p1(max_val[i], psi[i]);
+	}
+	endTime = std::chrono::system_clock::now(); // endTime check
+	duration_sec = endTime - startTime;  // calculate duration 
+	time_variable["Query"] = time_variable.find("Query")->second + duration_sec.count();
+
+
+	startTime = std::chrono::system_clock::now(); // startTime check	
+	PARALLEL_AS_CMP_SRO_Topk(Q, Q, alpha, node, NumNode, &cnt, &NumNodeGroup, true);
+	//Parallel_GSRO_Topk(Q, Q, alpha, node, NumNode, &cnt, &NumNodeGroup, true);
+	endTime = std::chrono::system_clock::now(); // endTime check
+	duration_sec = endTime - startTime;  // calculate duration 
+	time_variable["nodeRetrievalSRO"] = time_variable.find("nodeRetrievalSRO")->second + duration_sec.count();
+
+	while(1)
+	{
+		cnt = 0;
+		if(!verify_flag)
+		{	
+			startTime = std::chrono::system_clock::now(); // startTime check	
+			cand = PARALLEL_sNodeRetrievalforTopk(data, node, alpha, NumData, NumNode, &cnt, &NumNodeGroup);
+			totalNumOfRetrievedNodes += NumNodeGroup;
+			cout << "NumNodeGroup : " << NumNodeGroup << endl;
+			endTime = std::chrono::system_clock::now(); // endTime check
+			duration_sec = endTime - startTime;  // calculate duration 
+			time_variable["nodeRetrieval"] = time_variable.find("nodeRetrieval")->second + duration_sec.count();
+		}
+		else
+		{
+			startTime = std::chrono::system_clock::now(); // startTime check	
+			temp_cand = PARALLEL_sNodeRetrievalforTopk(data, node, alpha, NumData, NumNode, &cnt, &NumNodeGroup);
+			totalNumOfRetrievedNodes += NumNodeGroup;
+			cout << "Expand NumNodeGroup : " << NumNodeGroup << endl;
+			endTime = std::chrono::system_clock::now(); // endTime check
+			duration_sec = endTime - startTime;  // calculate duration 
+			time_variable["exnodeRetrieval"] = time_variable.find("exnodeRetrieval")->second + duration_sec.count();
+
+			printf("cnt : %d \n", cnt);
+			if(cnt == 0) {	// 검증을 위해 추가 탐색이 필요한 노드가 없는 경우를 처리함
+				break;
+			}
+			cand =  (paillier_ciphertext_t***)malloc(sizeof(paillier_ciphertext_t**)*(cnt+k));
+			for( i = 0 ; i < cnt+k ; i++ ){
+				cand[i] = (paillier_ciphertext_t**)malloc(sizeof(paillier_ciphertext_t*)*dim);
+				for( j = 0 ; j < dim; j ++ ){
+					cand[i][j] = paillier_create_enc_zero();
+				}
+			}
+			// 이전 k개의 결과를 저장
+			for(i=0; i<k; i++) {
+				for( j = 0 ; j < dim; j ++ ){
+					cand[i][j] = RESULT[i][j];
+				}
+			}
+			// 새로 찾은 후보 결과를 저장
+			for(i=0; i<cnt; i++) {
+				for( j = 0 ; j < dim; j ++ ){
+					cand[i+k][j] = temp_cand[i][j];
+				}
+			}
+			cnt = cnt + k;
+		}
+		int MAX_idx = 0;
+		paillier_ciphertext_t*	MAX				= (paillier_ciphertext_t*)malloc(sizeof(paillier_ciphertext_t));
+		mpz_init(MAX->c);
+
+		paillier_ciphertext_t**	V				= (paillier_ciphertext_t**)malloc(sizeof(paillier_ciphertext_t*)*cnt);
+		paillier_ciphertext_t** SCORE			= (paillier_ciphertext_t**)malloc(sizeof(paillier_ciphertext_t*)*cnt);
+		paillier_ciphertext_t**	SCORE_MINUS_MAX	= (paillier_ciphertext_t**)malloc(sizeof(paillier_ciphertext_t*)*cnt);
+		paillier_ciphertext_t***V2				= (paillier_ciphertext_t***)malloc(sizeof(paillier_ciphertext_t**)*cnt);
+
+		for( i = 0 ; i < cnt ; i++ )
+		{
+			V[i]				= (paillier_ciphertext_t*)malloc(sizeof(paillier_ciphertext_t));
+			SCORE[i]			= (paillier_ciphertext_t*)malloc(sizeof(paillier_ciphertext_t));
+			SCORE_MINUS_MAX[i]	= (paillier_ciphertext_t*)malloc(sizeof(paillier_ciphertext_t));
+			V2[i]				= (paillier_ciphertext_t**)malloc(sizeof(paillier_ciphertext_t*)*dim);
+
+			mpz_init(V[i]->c);
+			mpz_init(SCORE[i]->c);
+			mpz_init(SCORE_MINUS_MAX[i]->c);
+			for( j = 0 ; j < dim ; j++ )
+			{
+				V2[i][j] = (paillier_ciphertext_t*)malloc(sizeof(paillier_ciphertext_t));
+				mpz_init(V2[i][j]->c);
+			}
+		}
+
+		startTime = std::chrono::system_clock::now(); // startTime check	
+		ComputeScoreinMultithread(cand, q, SCORE, &cnt, true);
+		endTime = std::chrono::system_clock::now(); // endTime check
+		duration_sec = endTime - startTime;  // calculate duration 
+		time_variable["CS"] = time_variable.find("CS")->second + duration_sec.count();
+
+		for( s = 0 ; s < k ; s++ )
+		{
+			cout << s+1<<"dth MAXn_Topk start"<<endl;
+			startTime = std::chrono::system_clock::now(); // startTime check	
+
+			MAX = AS_CMP_MAXn(SCORE, cnt);
+			//gmp_printf("Max : %Zd \n", paillier_dec(0, pubkey, prvkey, MAX));
+
+			if(!verify_flag) {
+				endTime = std::chrono::system_clock::now(); // endTime check
+				duration_sec = endTime - startTime;  // calculate duration 
+				time_variable["SMAX"] = time_variable.find("SMAX")->second + duration_sec.count();
+			}
+			else {
+				endTime = std::chrono::system_clock::now(); // endTime check
+				duration_sec = endTime - startTime;  // calculate duration 
+				time_variable["exSMAX"] = time_variable.find("exSMAX")->second + duration_sec.count();
+			}
+			startTime = std::chrono::system_clock::now(); // startTime check	
+			MAXnMultithread2(cnt, SCORE_MINUS_MAX, SCORE, MAX, C_RAND);
+			endTime = std::chrono::system_clock::now(); // endTime check
+			duration_sec = endTime - startTime;  // calculate duration 
+			time_variable["subtract"] = time_variable.find("subtract")->second + duration_sec.count();
+
+			V = Topk_sub(SCORE_MINUS_MAX, cnt);
+
+			startTime = std::chrono::system_clock::now(); // startTime check	
+			MAXnMultithread3(cnt, s, V, V2, SCORE, cand, MIN, RESULT);
+			endTime = std::chrono::system_clock::now(); // endTime check
+			duration_sec = endTime - startTime;  // calculate duration 
+			time_variable["Topk&update"] = time_variable.find("Topk&update")->second + duration_sec.count();
+		}
+		if(Print)
+		{
+			cout<< "!!!!!!!!!!!!!MAXn!!!!!!!!!!!!!"<<endl;
+			for( s = 0 ; s < k ; s++ )
+			{
+				cout << s << " : ";
+				for( i = 0 ; i < dim ; i++ )
+				{
+					gmp_printf("%Zd ", paillier_dec(0, pubkey, prvkey, RESULT[s][i]));
+				}
+				cout<<endl;
+			}
+		}
+		if(!verify_flag)
+		{	
+			if(cnt < k)	 // 노드의 fanout이 k보다 적은 경우를 처리함
+				kth_score = computeScore(q, RESULT[cnt-1]);
+			else	// k개가 찾아졌다면, k번째 데이터의 score를 계산
+				kth_score = computeScore(q, RESULT[k-1]);
+
+			startTime = std::chrono::system_clock::now(); // startTime check	
+			int threadNum = thread_num;
+			if(threadNum > NumNode)
+			{
+				threadNum = NumNode;
+			}
+			std::vector<int> *inputIdx = new std::vector<int>[threadNum];
+			int count = 0;
+
+			for(int i = 0; i < NumNode ; i++)
+			{
+				inputIdx[count++].push_back(i);
+				count %= threadNum;
+			}					
+			std::thread *GSCMPforTopk_Thread = new std::thread[threadNum];
+			for(int i = 0; i < threadNum; i++)
+			{
+				GSCMPforTopk_Thread[i] = std::thread(GSCMPforTopk_inThread, std::ref(inputIdx[i]), std::ref(node), std::ref(psi), std::ref(kth_score), std::ref(q), std::ref(alpha), std::ref(*this));
+			}
+			for(int i = 0; i < threadNum; i++)
+			{
+				GSCMPforTopk_Thread[i].join();
+			}
+			delete[] GSCMPforTopk_Thread;
+			delete[] inputIdx;
+			endTime = std::chrono::system_clock::now(); // endTime check
+			duration_sec = endTime - startTime;  // calculate duration 
+			time_variable["excheck"] = time_variable.find("excheck")->second + duration_sec.count();
+		}
+		if(!verify_flag)
+		{
+			verify_flag = true;
+		}else
+			break;
+	}
+	for( i = 0 ; i < k ; i++ )
+	{
+		printf("%d final result : ", i);
+		gmp_printf(" %Zd \n", paillier_dec(0, pubkey, prvkey, computeScore(q, RESULT[i])));
+	
+		for( j = 0 ; j < dim ; j++ )
+		{
+			paillier_mul(pubkey, RESULT[i][j], RESULT[i][j], C_RAND);
+		}
+	}
+	cout << "End Line" <<endl;
+	return SkNNm_Bob2(RESULT, rand, k, dim);
 }
 
 
@@ -633,9 +897,9 @@ void protocol::UPDATE_SBD_SCORE_InTOPK_PB_inMultithread(paillier_ciphertext_t***
 	delete[] inputIdx;
 }
 
-paillier_ciphertext_t*** protocol::Parallel_GSRO_sNodeRetrievalforTopk(paillier_ciphertext_t*** data, boundary* node, paillier_ciphertext_t** alpha, int NumData, int NumNode, int* cnt, int* NumNodeGroup)
+paillier_ciphertext_t*** protocol::PARALLEL_sNodeRetrievalforTopk(paillier_ciphertext_t*** data, boundary* node, paillier_ciphertext_t** alpha, int NumData, int NumNode, int* cnt, int* NumNodeGroup)
 {
-	printf("\n===== Now Parallel_GSRO_sNodeRetrievalforTopk starts =====\n");
+	printf("\n===== Now PARALLEL_sNodeRetrievalforTopk starts =====\n");
 	printf("NumNode : %d thread_num : %d\n", NumNode, thread_num);
 	int i=0, j=0, m=0;
 
@@ -867,4 +1131,32 @@ void protocol::MAXnMultithread3(int cnt, int s, paillier_ciphertext_t **V, paill
 
 	delete[] SMSThread;
 	delete[] inputCnt;
+}
+
+//PARALLEL_AS_CMP_SRO
+void protocol::PARALLEL_AS_CMP_SRO_Topk(paillier_ciphertext_t** cipher_qLL, paillier_ciphertext_t** cipher_qRR, paillier_ciphertext_t** alpha, boundary* node, int NumNode, int* cnt, int* NumNodeGroup, bool type)
+{
+	int NumThread = thread_num;
+	if(NumThread > NumNode )
+	{
+		NumThread = NumNode;
+	}
+	std::vector<int> *NumNodeInput = new std::vector<int>[NumThread];
+	int count = 0;
+	for(int i = 0; i < NumNode ; i++)
+	{
+		NumNodeInput[count++].push_back(i);
+		count %= NumThread;
+	}
+	std::thread *GSROThread = new std::thread[NumThread];
+	for(int i = 0; i < NumThread; i++)
+	{
+		GSROThread[i] = std::thread(GSRO_MultithreadforTopk, std::ref(cipher_qLL), std::ref(cipher_qLL), std::ref(NumNodeInput[i]), std::ref(node), std::ref(alpha), std::ref(*this), true);
+	}
+	for(int i = 0; i < NumThread; i++)
+	{
+		GSROThread[i].join();
+	}
+	delete[] NumNodeInput;
+	delete[] GSROThread;
 }

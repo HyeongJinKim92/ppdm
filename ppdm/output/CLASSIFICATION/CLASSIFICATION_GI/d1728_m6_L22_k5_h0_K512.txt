@@ -16,3 +16,21 @@ total time : 104.061218
 # retrieved node : 7
 
 
+time : 2020-06-02-19-42-56
+query : CLASSIFICATION_GI TREE_LEVEL : 5 THREAD : 0 DATA : 1728 DIMENSION : 6 BITS : 22 k : 5 KEY : 512  QUERY : 0 0 0 0 0 0 
+total time : 104.016037
+                SMIN            subtract                 kNN            classify    nodeRetrievalSRO             excheck       nodeRetrieval     exnodeRetrieval                SSED
+            5.771023            5.210172           46.562866   1591094472.751491            1.043148            1.555559           16.413307           16.412050            6.872050
+            5.548205            5.009008           44.765084   1529662654.755522            1.002873            1.495499           15.779592           15.778384            6.606722
+# retrieved node : 7
+
+
+time : 2020-06-02-20-44-56
+query : CLASSIFICATION_GI TREE_LEVEL : 5 THREAD : 0 DATA : 1728 DIMENSION : 6 BITS : 22 k : 5 KEY : 512  QUERY : 0 0 0 0 0 0 
+total time : 103.842758
+                SMIN            subtract                 kNN            classify    nodeRetrievalSRO             excheck       nodeRetrieval     exnodeRetrieval                SSED
+            5.869289            5.194837           46.419851   1591098192.893043            1.034767            1.570482           16.369292           16.367515            6.853261
+            5.652092            5.002600           44.702059   1532218732.243996            0.996475            1.512365           15.763537           15.761826            6.599652
+# retrieved node : 7
+
+

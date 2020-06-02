@@ -717,26 +717,8 @@ paillier_ciphertext_t** protocol::Smin_n(paillier_ciphertext_t*** cipher, int nu
 	}
 	int e, q;
 	
-
-/*
-	for(j=0;j<10;j++){
-		for(i=0; i<10; i++){
-				gmp_printf("%Zd", paillier_dec(0, pubkey, prvkey, copy_cipher[j][i]));
-		}
-		printf("\n");
-	}
-		printf("\n");
-*/
 	paillier_ciphertext_t** sbd = SBD(paillier_create_enc_zero());
-/*
-	for(i=0;i<10;i++){
-		gmp_printf("%Zd", paillier_dec(0, pubkey, prvkey, sbd[i]));
-	}
-	printf("\n");
 
-	printf("\n");
-	printf("\n");
-*/
 	double n = log10(num)/log10(2) - (int)(log10(num)/log10(2));
 	
 	
@@ -750,48 +732,20 @@ paillier_ciphertext_t** protocol::Smin_n(paillier_ciphertext_t*** cipher, int nu
 			if (i == 1) {
 				e = 2 * j - 2;
 				q = 2 * j - 1;
-				/*
-				for(k=0; k<size; k++){
-					gmp_printf("%Zd", paillier_dec(0, pubkey, prvkey, copy_cipher[e][k]));
-				}
-				printf("\n");
-				for(k=0; k<size; k++){
-					gmp_printf("%Zd", paillier_dec(0, pubkey, prvkey, copy_cipher[q][k]));
-				}
-				printf("\n");
-				*/
 				copy_cipher[e] = Smin_basic1(copy_cipher[e],copy_cipher[q]);
-				// copy_cipher[e] = SMSn(copy_cipher[e],copy_cipher[q]);
-				// SMSn(..) { 안에서 작은 것을 찾아서, return 해주는 것을 paillier ciphertext **로 반환.. }
 				copy_cipher[q] = sbd;
-				//printf("%d %d\n",e,q);
 			} else {
 				e = (int)pow(2, i) * (j - 1);
 				q = (int)pow(2, i) * j - (int)pow(2, i - 1);
-				/*
-				for(k=0; k<size; k++){
-					gmp_printf("%Zd", paillier_dec(0, pubkey, prvkey, copy_cipher[e][k]));
-				}
-				printf("\n");
-				for(k=0; k<size; k++){
-					gmp_printf("%Zd", paillier_dec(0, pubkey, prvkey, copy_cipher[q][k]));
-				}
-				printf("\n");
-				*/
 				copy_cipher[e] = Smin_basic1(copy_cipher[e],copy_cipher[q]);
-				// copy_cipher[e] = SMSn(copy_cipher[e],copy_cipher[q]);
-				// SMSn(..) { 안에서 작은 것을 찾아서, return 해주는 것을 paillier ciphertext **로 반환.. }
 				copy_cipher[q] = sbd;
-				//printf("%d %d\n",e,q);
+
 			}
 		}
 		if (num % 2 == 0)
 			num = num / 2;
 		else
 			num = num / 2 + 1;
-
-		//printf("%dth iteration finished (out of %d iterations) -> %d %d\n",i, (int)n, e,q);
-		//printf("%dth round finished (out of %d round)\n",i, (int)n);
 	}
 	
 	free(sbd);
@@ -805,22 +759,10 @@ paillier_ciphertext_t** protocol::Smin_bool_n(paillier_ciphertext_t*** cipher, p
 	for(int i = 0 ; i < number; i++){
 		middle_result[i] = (paillier_ciphertext_t*)malloc(sizeof(paillier_ciphertext_t));
 		mpz_init(middle_result[i]->c);
-		/*
-		for(int j = 0 ; j < size ; j++){
-			gmp_printf("%Zd", paillier_dec(0, pubkey, prvkey, cipher[i][j]));
-		}
-		printf("\t");
-		*/
 	}
-	//printf("\n");
+
 	paillier_ciphertext_t** min = Smin_n(cipher, number);
-/*
-	printf("min_bit_arr : ");
-	for(int i = 0 ; i < size ; i++){
-		gmp_printf("%Zd", paillier_dec(0, pubkey, prvkey, min[i]));
-	}
-	printf("\n");
-*/	
+	
 	paillier_ciphertext_t* tmp1 = paillier_create_enc(0);
 	paillier_ciphertext_t* tmp2 = paillier_create_enc(0);
 	int t = 0;
@@ -851,14 +793,6 @@ paillier_ciphertext_t** protocol::Smin_bool_n(paillier_ciphertext_t*** cipher, p
 	//printf("\n");
 	
 	index_arr = Smin_bool_n_sub(middle_result, number);
-
-		
-/*
-	for(int i = 0 ; i < number ; i++){
-		gmp_printf("%Zd\t", paillier_dec(0, pubkey, prvkey, index_arr[i]));
-	}
-	printf("\n");
-*/
 	return index_arr;
 }
 
@@ -1418,13 +1352,13 @@ paillier_ciphertext_t** protocol::G_Smin_bool(paillier_ciphertext_t** data, int 
 	return index_arr;
 }
 
-paillier_ciphertext_t* protocol::AS_CMP(paillier_ciphertext_t* u, paillier_ciphertext_t* v)
+paillier_ciphertext_t* protocol::AS_CMP_MIN_BOOL(paillier_ciphertext_t* u, paillier_ciphertext_t* v)
 {
-	return AS_CMP_sub(u, v);
+	return AS_CMP_MIN_BOOL_sub(u, v);
 }
 
 
-paillier_ciphertext_t* protocol::AS_CMP_sub(paillier_ciphertext_t* u, paillier_ciphertext_t* v)
+paillier_ciphertext_t* protocol::AS_CMP_MIN_BOOL_sub(paillier_ciphertext_t* u, paillier_ciphertext_t* v)
 {
 	paillier_ciphertext_t* AS_CMP_RESULT;	
 
@@ -1440,4 +1374,158 @@ paillier_ciphertext_t* protocol::AS_CMP_sub(paillier_ciphertext_t* u, paillier_c
 		AS_CMP_RESULT = paillier_create_enc(0);
 	}
 	return AS_CMP_RESULT;
+}
+
+
+paillier_ciphertext_t * protocol::AS_CMP_MIN_VALUE(paillier_ciphertext_t* u, paillier_ciphertext_t* v)
+{
+	paillier_ciphertext_t * MIN_VALUE;
+/*
+ 	paillier_plaintext_t * random1 = paillier_plaintext_from_ui(100);
+	paillier_ciphertext_t * cipher_random1 = paillier_enc(0, pub, random1, paillier_get_rand_devurandom);
+ 	paillier_plaintext_t * random2 = paillier_plaintext_from_ui(124);
+	paillier_ciphertext_t * cipher_random2 = paillier_enc(0, pub, random2, paillier_get_rand_devurandom);
+
+	paillier_ciphertext_t * tmp_value1 = SM_p1(u, cipher_random1);
+	paillier_ciphertext_t * tmp_value2 = SM_p1(v, cipher_random1);
+	gmp_printf("%Zd %Zd\n", paillier_dec(0, pubkey, prvkey, tmp_value1), paillier_dec(0, pubkey, prvkey, tmp_value2) );
+
+
+	paillier_mul(pub, tmp_value1, tmp_value1, cipher_random2); 
+	paillier_mul(pub, tmp_value2, tmp_value2, cipher_random2); 
+
+	gmp_printf("%Zd %Zd\n", paillier_dec(0, pubkey, prvkey, tmp_value1), paillier_dec(0, pubkey, prvkey, tmp_value2));
+*/
+	MIN_VALUE = AS_CMP_MIN_VALUE_sub(u, v);
+//	gmp_printf("MIN : %Zd\n", paillier_dec(0, pubkey, prvkey, MIN_VALUE));
+
+//	paillier_subtract(pubkey, MIN_VALUE, MIN_VALUE, cipher_random2);
+//	gmp_printf("MIN : %Zd\n", paillier_dec(0, pubkey, prvkey, MIN_VALUE));
+//	paillier_divide(pubkey, MIN_VALUE, MIN_VALUE, random1);
+
+	return MIN_VALUE;
+}
+paillier_ciphertext_t * protocol::AS_CMP_MIN_VALUE_sub(paillier_ciphertext_t* u, paillier_ciphertext_t* v)
+{
+
+	paillier_plaintext_t* plain_u = paillier_dec(0, pubkey, prvkey, u);
+	paillier_plaintext_t* plain_v = paillier_dec(0, pubkey, prvkey, v);
+		
+	if ( mpz_cmp(plain_u->m, plain_v->m) <= 0 )
+	{
+		return u;
+	}
+	else 
+	{
+		return v;
+	}
+}
+
+
+
+
+paillier_ciphertext_t * protocol::AS_CMP_MAX_VALUE(paillier_ciphertext_t* u, paillier_ciphertext_t* v)
+{
+	paillier_ciphertext_t * MIN_VALUE;
+/*
+ 	paillier_plaintext_t * random1 = paillier_plaintext_from_ui(100);
+	paillier_ciphertext_t * cipher_random1 = paillier_enc(0, pub, random1, paillier_get_rand_devurandom);
+ 	paillier_plaintext_t * random2 = paillier_plaintext_from_ui(124);
+	paillier_ciphertext_t * cipher_random2 = paillier_enc(0, pub, random2, paillier_get_rand_devurandom);
+
+	paillier_ciphertext_t * tmp_value1 = SM_p1(u, cipher_random1);
+	paillier_ciphertext_t * tmp_value2 = SM_p1(v, cipher_random1);
+	gmp_printf("%Zd %Zd\n", paillier_dec(0, pubkey, prvkey, tmp_value1), paillier_dec(0, pubkey, prvkey, tmp_value2) );
+
+
+	paillier_mul(pub, tmp_value1, tmp_value1, cipher_random2); 
+	paillier_mul(pub, tmp_value2, tmp_value2, cipher_random2); 
+
+	gmp_printf("%Zd %Zd\n", paillier_dec(0, pubkey, prvkey, tmp_value1), paillier_dec(0, pubkey, prvkey, tmp_value2));
+*/
+	MIN_VALUE = AS_CMP_MAX_VALUE_sub(u, v);
+//	gmp_printf("MIN : %Zd\n", paillier_dec(0, pubkey, prvkey, MIN_VALUE));
+
+//	paillier_subtract(pubkey, MIN_VALUE, MIN_VALUE, cipher_random2);
+//	gmp_printf("MIN : %Zd\n", paillier_dec(0, pubkey, prvkey, MIN_VALUE));
+//	paillier_divide(pubkey, MIN_VALUE, MIN_VALUE, random1);
+
+	return MIN_VALUE;
+}
+paillier_ciphertext_t * protocol::AS_CMP_MAX_VALUE_sub(paillier_ciphertext_t* u, paillier_ciphertext_t* v)
+{
+
+	paillier_plaintext_t* plain_u = paillier_dec(0, pubkey, prvkey, u);
+	paillier_plaintext_t* plain_v = paillier_dec(0, pubkey, prvkey, v);
+		
+	if ( mpz_cmp(plain_v->m, plain_u->m) <= 0 )
+	{
+		return u;
+	}
+	else 
+	{
+		return v;
+	}
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*
+paillier_ciphertext_t* protocol::AS_CMP_MAX_BOOL(paillier_ciphertext_t* u, paillier_ciphertext_t* v)
+{
+	return AS_CMP_MAX_BOOL_sub(u, v);
+}
+
+paillier_ciphertext_t* protocol::AS_CMP_MAX_BOOL_sub(paillier_ciphertext_t* u, paillier_ciphertext_t* v)
+{
+	paillier_ciphertext_t* AS_CMP_RESULT;	
+
+	paillier_plaintext_t* plain_u = paillier_dec(0, pubkey, prvkey, u);
+	paillier_plaintext_t* plain_v = paillier_dec(0, pubkey, prvkey, v);
+		
+	if ( mpz_cmp( plain_v->m, plain_u->m ) < 0 )
+	{
+		AS_CMP_RESULT = paillier_create_enc(1);
+	}
+	else 
+	{
+		AS_CMP_RESULT = paillier_create_enc(0);
+	}
+	return AS_CMP_RESULT;
+}
+*/
+
+
+
+
+
+
+
+paillier_ciphertext_t* protocol::AS_CMP_SRO(paillier_ciphertext_t** qLL, paillier_ciphertext_t** qRR, paillier_ciphertext_t** nodeLL, paillier_ciphertext_t** nodeRR)
+{
+	paillier_ciphertext_t* alpha = paillier_create_enc(1);
+
+	for( int i = 0 ; i < dim ; i++ )
+	{
+		alpha = SM_p1(alpha, AS_CMP_MIN_BOOL(qLL[i], nodeRR[i]));
+	}
+	for( int i = 0 ; i < dim ; i++ )
+	{
+		alpha = SM_p1(alpha, AS_CMP_MIN_BOOL(nodeLL[i], qRR[i]));
+	}
+	return alpha;
 }

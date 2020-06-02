@@ -66,3 +66,41 @@ Result(8) :	489	468	473	395
 Result(9) :	498	492	310	505	
 
 
+time : 2020-06-02-19-25-10
+query : TOPK_I TREE_LEVEL : 7 THREAD : 0 DATA : 2000 DIMENSION : 4 BITS : 20 k : 10 KEY : 512  QUERY : 10 10 10 10 10 
+total time : 335.451324
+              CS&SBD                SMAX            Bi to De            subtract                Topk              update               Query    nodeRetrievalSBD               SBD_Q    nodeRetrievalSRO       nodeRetrieval     exnodeRetrieval              exSMAX             excheck
+           11.581550           22.979109           56.528348            2.216200            7.462771           37.479427            0.705276           39.576565            0.622197           40.104136           11.080691           11.078144           76.805796           15.299708
+            3.452528            6.850207           16.851431            0.660662            2.224696           11.172836            0.210247           11.798005            0.185480           11.955277            3.303219            3.302459           22.896257            4.560932
+# retrieved node : 4
+Result(0) :	477	427	506	501	
+Result(1) :	435	471	472	510	
+Result(2) :	488	437	490	456	
+Result(3) :	349	506	501	507	
+Result(4) :	449	491	472	431	
+Result(5) :	470	491	491	388	
+Result(6) :	463	457	493	425	
+Result(7) :	446	478	482	420	
+Result(8) :	489	468	473	395	
+Result(9) :	498	492	310	505	
+
+
+time : 2020-06-02-20-03-47
+query : TOPK_I TREE_LEVEL : 7 THREAD : 0 DATA : 2000 DIMENSION : 4 BITS : 20 k : 10 KEY : 512  QUERY : 10 10 10 10 10 
+total time : 336.817474
+              CS&SBD                SMAX            Bi to De            subtract                Topk              update               Query    nodeRetrievalSBD               SBD_Q    nodeRetrievalSRO       nodeRetrieval     exnodeRetrieval              exSMAX             excheck
+           11.630922           23.070152           56.758539            2.223366            7.488304           37.629781            0.708081           39.765245            0.624780           40.244243           11.122888           11.117431           77.129438           15.364530
+            3.453182            6.849452           16.851423            0.660110            2.223253           11.172158            0.210227           11.806171            0.185495           11.948383            3.302349            3.300729           22.899476            4.561678
+# retrieved node : 4
+Result(0) :	477	427	506	501	
+Result(1) :	435	471	472	510	
+Result(2) :	488	437	490	456	
+Result(3) :	349	506	501	507	
+Result(4) :	449	491	472	431	
+Result(5) :	470	491	491	388	
+Result(6) :	463	457	493	425	
+Result(7) :	446	478	482	420	
+Result(8) :	489	468	473	395	
+Result(9) :	498	492	310	505	
+
+

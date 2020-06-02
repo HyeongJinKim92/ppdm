@@ -136,3 +136,69 @@ Result(22) :	1	2
 Result(23) :	1	2	
 
 
+time : 2020-06-02-19-15-39
+query : RANGE_I TREE_LEVEL : 7 THREAD : 0 DATA : 2000 DIMENSION : 2 BITS : 12 k : 10 KEY : 512  QUERY : 0 0 2 2 
+total time : 42.502567
+               SBD_Q               SBD_D               SRO_D    nodeRetrievalSBD    nodeRetrievalSRO       nodeRetrieval
+            0.188179            5.987987            6.382736           11.891802           12.474941            5.539990
+            0.442747           14.088529           15.017296           27.979020           29.351029           13.034483
+# retrieved node : 1
+Result(0) :	0	0	
+Result(1) :	0	0	
+Result(2) :	2	0	
+Result(3) :	2	0	
+Result(4) :	2	0	
+Result(5) :	2	0	
+Result(6) :	2	0	
+Result(7) :	0	0	
+Result(8) :	1	0	
+Result(9) :	0	0	
+Result(10) :	0	0	
+Result(11) :	2	1	
+Result(12) :	1	1	
+Result(13) :	2	1	
+Result(14) :	2	1	
+Result(15) :	0	1	
+Result(16) :	0	1	
+Result(17) :	1	1	
+Result(18) :	2	2	
+Result(19) :	2	2	
+Result(20) :	0	2	
+Result(21) :	1	2	
+Result(22) :	1	2	
+Result(23) :	1	2	
+
+
+time : 2020-06-02-19-54-15
+query : RANGE_I TREE_LEVEL : 7 THREAD : 0 DATA : 2000 DIMENSION : 2 BITS : 12 k : 10 KEY : 512  QUERY : 0 0 2 2 
+total time : 42.376156
+               SBD_Q               SBD_D               SRO_D    nodeRetrievalSBD    nodeRetrievalSRO       nodeRetrieval
+            0.187702            5.966730            6.366164           11.848700           12.437626            5.532254
+            0.442943           14.080395           15.022986           27.960772           29.350529           13.055110
+# retrieved node : 1
+Result(0) :	0	0	
+Result(1) :	0	0	
+Result(2) :	2	0	
+Result(3) :	2	0	
+Result(4) :	2	0	
+Result(5) :	2	0	
+Result(6) :	2	0	
+Result(7) :	0	0	
+Result(8) :	1	0	
+Result(9) :	0	0	
+Result(10) :	0	0	
+Result(11) :	2	1	
+Result(12) :	1	1	
+Result(13) :	2	1	
+Result(14) :	2	1	
+Result(15) :	0	1	
+Result(16) :	0	1	
+Result(17) :	1	1	
+Result(18) :	2	2	
+Result(19) :	2	2	
+Result(20) :	0	2	
+Result(21) :	1	2	
+Result(22) :	1	2	
+Result(23) :	1	2	
+
+

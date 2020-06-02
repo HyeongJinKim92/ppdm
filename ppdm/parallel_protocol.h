@@ -71,4 +71,13 @@ void ComputeNEWCLUSTER_forKMEANS_PBinThread( std::vector<int> input, paillier_ci
 void Comp_Cluster_inThread(paillier_ciphertext_t*** cipher, paillier_ciphertext_t*** former_Center, std::vector<int> inputIdx, paillier_ciphertext_t*** NewSumCluster, paillier_ciphertext_t** NewSumCntCluster, protocol proto, int i);
 
 
+//AS_CMP
+void AS_CMP_SRO_Multithread(paillier_ciphertext_t **qLL, paillier_ciphertext_t **qRR, std::vector<int> input, boundary *node, paillier_ciphertext_t **alpha, protocol proto, int idx);
+void AS_CMP_NodeRetrievalinThread(std::vector<int> inputJ, std::vector<int *> inputNodeGroup, int &remained,	std::vector<int> inputCnt, boundary *node, paillier_ciphertext_t ***data, paillier_ciphertext_t **alpha, paillier_ciphertext_t ***cand, protocol proto, int idx);
+void AS_CMP_SRO_dataquery_Multithread(paillier_ciphertext_t *** cand, boundary q, std::vector<int> input, paillier_ciphertext_t **alpha, protocol proto, int idx, paillier_ciphertext_t * cipher_rand);
+void AS_CMP_SRO_MultithreadforTopk(paillier_ciphertext_t **qLL, paillier_ciphertext_t **qRR, std::vector<int> input, boundary *node, paillier_ciphertext_t **alpha, protocol proto, bool verify);
+void AS_CMP_NodeExpansion_Multithread(paillier_ciphertext_t **q, paillier_ciphertext_t *K_DIST, std::vector<int> input, boundary *node, paillier_ciphertext_t **alpha, protocol proto, int idx);
+void AS_CMP_MIN_VALUE_inThread(std::vector<int> inputIdx, int idx, paillier_ciphertext_t ** cipher, paillier_ciphertext_t ** min, protocol proto);
+
+
 #endif

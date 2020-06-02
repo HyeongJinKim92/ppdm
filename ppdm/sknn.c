@@ -2255,3 +2255,54 @@ paillier_ciphertext_t*** protocol::GSRO_sNodeRetrievalforkNN(paillier_ciphertext
 	return cand;
 }
 
+paillier_ciphertext_t * protocol::AS_CMP_MINn(paillier_ciphertext_t** cipher, int cnt)
+{
+	int i, j;
+	int iter;
+	int num = cnt;
+	int k;
+
+	paillier_ciphertext_t * MIN_VALUE = new paillier_ciphertext_t;
+	paillier_ciphertext_t ** copy_cipher = new paillier_ciphertext_t*[num];
+	for(i=0; i<num ; i++){
+		copy_cipher[i] = new paillier_ciphertext_t;
+		mpz_init(copy_cipher[i]->c);
+		copy_cipher[i] = cipher[i];
+	}
+	int e, q;
+	
+	paillier_ciphertext_t* Zero = paillier_create_enc_zero();
+
+	double n = log10(num)/log10(2) - (int)(log10(num)/log10(2));
+	
+	
+	if(n>0){
+		n = (int)(log10(num)/log10(2))+1;
+	}else{
+		n = (int)(log10(num)/log10(2));
+	}
+	for (i = 1; i <= n; i++) {
+		for (j = 1; j <= num / 2; j++) {
+			if (i == 1) {
+				e = 2 * j - 2;
+				q = 2 * j - 1;
+				copy_cipher[e] = AS_CMP_MIN_VALUE(copy_cipher[e], copy_cipher[q]);
+				copy_cipher[q] = Zero;
+			} else {
+				e = (int)pow(2, i) * (j - 1);
+				q = (int)pow(2, i) * j - (int)pow(2, i - 1);
+				copy_cipher[e] = AS_CMP_MIN_VALUE(copy_cipher[e], copy_cipher[q]);
+				copy_cipher[q] = Zero;
+
+			}
+		}
+		if (num % 2 == 0)
+			num = num / 2;
+		else
+			num = num / 2 + 1;
+	}
+	
+	free(Zero);
+	MIN_VALUE = copy_cipher[0];
+	return MIN_VALUE;
+}

@@ -853,12 +853,292 @@ int** protocol::Classification_PGI(paillier_ciphertext_t*** data, paillier_ciphe
 
 int** protocol::Classification_PAI(paillier_ciphertext_t*** data, paillier_ciphertext_t** query, paillier_ciphertext_t** Entire_set, boundary* node, int k, int NumData, int NumNode, int Entire_num)
 {
+	printf("\n=== Classification_PAI start ===\n");
+
 	if( thread_num < 1 ) 
 	{
 		cout << "THREAD NUM IS ERROR" << endl;
 		exit(1);
 	}
 
+
+	int rand = 5;
+	int cnt = 0;	 
+	int NumNodeGroup = 0;
+	bool verify_flag = false;
+
+	paillier_ciphertext_t **alpha = new paillier_ciphertext_t *[NumNode];
+	for(int i = 0; i < NumNode; i++)
+	{
+		alpha[i] = new paillier_ciphertext_t;
+		mpz_init(alpha[i]->c);
+	}
+	paillier_ciphertext_t ***cand;
+	paillier_ciphertext_t ***temp_cand;
+
+	paillier_ciphertext_t **Rabel_Result = new paillier_ciphertext_t *[k];
+	paillier_ciphertext_t ***Result = new paillier_ciphertext_t **[k];
+
+	for(int i = 0; i < k; i++)
+	{
+		Rabel_Result[i] = (paillier_ciphertext_t*)malloc(sizeof(paillier_ciphertext_t));
+
+		Result[i] = (paillier_ciphertext_t**)malloc(sizeof(paillier_ciphertext_t*)*(dim+1));
+		for(int j = 0 ; j < dim + 1; j++)
+		{
+			Result[i][j] = (paillier_ciphertext_t*)malloc(sizeof(paillier_ciphertext_t));
+			mpz_init(Result[i][j]->c);
+		}
+	}
+
+	paillier_ciphertext_t*		C_RAND			= paillier_create_enc(rand);
+	paillier_ciphertext_t*		TMP_alpha		= (paillier_ciphertext_t*)malloc(sizeof(paillier_ciphertext_t));
+	paillier_ciphertext_t*		MAX				= paillier_create_enc(pow(2, size)-1);
+	paillier_ciphertext_t*		K_DIST = 0;	
+
+	while(1)
+	{
+
+		startTime = std::chrono::system_clock::now(); // startTime check					
+
+		if(!verify_flag)
+		{	
+				int NumThread = thread_num;
+				if(NumThread > NumNode)
+				{
+					NumThread = NumNode;
+				}
+				std::vector<int> *NumNodeInput = new std::vector<int>[NumThread];
+				int count = 0;
+				for(int i = 0; i < NumNode; i++)
+				{
+					NumNodeInput[count++].push_back(i);
+					count %= NumThread;
+				}
+
+				std::thread *GSROThread = new std::thread[NumThread];
+				for(int i = 0; i < NumThread; i++)
+				{
+					GSROThread[i] = std::thread(AS_CMP_SRO_Multithread, std::ref(query), std::ref(query), std::ref(NumNodeInput[i]), std::ref(node), std::ref(alpha), std::ref(*this), i);
+				}
+
+				for(int i = 0; i < NumThread; i++)
+				{
+					GSROThread[i].join();
+				}
+
+				delete[] NumNodeInput;
+				delete[] GSROThread;
+		}
+		else
+		{
+			std::cout << "!!!!!!!!Seconde Node Expansion!!!!!!!!" << std::endl;
+
+			int NumThread = thread_num;
+			if(NumThread > NumNode)
+ 			{
+				NumThread = NumNode;
+			}
+
+			std::cout << "numThread: " << NumThread << std::endl;
+
+			std::vector<int> *NumNodeInput = new std::vector<int>[NumThread];
+			int count = 0;
+			for(int i = 0; i < NumNode; i++)
+			{
+				NumNodeInput[count++].push_back(i);
+				count %= NumThread;
+			}
+
+			std::thread *NodeExpansionThread = new std::thread[NumThread];
+			for(int i = 0; i < NumThread; i++)
+			{
+				NodeExpansionThread[i] = std::thread(AS_CMP_NodeExpansion_Multithread, std::ref(query), std::ref(K_DIST), std::ref(NumNodeInput[i]), std::ref(node), std::ref(alpha), std::ref(*this), i);
+			}
+
+			for(int i = 0; i < NumThread; i++)
+			{
+				NodeExpansionThread[i].join();
+			}
+
+			delete[] NumNodeInput;
+			delete[] NodeExpansionThread;
+			
+			if(Print)
+			{
+				for(int i = 0; i < NumNode; i++)
+				{
+					std::cout<< i+1 <<"Node Expansion alpha : ";
+					gmp_printf("%Zd\n", paillier_dec(0, pubkey, prvkey, alpha[i]));
+				}
+			}
+		}
+		
+		if(!verify_flag)	
+		{
+			endTime = std::chrono::system_clock::now(); // endTime check
+			duration_sec = endTime - startTime;  // calculate duration 
+			time_variable["nodeRetrievalSRO"] = time_variable.find("nodeRetrievalSRO")->second + duration_sec.count();
+		}
+		else 
+		{
+			endTime = std::chrono::system_clock::now(); // endTime check
+			duration_sec = endTime - startTime;  // calculate duration 
+			time_variable["excheck"] = time_variable.find("excheck")->second + duration_sec.count();
+		}
+		
+		cnt = 0;
+
+		if(!verify_flag)
+		{	
+			startTime = std::chrono::system_clock::now(); // startTime check						
+			cand = sNodeRetrievalforClassificationMultiThread(data, node, alpha, NumData, NumNode, &cnt, &NumNodeGroup);
+			totalNumOfRetrievedNodes += NumNodeGroup;
+			endTime = std::chrono::system_clock::now(); // endTime check
+			duration_sec = endTime - startTime;  // calculate duration 
+			time_variable["nodeRetrieval"] = time_variable.find("nodeRetrieval")->second + duration_sec.count();
+		}else{
+			startTime = std::chrono::system_clock::now(); // startTime check						
+			std::cout << "second GSRO_sNodeRetrievalforkNN start" << std::endl;
+			temp_cand = sNodeRetrievalforClassificationMultiThread(data, node, alpha, NumData, NumNode, &cnt, &NumNodeGroup);
+			totalNumOfRetrievedNodes += NumNodeGroup;
+			endTime = std::chrono::system_clock::now(); // endTime check
+			duration_sec = endTime - startTime;  // calculate duration 
+			time_variable["exnodeRetrieval"] = time_variable.find("exnodeRetrieval")->second + duration_sec.count();
+
+			if(cnt == 0)
+			{	
+				break;
+			}
+
+			cand = (paillier_ciphertext_t***)malloc(sizeof(paillier_ciphertext_t**)*(cnt+k));
+			for(int i = 0 ; i < cnt+k ; i++ )
+			{
+				cand[i] = (paillier_ciphertext_t**)malloc(sizeof(paillier_ciphertext_t*)*dim+1);
+				for(int j = 0 ; j < dim+1 ; j ++ )
+				{
+					cand[i][j] = (paillier_ciphertext_t*)malloc(sizeof(paillier_ciphertext_t));
+					mpz_init(cand[i][j]->c);
+				}
+			}
+
+			for(int i = 0 ; i < k ; i++ )
+			{
+				for(int j = 0 ; j < dim+1 ; j ++ )
+				{
+					cand[i][j] = Result[i][j];
+				}
+			}
+			for(int i = 0 ; i < cnt ; i++ )
+			{
+				for(int j = 0 ; j < dim+1 ; j ++ )
+				{
+					cand[i+k][j] = temp_cand[i][j];
+				}
+			}
+			cnt = cnt + k;
+		}
+
+
+
+		int idx = 0;
+		paillier_ciphertext_t*		MIN				= (paillier_ciphertext_t*)malloc(sizeof(paillier_ciphertext_t));
+		paillier_ciphertext_t**		ORIGIN_DIST		= (paillier_ciphertext_t**)malloc(sizeof(paillier_ciphertext_t*)*cnt);
+		paillier_ciphertext_t**		DIST			= (paillier_ciphertext_t**)malloc(sizeof(paillier_ciphertext_t*)*cnt);
+		paillier_ciphertext_t**		V				= (paillier_ciphertext_t**)malloc(sizeof(paillier_ciphertext_t*)*cnt);
+		paillier_ciphertext_t**		DIST_MINUS_MIN	= (paillier_ciphertext_t**)malloc(sizeof(paillier_ciphertext_t*)*cnt);
+		paillier_ciphertext_t***	V2				= (paillier_ciphertext_t***)malloc(sizeof(paillier_ciphertext_t**)*cnt);
+
+		mpz_init(MIN->c);
+		for(int i = 0 ; i < cnt ; i ++ )
+		{
+			DIST_MINUS_MIN[i]	= (paillier_ciphertext_t*)malloc(sizeof(paillier_ciphertext_t));
+			DIST[i]				= (paillier_ciphertext_t*)malloc(sizeof(paillier_ciphertext_t));
+			V[i]				= (paillier_ciphertext_t*)malloc(sizeof(paillier_ciphertext_t));
+			V2[i]				= (paillier_ciphertext_t**)malloc(sizeof(paillier_ciphertext_t*)*(dim+1));
+			
+			mpz_init(DIST_MINUS_MIN[i]->c);
+			mpz_init(DIST[i]->c);
+			mpz_init(V[i]->c);
+			
+			for(int j = 0 ; j < dim+1 ; j++ ){
+				V2[i][j] = (paillier_ciphertext_t*)malloc(sizeof(paillier_ciphertext_t));
+				mpz_init(V2[i][j]->c);
+			}
+			
+		}
+	
+		startTime = std::chrono::system_clock::now(); // startTime check						
+		SSEDMultiThread(DIST, cand, query, cnt);
+		endTime = std::chrono::system_clock::now(); // endTime check
+		duration_sec = endTime - startTime;  // calculate duration 
+		time_variable["SSED"] = time_variable.find("SSED")->second + duration_sec.count();
+
+		for(int s = 0 ; s < k ; s ++ )
+		{
+			std::cout << s+1 <<" th Classification Start !!!!!!!!!!!!"<<std::endl;
+			startTime = std::chrono::system_clock::now(); // startTime check						
+			MIN = AS_CMP_MINn(DIST, cnt);
+			endTime = std::chrono::system_clock::now(); // endTime check
+			duration_sec = endTime - startTime;  // calculate duration 
+			time_variable["SMIN"] = time_variable.find("SMIN")->second + duration_sec.count();
+
+			startTime = std::chrono::system_clock::now(); // startTime check						
+			SMSnMultithread2(cnt, DIST_MINUS_MIN, DIST, MIN, C_RAND);
+			endTime = std::chrono::system_clock::now(); // endTime check
+			duration_sec = endTime - startTime;  // calculate duration 
+			time_variable["subtract"] = time_variable.find("subtract")->second + duration_sec.count();
+
+			V = SkNNm_sub(DIST_MINUS_MIN, cnt);
+
+			startTime = std::chrono::system_clock::now(); // startTime check						
+			SMSnMultithread3(cnt, s, V, V2, DIST, cand, MAX, Result);
+			endTime = std::chrono::system_clock::now(); // endTime check
+			duration_sec = endTime - startTime;  // calculate duration 
+			time_variable["kNN"] = time_variable.find("kNN")->second + duration_sec.count();
+		}
+
+		if(!verify_flag)
+		{	
+			K_DIST = SSEDm(query, Result[k-1], dim); 
+		}
+
+		if(!verify_flag)
+			verify_flag = true;
+		else
+			break;
+	}
+	for(int i = 0 ; i < k ; i++ ){
+		*Rabel_Result[i] = *Result[i][dim];
+	}
+	
+
+	paillier_ciphertext_t**	cipher_rabel = new paillier_ciphertext_t*[k];
+	paillier_plaintext_t* A = (paillier_plaintext_t*)malloc(sizeof(paillier_plaintext_t));
+	int** sknn = (int**)malloc(sizeof(int*)*k);
+	for(int i = 0 ; i < k ; i++ ){
+		cipher_rabel[i] = new paillier_ciphertext_t;
+		mpz_init(cipher_rabel[i]->c);
+		sknn[i] = (int*)malloc(sizeof(int)*(dim+1));
+		for(int j = 0 ; j < dim+1 ; j++ ){
+			A = paillier_dec(0, pubkey, prvkey, Result[i][j]);
+			sknn[i][j] = mpz_get_ui(A->m);
+			printf("%d ", sknn[i][j]);
+			if ( j == dim)
+			{
+				cipher_rabel[i] = Result[i][j];
+			}
+		}
+		printf("\n");
+	}
+
+	startTime = std::chrono::system_clock::now(); // startTime check					
+	SCMC(Entire_set, cipher_rabel, Entire_num, k);
+	endTime = std::chrono::system_clock::now(); // endTime check
+	duration_sec = endTime - startTime;  // calculate duration 
+	time_variable["classify"] = time_variable.find("classify")->second + duration_sec.count();
+
+	return sknn;
 }
 
 

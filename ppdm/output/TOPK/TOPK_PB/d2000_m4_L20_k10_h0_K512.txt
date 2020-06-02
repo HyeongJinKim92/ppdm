@@ -61,3 +61,22 @@ Result(8) :	489	468	473	395
 Result(9) :	498	492	310	505	
 
 
+time : 2020-06-02-20-18-56
+query : TOPK_PB TREE_LEVEL : 7 THREAD : 4 DATA : 2000 DIMENSION : 4 BITS : 20 k : 10 KEY : 512  QUERY : 10 10 10 10 10 
+total time : 850.022278
+              CS&SBD                SMAX            Bi to De            subtract                Topk              update
+           44.797798          387.851206          212.781737            8.606595           29.133442          145.589659
+            5.270191           45.628358           25.032489            1.012514            3.427374           17.127746
+# retrieved node : 0
+Result(0) :	477	427	506	501	
+Result(1) :	435	471	472	510	
+Result(2) :	488	437	490	456	
+Result(3) :	349	506	501	507	
+Result(4) :	449	491	472	431	
+Result(5) :	470	491	491	388	
+Result(6) :	463	457	493	425	
+Result(7) :	446	478	482	420	
+Result(8) :	489	468	473	395	
+Result(9) :	498	492	310	505	
+
+

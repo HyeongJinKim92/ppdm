@@ -102,9 +102,9 @@ int range_main(parsed_query * user_query)
 	else if(user_query->rquery_t == RANGE_PAI) 	setting.TimeResult_write_map(shellquery, result, result_num, "RANGE/RANGE_PAI", proto); //rangePAI
 
 	for( int i = 0 ; i < result_num ; i++ ){
-		printf("%d result : ", (i+1) );
+		printf("%4d result : ", (i+1) );
 		for ( int j = 0 ; j < user_query->dim_n ; j++ ){
-			printf("%d \t", result[i][j]);
+			printf("%4d ", result[i][j]);
 		}
 		printf("\n");
 	}	
@@ -131,25 +131,6 @@ int topk_main(parsed_query* user_query)
 	paillier_ciphertext_t** max_val = (paillier_ciphertext_t**)malloc(sizeof(paillier_ciphertext_t*)*user_query->dim_n); 
 
 	paillier_ciphertext_t* cipher_zero = paillier_create_enc(0);
-	/*
-	cout << "G_CMP : " <<proto.G_CMP(10, 0, 10, 0) << endl;
-	cout << "G_CMP : " <<proto.G_CMP(10, 3, 10, 3) << endl;
-	cout << "G_CMP : " <<proto.G_CMP(10, 3, 10, 4) << endl;
-	cout << "G_CMP : " <<proto.G_CMP(10, 4, 10, 3) << endl;
-	cout << "G_CMP : " <<proto.G_CMP(10, 99, 100, 3) << endl;
-
-	cout << "G_CMP : " <<proto.G_CMP(1, 1, 1, 0) << endl;
-	cout << "G_CMP : " <<proto.G_CMP(1, 0, 1, 1) << endl;
-
-	cout << "G_CMP : " <<proto.G_CMP(1, 0, 2, 0) << endl;
-	cout << "G_CMP : " <<proto.G_CMP(1, 1, 2, 0) << endl;
-	cout << "G_CMP : " <<proto.G_CMP(1, 0, 2, 1) << endl;
-
-
-	cout << "G_CMP : " <<proto.G_CMP(2, 0, 1, 0) << endl;
-	cout << "G_CMP : " <<proto.G_CMP(2, 1, 1, 0) << endl;
-	cout << "G_CMP : " <<proto.G_CMP(2, 0, 1, 1) << endl;
-	*/
 
 	int MAX_VAL = 0;
 	MAX_VAL = sqrt(pow(2, user_query->bit_s)/user_query->dim_n);
@@ -236,9 +217,9 @@ int topk_main(parsed_query* user_query)
 	else if(user_query->tquery_t == TOPK_PAI) 	setting.TimeResult_write_map(shellquery, topk, user_query->k, "TOPK/TOPK_PAI", proto); //TOPKPAI
 
 	for( i = 0 ; i < user_query->k ; i++ ){
-		printf("%d result : ", (i+1));
+		printf("%4d topk : ", (i+1));
 		for ( j = 0 ; j < user_query->dim_n ; j++ ){
-			printf("%d \t", topk[i][j]);
+			printf("%5d ", topk[i][j]);
 		}
 		printf("\n");
 	}
@@ -323,9 +304,9 @@ int knn_main(parsed_query* user_query)
 	else if(user_query->kquery_t == KNN_PAI) 	setting.TimeResult_write_map(shellquery, SkNNm, result_num, "KNN/KNN_PAI", proto); //KNNPAI
 
 	for( i = 0 ; i < user_query->k ; i++ ){
-		printf("%d result : ", (i+1) );
+		printf("%4d result : ", (i+1) );
 		for ( j = 0 ; j < user_query->dim_n ; j++ ){
-			printf("%d \t", SkNNm[i][j]);
+			printf("%5d ", SkNNm[i][j]);
 		}
 		printf("\n");
 	}
@@ -416,7 +397,17 @@ int classification_main(parsed_query* user_query)
 	else if(user_query->cquery_t == CLASSIFICATION_PGI) 	setting.TimeResult_write_map(shellquery, classification, result_num, "CLASSIFICATION/CLASSIFICATION_PGI", proto);
 	else if(user_query->cquery_t == CLASSIFICATION_PAI) 	setting.TimeResult_write_map(shellquery, classification, result_num, "CLASSIFICATION/CLASSIFICATION_PAI", proto);
 
-	proto.protocol_free();
+	for( i = 0 ; i < user_query->k ; i++ ){
+		printf("%4d result : ", (i+1) );
+		for ( j = 0 ; j < user_query->dim_n ; j++ ){
+			printf("%5d ", classification[i][j]);
+		}
+		printf("\n");
+	}
+
+
+	//proto.protocol_free();
+
 	return 0;
 }
 
@@ -477,7 +468,7 @@ int kmeans_main(parsed_query* user_query)
 		cluseter[i] = (int*)malloc(sizeof(int)*user_query->dim_n);
 		for(int j = 0 ; j < user_query->dim_n ; j++ ){
 			cluseter[i][j] = mpz_get_ui(paillier_dec(0, pub, prv, Cluster[i][j])->m);
-			printf("%d ", cluseter[i][j]);
+			printf("%5d ", cluseter[i][j]);
 		}
 		printf("\n");
 	}

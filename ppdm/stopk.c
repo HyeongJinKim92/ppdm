@@ -840,7 +840,8 @@ int** protocol::STopk_G(paillier_ciphertext_t*** data, paillier_ciphertext_t** q
 	cout << "End Line" <<endl;
 	return SkNNm_Bob2(RESULT, rand, k, dim);
 }
-paillier_ciphertext_t** protocol::Topk_sub(paillier_ciphertext_t** ciper_n, int n){
+paillier_ciphertext_t** protocol::Topk_sub(paillier_ciphertext_t** ciper_n, int n)
+{
 	int i = 0;
 	int cnt = 0;
 	paillier_plaintext_t* plain = (paillier_plaintext_t*)malloc(sizeof(paillier_plaintext_t));
@@ -1386,7 +1387,7 @@ paillier_ciphertext_t* protocol::Smax_basic2(paillier_ciphertext_t** ciper_R, pa
 	return alpha;
 }
 
-int protocol::MAXn(paillier_ciphertext_t** ciper, int cnt)
+int protocol::MAXn(paillier_ciphertext_t** cipher, int cnt)
 {
 	int i = 0, s = 0;
 	int buff = 0;
@@ -1395,7 +1396,7 @@ int protocol::MAXn(paillier_ciphertext_t** ciper, int cnt)
 	int remain = 0;
 	int iter = 0;
 	int bundle = 0;
-	int ciper_idx = 0;
+	int cipher_idx = 0;
 	bool re = false;
 	int * R_array_result = (int *)malloc(sizeof(int)*cnt);
 	int * V_array_result = (int *)malloc(sizeof(int)*cnt);
@@ -1423,8 +1424,8 @@ int protocol::MAXn(paillier_ciphertext_t** ciper, int cnt)
 	paillier_plaintext_t* R1_array = paillier_plaintext_from_ui(R1);
 	paillier_ciphertext_t* c1_array ;
 	paillier_ciphertext_t* cR1_array;
-	paillier_ciphertext_t* ciper_tmp = (paillier_ciphertext_t*) malloc(sizeof(paillier_ciphertext_t));	
-	mpz_init(ciper_tmp->c);
+	paillier_ciphertext_t* cipher_tmp = (paillier_ciphertext_t*) malloc(sizeof(paillier_ciphertext_t));	
+	mpz_init(cipher_tmp->c);
 
 	paillier_ciphertext_t* SMSn_sub_result;
 	//cout<< "setting iter, bundle" <<endl;
@@ -1462,8 +1463,8 @@ int protocol::MAXn(paillier_ciphertext_t** ciper, int cnt)
 		cR1_array = paillier_enc(0, pubkey, p1_array, paillier_get_rand_devurandom);
 		for( i = 0 ; i < bundle ; i++){
 			mpz_ui_pow_ui(shift->m,2,DP*i);
-			paillier_exp(pub, ciper_tmp, ciper[ciper_idx++], shift);
-			paillier_mul(pubkey, c1_array, c1_array, ciper_tmp); //E_add
+			paillier_exp(pub, cipher_tmp, cipher[cipher_idx++], shift);
+			paillier_mul(pubkey, c1_array, c1_array, cipher_tmp); //E_add
 		}
 		SMSn_sub_result = SMSn_sub(c1_array, cR1_array, bundle);
 		R1_array = paillier_dec(0, pub, prv, SMSn_sub_result);
@@ -1480,7 +1481,7 @@ int protocol::MAXn(paillier_ciphertext_t** ciper, int cnt)
 			V_array_result[(s*buff+bundle)-1-i] = mpz_get_ui(tmp->m);
 			mpz_mod(SMSn_value->m,SMSn_value->m,shift->m);
 		}
-		mpz_init(ciper_tmp->c);
+		mpz_init(cipher_tmp->c);
 		shift = paillier_plaintext_from_ui(0);
 		tmp= paillier_plaintext_from_ui(0);
 		p1_array = paillier_plaintext_from_ui(0);
@@ -1503,16 +1504,13 @@ int protocol::MAXn(paillier_ciphertext_t** ciper, int cnt)
 	
 	for( i = 0 ; i < cnt ; i++ )
 	{
-		//cout << MAXn_tmp_val+MAXn_tmp_rand << " ";
 		if(G_CMP(V_array_result[i], R_array_result[i], MAXn_tmp_val, MAXn_tmp_rand)){
-		//	cout << "<";
 			MAXn_tmp_val    = V_array_result[i];	
 			MAXn_tmp_rand   = R_array_result[i];
 			MAXn_result_idx = i;
 		}else{
 		//	cout << ">";
 		}
-		//cout << V_array_result[i]+R_array_result[i] <<endl;
 	}
 	
 	free(shift);
@@ -1521,16 +1519,76 @@ int protocol::MAXn(paillier_ciphertext_t** ciper, int cnt)
 	free(R1_array);
 	free(c1_array);
 	free(cR1_array);
-	free(ciper_tmp);
+	free(cipher_tmp);
 	
 	if(Print)
 	{
 		cout << "MAXn Value : " << MAXn_tmp_val+MAXn_tmp_rand <<"   idx : "<<MAXn_result_idx;
-		gmp_printf("  %Zd\n",paillier_dec(0, pub, prv, ciper[MAXn_result_idx]));	
+		gmp_printf("  %Zd\n",paillier_dec(0, pub, prv, cipher[MAXn_result_idx]));	
 	}
 	
 	return MAXn_result_idx;
 }
 
+paillier_ciphertext_t * protocol::AS_CMP_MAXn(paillier_ciphertext_t** cipher, int cnt)
+{
+	int i, j;
+	int iter;
+	int num = cnt;
+	int k;
+
+	paillier_ciphertext_t* MAX_VALUE = paillier_create_enc_zero();
+	paillier_ciphertext_t* Zero = paillier_create_enc_zero();
+
+	paillier_ciphertext_t** copy_cipher = (paillier_ciphertext_t**)malloc(sizeof(paillier_ciphertext_t*)*num);
+	for( i = 0 ; i < num ; i++){
+		copy_cipher[i] = new paillier_ciphertext_t;
+		mpz_init(copy_cipher[i]->c);
+		copy_cipher[i] = cipher[i];
+	}
+	int e, q;
+	
+
+	double n = log10(num)/log10(2) - (int)(log10(num)/log10(2));
+	
+	
+	if( n > 0 ){
+		n = (int)(log10(num)/log10(2))+1;
+	}else{
+		n = (int)(log10(num)/log10(2));
+	}
+	for (i = 1; i <= n; i++) {
+		for (j = 1; j <= num / 2; j++) {
+			if (i == 1) {
+				e = 2 * j - 2;
+				q = 2 * j - 1;
+
+				copy_cipher[e] = AS_CMP_MAX_VALUE(copy_cipher[e],copy_cipher[q]);
+				copy_cipher[q] = Zero;
+				//printf("%d %d\n",e,q);
+			} else {
+				e = (int)pow(2, i) * (j - 1);
+				q = (int)pow(2, i) * j - (int)pow(2, i - 1);
+
+				copy_cipher[e] = AS_CMP_MAX_VALUE(copy_cipher[e],copy_cipher[q]);
+				copy_cipher[q] = Zero;
+				//printf("%d %d\n",e,q);
+			}
+		}
+		if (num % 2 == 0)
+			num = num / 2;
+		else
+			num = num / 2 + 1;
+	}
+
+	paillier_mul(pubkey, MAX_VALUE, MAX_VALUE, copy_cipher[0]); //E_add
+
+
+	//free
+	
+	free(Zero);
+
+	return MAX_VALUE;
+}
 
 

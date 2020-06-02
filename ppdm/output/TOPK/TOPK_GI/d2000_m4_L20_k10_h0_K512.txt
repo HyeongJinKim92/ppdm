@@ -88,3 +88,41 @@ Result(8) :	489	468	473	395
 Result(9) :	498	492	310	505	
 
 
+time : 2020-06-02-19-26-03
+query : TOPK_GI TREE_LEVEL : 7 THREAD : 0 DATA : 2000 DIMENSION : 4 BITS : 20 k : 10 KEY : 512  QUERY : 10 10 10 10 10 
+total time : 46.248486
+                SMAX            subtract               Query    nodeRetrievalSRO       nodeRetrieval     exnodeRetrieval              exSMAX             excheck                  CS         Topk&update
+            0.573350            2.282514            0.024004            3.488985           11.360695           11.355447            1.579095            1.347269            0.888911           11.451497
+            1.239716            4.935328            0.051902            7.543999           24.564470           24.553123            3.414372            2.913109            1.922032           24.760804
+# retrieved node : 4
+Result(0) :	477	427	506	501	
+Result(1) :	435	471	472	510	
+Result(2) :	488	437	490	456	
+Result(3) :	349	506	501	507	
+Result(4) :	449	491	472	431	
+Result(5) :	470	491	491	388	
+Result(6) :	463	457	493	425	
+Result(7) :	446	478	482	420	
+Result(8) :	489	468	473	395	
+Result(9) :	498	492	310	505	
+
+
+time : 2020-06-02-20-04-39
+query : TOPK_GI TREE_LEVEL : 7 THREAD : 0 DATA : 2000 DIMENSION : 4 BITS : 20 k : 10 KEY : 512  QUERY : 10 10 10 10 10 
+total time : 45.277248
+                SMAX            subtract               Query    nodeRetrievalSRO       nodeRetrieval     exnodeRetrieval              exSMAX             excheck                  CS         Topk&update
+            0.525873            2.222159            0.023745            3.391537           11.127612           11.129454            1.558593            1.317766            0.861637           11.247872
+            1.161451            4.907893            0.052442            7.490598           24.576608           24.580676            3.442331            2.910436            1.903023           24.842217
+# retrieved node : 4
+Result(0) :	477	427	506	501	
+Result(1) :	435	471	472	510	
+Result(2) :	488	437	490	456	
+Result(3) :	349	506	501	507	
+Result(4) :	449	491	472	431	
+Result(5) :	470	491	491	388	
+Result(6) :	463	457	493	425	
+Result(7) :	446	478	482	420	
+Result(8) :	489	468	473	395	
+Result(9) :	498	492	310	505	
+
+

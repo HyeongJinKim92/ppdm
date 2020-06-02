@@ -25,3 +25,21 @@ total time : 64.229538
 # retrieved node : 7
 
 
+time : 2020-06-02-19-36-16
+query : KNN_GI TREE_LEVEL : 7 THREAD : 0 DATA : 2000 DIMENSION : 6 BITS : 22 k : 5 KEY : 512  QUERY : 10 10 10 10 10 10 
+total time : 63.809624
+                SMIN            subtract                 kNN    nodeRetrievalSRO             excheck       nodeRetrieval     exnodeRetrieval              exSMIN                SSED
+            0.255292            1.570082           12.434894            4.119638            6.345080           16.651897           16.653668            1.518663            2.082852
+            0.400084            2.460572           19.487490            6.456139            9.943766           26.096216           26.098991            2.379991            3.264166
+# retrieved node : 7
+
+
+time : 2020-06-02-20-28-42
+query : KNN_GI TREE_LEVEL : 7 THREAD : 0 DATA : 2000 DIMENSION : 6 BITS : 22 k : 5 KEY : 512  QUERY : 10 10 10 10 10 10 
+total time : 64.136734
+                SMIN            subtract                 kNN    nodeRetrievalSRO             excheck       nodeRetrieval     exnodeRetrieval              exSMIN                SSED
+            0.287647            1.575502           12.476025            4.129059            6.348993           16.709755           16.708632            1.633710            2.088714
+            0.448491            2.456474           19.452231            6.437901            9.899153           26.053330           26.051580            2.547230            3.256659
+# retrieved node : 7
+
+

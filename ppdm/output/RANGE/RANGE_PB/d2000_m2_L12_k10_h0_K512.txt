@@ -96,3 +96,190 @@ Result(22) :	0	2
 Result(23) :	2	0	
 
 
+time : 2020-06-02-00-15-10
+query : RANGE_PB TREE_LEVEL : 7 THREAD : 4 DATA : 2000 DIMENSION : 2 BITS : 12 k : 10 KEY : 512  QUERY : 0 0 5 5 
+total time : 202.847382
+               SBD_Q       SBD_D + SRO_D
+            0.187793          202.104664
+            0.092578           99.633854
+# retrieved node : 0
+Result(0) :	1	2	
+Result(1) :	1	2	
+Result(2) :	3	0	
+Result(3) :	5	5	
+Result(4) :	0	4	
+Result(5) :	5	0	
+Result(6) :	3	5	
+Result(7) :	2	5	
+Result(8) :	4	2	
+Result(9) :	5	4	
+Result(10) :	5	5	
+Result(11) :	2	0	
+Result(12) :	2	4	
+Result(13) :	1	5	
+Result(14) :	3	1	
+Result(15) :	2	3	
+Result(16) :	4	1	
+Result(17) :	4	2	
+Result(18) :	4	1	
+Result(19) :	3	0	
+Result(20) :	4	5	
+Result(21) :	2	4	
+Result(22) :	3	5	
+Result(23) :	5	1	
+Result(24) :	0	5	
+Result(25) :	4	1	
+Result(26) :	2	1	
+Result(27) :	0	0	
+Result(28) :	4	2	
+Result(29) :	0	5	
+Result(30) :	0	1	
+Result(31) :	1	5	
+Result(32) :	5	1	
+Result(33) :	3	3	
+Result(34) :	4	1	
+Result(35) :	4	2	
+Result(36) :	4	5	
+Result(37) :	5	4	
+Result(38) :	2	4	
+Result(39) :	3	3	
+Result(40) :	3	4	
+Result(41) :	2	4	
+Result(42) :	3	1	
+Result(43) :	1	5	
+Result(44) :	2	1	
+Result(45) :	2	0	
+Result(46) :	3	4	
+Result(47) :	1	0	
+Result(48) :	4	5	
+Result(49) :	5	0	
+Result(50) :	5	1	
+Result(51) :	1	1	
+Result(52) :	4	3	
+Result(53) :	1	2	
+Result(54) :	2	4	
+Result(55) :	3	2	
+Result(56) :	0	5	
+Result(57) :	4	2	
+Result(58) :	0	5	
+Result(59) :	4	5	
+Result(60) :	0	0	
+Result(61) :	3	5	
+Result(62) :	0	1	
+Result(63) :	2	0	
+Result(64) :	5	0	
+Result(65) :	4	2	
+Result(66) :	2	0	
+Result(67) :	2	2	
+Result(68) :	4	5	
+Result(69) :	1	1	
+Result(70) :	3	1	
+Result(71) :	2	3	
+Result(72) :	0	4	
+Result(73) :	4	5	
+Result(74) :	0	4	
+Result(75) :	0	5	
+Result(76) :	2	5	
+Result(77) :	5	3	
+Result(78) :	5	4	
+Result(79) :	4	0	
+Result(80) :	5	3	
+Result(81) :	2	2	
+Result(82) :	0	4	
+Result(83) :	1	5	
+Result(84) :	3	2	
+Result(85) :	2	1	
+Result(86) :	3	1	
+Result(87) :	0	0	
+Result(88) :	4	3	
+Result(89) :	0	4	
+Result(90) :	0	0	
+Result(91) :	2	5	
+Result(92) :	5	4	
+Result(93) :	3	0	
+Result(94) :	0	0	
+Result(95) :	3	0	
+Result(96) :	4	2	
+Result(97) :	0	2	
+Result(98) :	0	4	
+Result(99) :	5	4	
+Result(100) :	5	5	
+Result(101) :	1	5	
+Result(102) :	5	1	
+Result(103) :	0	5	
+Result(104) :	3	3	
+Result(105) :	2	3	
+Result(106) :	1	5	
+Result(107) :	4	2	
+Result(108) :	4	1	
+Result(109) :	0	3	
+Result(110) :	4	0	
+Result(111) :	2	0	
+
+
+time : 2020-06-02-19-19-16
+query : RANGE_PB TREE_LEVEL : 7 THREAD : 4 DATA : 2000 DIMENSION : 2 BITS : 12 k : 10 KEY : 512  QUERY : 0 0 2 2 
+total time : 203.308105
+               SBD_Q       SBD_D + SRO_D
+            0.187966          202.606173
+            0.092454           99.654744
+# retrieved node : 0
+Result(0) :	1	2	
+Result(1) :	1	2	
+Result(2) :	2	0	
+Result(3) :	2	1	
+Result(4) :	0	0	
+Result(5) :	0	1	
+Result(6) :	2	1	
+Result(7) :	2	0	
+Result(8) :	1	0	
+Result(9) :	1	1	
+Result(10) :	1	2	
+Result(11) :	0	0	
+Result(12) :	0	1	
+Result(13) :	2	0	
+Result(14) :	2	0	
+Result(15) :	2	2	
+Result(16) :	1	1	
+Result(17) :	2	2	
+Result(18) :	2	1	
+Result(19) :	0	0	
+Result(20) :	0	0	
+Result(21) :	0	0	
+Result(22) :	0	2	
+Result(23) :	2	0	
+
+
+time : 2020-06-02-19-57-52
+query : RANGE_PB TREE_LEVEL : 7 THREAD : 4 DATA : 2000 DIMENSION : 2 BITS : 12 k : 10 KEY : 512  QUERY : 0 0 2 2 
+total time : 202.284271
+               SBD_Q       SBD_D + SRO_D
+            0.187410          201.587288
+            0.092647           99.655444
+# retrieved node : 0
+Result(0) :	1	2	
+Result(1) :	1	2	
+Result(2) :	2	0	
+Result(3) :	2	1	
+Result(4) :	0	0	
+Result(5) :	0	1	
+Result(6) :	2	1	
+Result(7) :	2	0	
+Result(8) :	1	0	
+Result(9) :	1	1	
+Result(10) :	1	2	
+Result(11) :	0	0	
+Result(12) :	0	1	
+Result(13) :	2	0	
+Result(14) :	2	0	
+Result(15) :	2	2	
+Result(16) :	1	1	
+Result(17) :	2	2	
+Result(18) :	2	1	
+Result(19) :	0	0	
+Result(20) :	0	0	
+Result(21) :	0	0	
+Result(22) :	0	2	
+Result(23) :	2	0	
+
+

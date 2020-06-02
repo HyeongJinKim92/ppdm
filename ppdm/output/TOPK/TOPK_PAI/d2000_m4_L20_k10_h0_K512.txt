@@ -1,0 +1,190 @@
+time : 2020-06-02-13-00-03
+query : TOPK_PAI TREE_LEVEL : 7 THREAD : 4 DATA : 2000 DIMENSION : 4 BITS : 20 k : 10 KEY : 512  QUERY : 10 10 10 10 10 
+total time : 15.647005
+                SMAX            subtract               Query    nodeRetrievalSRO       nodeRetrieval     exnodeRetrieval                  CS              exSMAX         Topk&update             excheck
+            0.430149            0.656528            0.018881            1.228983            2.989776            2.993401            0.233933            1.400479            3.439034            0.358056
+            2.749079            4.195872            0.120668            7.854430           19.107659           19.130825            1.495063            8.950460           21.978865            2.288333
+# retrieved node : 4
+Result(0) :	477	427	506	501	
+Result(1) :	435	471	472	510	
+Result(2) :	488	437	490	456	
+Result(3) :	349	506	501	507	
+Result(4) :	449	491	472	431	
+Result(5) :	470	491	491	388	
+Result(6) :	463	457	493	425	
+Result(7) :	446	478	482	420	
+Result(8) :	489	468	473	395	
+Result(9) :	498	492	310	505	
+
+
+time : 2020-06-02-13-09-06
+query : TOPK_PAI TREE_LEVEL : 7 THREAD : 4 DATA : 2000 DIMENSION : 4 BITS : 20 k : 10 KEY : 512  QUERY : 10 10 10 10 10 
+total time : 15.514729
+                SMAX            subtract               Query    nodeRetrievalSRO       nodeRetrieval     exnodeRetrieval                  CS              exSMAX         Topk&update             excheck
+            0.426680            0.660162            0.018829            1.226910            2.963233            2.961388            0.233010            1.390642            3.395156            0.352849
+            2.750160            4.255065            0.121360            7.908030           19.099484           19.087591            1.501861            8.963364           21.883434            2.274285
+# retrieved node : 4
+Result(0) :	477	427	506	501	
+Result(1) :	435	471	472	510	
+Result(2) :	488	437	490	456	
+Result(3) :	349	506	501	507	
+Result(4) :	449	491	472	431	
+Result(5) :	470	491	491	388	
+Result(6) :	463	457	493	425	
+Result(7) :	446	478	482	420	
+Result(8) :	489	468	473	395	
+Result(9) :	498	492	310	505	
+
+
+time : 2020-06-02-13-10-49
+query : TOPK_PAI TREE_LEVEL : 7 THREAD : 4 DATA : 2000 DIMENSION : 4 BITS : 20 k : 10 KEY : 512  QUERY : 10 10 10 10 10 
+total time : 15.589846
+                SMAX            subtract               Query    nodeRetrievalSRO       nodeRetrieval     exnodeRetrieval                  CS              exSMAX         Topk&update             excheck
+            0.427854            0.651527            0.018885            1.266544            2.972378            2.966105            0.233342            1.394222            3.418440            0.354959
+            2.744437            4.179173            0.121138            8.124161           19.066118           19.025877            1.496759            8.943145           21.927352            2.276860
+# retrieved node : 4
+Result(0) :	477	427	506	501	
+Result(1) :	435	471	472	510	
+Result(2) :	488	437	490	456	
+Result(3) :	349	506	501	507	
+Result(4) :	449	491	472	431	
+Result(5) :	470	491	491	388	
+Result(6) :	463	457	493	425	
+Result(7) :	446	478	482	420	
+Result(8) :	489	468	473	395	
+Result(9) :	498	492	310	505	
+
+
+time : 2020-06-02-13-12-27
+query : TOPK_PAI TREE_LEVEL : 7 THREAD : 4 DATA : 2000 DIMENSION : 4 BITS : 20 k : 10 KEY : 512  QUERY : 10 10 10 10 10 
+total time : 15.656984
+                SMAX            subtract               Query    nodeRetrievalSRO       nodeRetrieval     exnodeRetrieval                  CS              exSMAX         Topk&update             excheck
+            0.427978            0.713952            0.026096            1.229901            2.985296            2.988138            0.233608            1.398264            3.396682            0.357619
+            2.733461            4.559959            0.166673            7.855287           19.066867           19.085014            1.492039            8.930608           21.694354            2.284088
+# retrieved node : 4
+Result(0) :	477	427	506	501	
+Result(1) :	435	471	472	510	
+Result(2) :	488	437	490	456	
+Result(3) :	349	506	501	507	
+Result(4) :	449	491	472	431	
+Result(5) :	470	491	491	388	
+Result(6) :	463	457	493	425	
+Result(7) :	446	478	482	420	
+Result(8) :	489	468	473	395	
+Result(9) :	498	492	310	505	
+
+
+time : 2020-06-02-13-19-14
+query : TOPK_PAI TREE_LEVEL : 7 THREAD : 4 DATA : 2000 DIMENSION : 4 BITS : 20 k : 10 KEY : 512  QUERY : 10 10 10 10 10 
+total time : 14.439000
+                SMAX            subtract               Query    nodeRetrievalSRO       nodeRetrieval     exnodeRetrieval                  CS              exSMAX         Topk&update             excheck
+            0.175497            0.647074            0.018803            1.228121            2.973635            2.966778            0.233529            0.547021            3.404708            0.358064
+            1.215439            4.481431            0.130222            8.505583           20.594467           20.546976            1.617346            3.788499           23.579942            2.479842
+# retrieved node : 4
+Result(0) :	477	427	506	501	
+Result(1) :	435	471	472	510	
+Result(2) :	488	437	490	456	
+Result(3) :	349	506	501	507	
+Result(4) :	449	491	472	431	
+Result(5) :	470	491	491	388	
+Result(6) :	463	457	493	425	
+Result(7) :	446	478	482	420	
+Result(8) :	489	468	473	395	
+Result(9) :	498	492	310	505	
+
+
+time : 2020-06-02-13-20-26
+query : TOPK_PAI TREE_LEVEL : 7 THREAD : 4 DATA : 2000 DIMENSION : 4 BITS : 20 k : 10 KEY : 512  QUERY : 10 10 10 10 10 
+total time : 14.566604
+                SMAX            subtract               Query    nodeRetrievalSRO       nodeRetrieval     exnodeRetrieval                  CS              exSMAX         Topk&update             excheck
+            0.166680            0.635475            0.018813            1.291244            2.975962            3.019258            0.236011            0.539230            3.437187            0.357238
+            1.144259            4.362545            0.129152            8.864414           20.430036           20.727262            1.620220            3.701825           23.596351            2.452445
+# retrieved node : 4
+Result(0) :	1727455827	1727455827	1727455827	1727455827	
+Result(1) :	1727455827	1727455827	1727455827	1727455827	
+Result(2) :	1727455827	1727455827	1727455827	1727455827	
+Result(3) :	477	427	506	501	
+Result(4) :	435	471	472	510	
+Result(5) :	488	437	490	456	
+Result(6) :	349	506	501	507	
+Result(7) :	449	491	472	431	
+Result(8) :	470	491	491	388	
+Result(9) :	463	457	493	425	
+
+
+time : 2020-06-02-13-21-24
+query : TOPK_PAI TREE_LEVEL : 7 THREAD : 4 DATA : 2000 DIMENSION : 4 BITS : 20 k : 10 KEY : 512  QUERY : 10 10 10 10 10 
+total time : 14.413626
+                SMAX            subtract               Query    nodeRetrievalSRO       nodeRetrieval     exnodeRetrieval                  CS              exSMAX         Topk&update             excheck
+            0.178784            0.634975            0.018845            1.227540            2.966933            2.967344            0.232359            0.549298            3.396719            0.356897
+            1.240383            4.405378            0.130744            8.516526           20.584227           20.587076            1.612081            3.810964           23.566030            2.476111
+# retrieved node : 4
+Result(0) :	477	427	506	501	
+Result(1) :	435	471	472	510	
+Result(2) :	488	437	490	456	
+Result(3) :	349	506	501	507	
+Result(4) :	449	491	472	431	
+Result(5) :	470	491	491	388	
+Result(6) :	463	457	493	425	
+Result(7) :	446	478	482	420	
+Result(8) :	489	468	473	395	
+Result(9) :	498	492	310	505	
+
+
+time : 2020-06-02-13-22-44
+query : TOPK_PAI TREE_LEVEL : 7 THREAD : 4 DATA : 2000 DIMENSION : 4 BITS : 20 k : 10 KEY : 512  QUERY : 10 10 10 10 10 
+total time : 14.526136
+                SMAX            subtract               Query    nodeRetrievalSRO       nodeRetrieval     exnodeRetrieval                  CS              exSMAX         Topk&update             excheck
+            0.176030            0.662941            0.018911            1.229637            2.994531            2.991169            0.235992            0.554546            3.406802            0.357263
+            1.211812            4.563778            0.130185            8.464998           20.614780           20.591636            1.624601            3.817572           23.452915            2.459450
+# retrieved node : 4
+Result(0) :	477	427	506	501	
+Result(1) :	435	471	472	510	
+Result(2) :	488	437	490	456	
+Result(3) :	349	506	501	507	
+Result(4) :	449	491	472	431	
+Result(5) :	470	491	491	388	
+Result(6) :	463	457	493	425	
+Result(7) :	446	478	482	420	
+Result(8) :	489	468	473	395	
+Result(9) :	498	492	310	505	
+
+
+time : 2020-06-02-19-34-46
+query : TOPK_PAI TREE_LEVEL : 7 THREAD : 4 DATA : 2000 DIMENSION : 4 BITS : 20 k : 10 KEY : 512  QUERY : 10 10 10 10 10 
+total time : 14.440723
+                SMAX            subtract               Query    nodeRetrievalSRO       nodeRetrieval     exnodeRetrieval                  CS              exSMAX         Topk&update             excheck
+            0.181116            0.635737            0.010672            1.222803            2.974448            2.976427            0.233705            0.550004            3.411000            0.355018
+            1.254202            4.402393            0.073901            8.467740           20.597639           20.611341            1.618373            3.808700           23.620703            2.458450
+# retrieved node : 4
+Result(0) :	477	427	506	501	
+Result(1) :	435	471	472	510	
+Result(2) :	488	437	490	456	
+Result(3) :	349	506	501	507	
+Result(4) :	449	491	472	431	
+Result(5) :	470	491	491	388	
+Result(6) :	463	457	493	425	
+Result(7) :	446	478	482	420	
+Result(8) :	489	468	473	395	
+Result(9) :	498	492	310	505	
+
+
+time : 2020-06-02-20-19-40
+query : TOPK_PAI TREE_LEVEL : 7 THREAD : 4 DATA : 2000 DIMENSION : 4 BITS : 20 k : 10 KEY : 512  QUERY : 10 10 10 10 10 
+total time : 14.400857
+                SMAX            subtract               Query    nodeRetrievalSRO       nodeRetrieval     exnodeRetrieval                  CS              exSMAX         Topk&update             excheck
+            0.174847            0.639597            0.010610            1.246393            2.959537            2.956757            0.236071            0.543196            3.399886            0.355760
+            1.214145            4.441385            0.073676            8.654989           20.551117           20.531815            1.639286            3.771969           23.608914            2.470412
+# retrieved node : 4
+Result(0) :	477	427	506	501	
+Result(1) :	435	471	472	510	
+Result(2) :	488	437	490	456	
+Result(3) :	349	506	501	507	
+Result(4) :	449	491	472	431	
+Result(5) :	470	491	491	388	
+Result(6) :	463	457	493	425	
+Result(7) :	446	478	482	420	
+Result(8) :	489	468	473	395	
+Result(9) :	498	492	310	505	
+
+

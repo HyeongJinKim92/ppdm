@@ -25,3 +25,21 @@ total time : 433.186737
 # retrieved node : 0
 
 
+time : 2020-06-02-19-50-18
+query : CLASSIFICATION_PB TREE_LEVEL : 5 THREAD : 4 DATA : 1728 DIMENSION : 6 BITS : 22 k : 5 KEY : 512  QUERY : 0 0 0 0 0 0 
+total time : 431.886749
+            SSED&SBD                SMIN            Bi to De            subtract                 kNN              update            classify
+           43.536482          195.995881           89.100470            3.135312           21.805389           68.814951            0.133327
+           10.080532           45.381314           20.630517            0.725957            5.048867           15.933564            0.030871
+# retrieved node : 0
+
+
+time : 2020-06-02-20-52-18
+query : CLASSIFICATION_PB TREE_LEVEL : 5 THREAD : 4 DATA : 1728 DIMENSION : 6 BITS : 22 k : 5 KEY : 512  QUERY : 0 0 0 0 0 0 
+total time : 432.373230
+            SSED&SBD                SMIN            Bi to De            subtract                 kNN              update            classify
+           43.535108          196.349136           89.086180            3.145290           21.845700           68.901810            0.133362
+           10.068872           45.411955           20.604000            0.727448            5.052510           15.935725            0.030844
+# retrieved node : 0
+
+

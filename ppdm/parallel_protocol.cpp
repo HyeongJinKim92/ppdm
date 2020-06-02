@@ -58,11 +58,6 @@ void Smax_n_InThread(int index, std::vector<int> inputIdx, paillier_ciphertext_t
 	delete[] cipher_SBD_distance;
 }
 
-void Smax_basic1_InThread(int index, std::vector<int> inputIdx, paillier_ciphertext_t** cipher1, paillier_ciphertext_t** cipher2, bool func, paillier_ciphertext_t* cipher_Rand_value, paillier_plaintext_t* Rand_value, paillier_ciphertext_t** cipher_W, paillier_ciphertext_t** cipher_R, paillier_ciphertext_t** cipher_H, paillier_ciphertext_t** cipher_L,	paillier_ciphertext_t** cipher_M, paillier_ciphertext_t** cipher_lambda, paillier_ciphertext_t** cipher_min, paillier_ciphertext_t** cipher_O, paillier_ciphertext_t** cipher_G, paillier_ciphertext_t** temp, paillier_ciphertext_t** temp2, paillier_ciphertext_t** temp3, protocol proto)
-{
-	
-}
-
 
 void recalculate_dist_inThread(std::vector<int>input, paillier_ciphertext_t*** cipher_SBD_distance, paillier_ciphertext_t** cipher_distance, protocol proto)
 {
@@ -197,6 +192,19 @@ void GSRO_MultithreadforTopk(paillier_ciphertext_t **qLL, paillier_ciphertext_t 
 	}
 }
 
+void AS_CMP_SRO_MultithreadforTopk(paillier_ciphertext_t **qLL, paillier_ciphertext_t **qRR, std::vector<int> input, boundary *node, paillier_ciphertext_t **alpha, protocol proto, bool verify)
+{
+	for(int i = 0; i < input.size(); i++)
+	{
+		int num = input[i];
+		alpha[num] = proto.AS_CMP_SRO(qLL, qRR, node[num].LL, node[num].RR);
+		for( int j = 0 ; j < proto.dim ; j++ )
+		{
+			node[num].LL[j] = proto.SM_p1(node[num].LL[j], proto.SBN(alpha[num]));
+			node[num].RR[j] = proto.SM_p1(node[num].RR[j], proto.SBN(alpha[num]));
+		}
+	}
+}
 
 
 void GSRO_Multithread(paillier_ciphertext_t **qLL, paillier_ciphertext_t **qRR, std::vector<int> input, boundary *node, paillier_ciphertext_t **alpha, protocol proto, int idx)
@@ -206,11 +214,6 @@ void GSRO_Multithread(paillier_ciphertext_t **qLL, paillier_ciphertext_t **qRR, 
 	{
 		int num = input[i];
 		alpha[num] = proto.GSRO_inThread(qLL, qRR, node[num].LL, node[num].RR, 0);
-		/*
-		mtx.lock();
-		gmp_printf("%d : %Zd \n", num, paillier_dec(0, proto.pubkey, proto.prvkey, alpha[num]));
-		mtx.unlock();
-		*/
 	}
 }
 
@@ -318,7 +321,6 @@ void MAXnInThread3_1(int index, int s, std::vector<int> inputCnt, paillier_ciphe
 	for(int i = 0; i < inputCnt.size(); i++)
 	{
 		int c = inputCnt[i];
-		//std::cout << c << std::endl;
 		paillier_subtract(proto.pubkey, TMP_alpha, proto.cipher_one, V[c]);
 		paillier_mul(proto.pubkey, SCORE[c], proto.SM_p1(V[c], MIN), proto.SM_p1(TMP_alpha, SCORE[c]));
 	}
@@ -367,7 +369,6 @@ void SMSnInThread3_1(int index, int s, std::vector<int> inputCnt, paillier_ciphe
 	for(int i = 0; i < inputCnt.size(); i++)
 	{
 		int c = inputCnt[i];
-		//std::cout << c << std::endl;
 		paillier_subtract(proto.pubkey, TMP_alpha, proto.cipher_one, V[c]);
 		paillier_mul(proto.pubkey, DIST[c], proto.SM_p1(V[c], MAX, index), proto.SM_p1(TMP_alpha, DIST[c], index));
 	}
@@ -422,7 +423,6 @@ void sNodeRetrievalforClassificationinThread(std::vector<int> inputJ, std::vecto
 						paillier_mul(proto.pubkey, cand[inputCnt[i]][k], cand[inputCnt[i]][k], tmp[k]);
 					}
 				}
-
 				if(node[nodeId].NumData == j + 1)
 					remained--;
 			}
@@ -511,8 +511,7 @@ void NodeExpansion_Multithread(paillier_ciphertext_t **q, paillier_ciphertext_t 
 	delete[] cihper_nodedist;
 }
 
-void SSED_SBD_inThread(int index, std::vector<int> inputIdx, paillier_ciphertext_t **query, paillier_ciphertext_t ***data,
-	int dim, paillier_ciphertext_t **cipher_distance, paillier_ciphertext_t ***cipher_SBD_distance, protocol proto)
+void SSED_SBD_inThread(int index, std::vector<int> inputIdx, paillier_ciphertext_t **query, paillier_ciphertext_t ***data, int dim, paillier_ciphertext_t **cipher_distance, paillier_ciphertext_t ***cipher_SBD_distance, protocol proto)
 {
 	int len = inputIdx.size();
 	
@@ -522,8 +521,7 @@ void SSED_SBD_inThread(int index, std::vector<int> inputIdx, paillier_ciphertext
 		cipher_SBD_distance[inputIdx[i]] = proto.SBD(cipher_distance[inputIdx[i]]);
 	}
 }
-void SSED_inThread(std::vector<int> inputIdx, paillier_ciphertext_t **query, paillier_ciphertext_t ***data, paillier_ciphertext_t **cipher_distance,
-	protocol proto)
+void SSED_inThread(std::vector<int> inputIdx, paillier_ciphertext_t **query, paillier_ciphertext_t ***data, paillier_ciphertext_t **cipher_distance, protocol proto)
 {
 	int len = inputIdx.size();
 	
@@ -533,8 +531,7 @@ void SSED_inThread(std::vector<int> inputIdx, paillier_ciphertext_t **query, pai
 	}
 }
 
-void SBD_inThread(int index, std::vector<int> inputIdx, paillier_ciphertext_t **query, paillier_ciphertext_t ***data, paillier_ciphertext_t **cipher_distance,
-	paillier_ciphertext_t ***cipher_SBD_distance, protocol proto)
+void SBD_inThread(int index, std::vector<int> inputIdx, paillier_ciphertext_t **query, paillier_ciphertext_t ***data, paillier_ciphertext_t **cipher_distance, paillier_ciphertext_t ***cipher_SBD_distance, protocol proto)
 {
 	int len = inputIdx.size();
 	
@@ -554,8 +551,7 @@ void Smin_n_InThread(int index, std::vector<int> inputIdx, paillier_ciphertext_t
 	delete[] cipher_SBD_distance;
 }
 
-void caldistanceInThread(int index, std::vector<int> inputIdx, paillier_ciphertext_t ***cipher_SBD_distance, paillier_ciphertext_t **cipher_distance,
-	protocol proto)
+void caldistanceInThread(int index, std::vector<int> inputIdx, paillier_ciphertext_t ***cipher_SBD_distance, paillier_ciphertext_t **cipher_distance, protocol proto)
 {
 	paillier_ciphertext_t *cipher_dist	= paillier_create_enc_zero();
 	int len = inputIdx.size();
@@ -588,8 +584,7 @@ void ExtractKNNInCLASSIFICATION_PB_inThread(std::vector<int>input, paillier_ciph
 	}
 }
 
-void classipmInThread1(int index, std::vector<int> inputIdx, paillier_ciphertext_t **cipher_distance, paillier_ciphertext_t *cipher_min,
-	paillier_ciphertext_t *cipher_rand, paillier_ciphertext_t **cipher_mid, protocol proto)
+void classipmInThread1(int index, std::vector<int> inputIdx, paillier_ciphertext_t **cipher_distance, paillier_ciphertext_t *cipher_min, paillier_ciphertext_t *cipher_rand, paillier_ciphertext_t **cipher_mid, protocol proto)
 {
 	paillier_ciphertext_t *temp_dist = paillier_create_enc_zero();
 	int len = inputIdx.size();
@@ -626,6 +621,167 @@ void SBOR_inThread(int index, std::vector<int> inputIdx, paillier_ciphertext_t *
 		}
 	}
 }
+//AS_CMP SRO in multithread
+void AS_CMP_SRO_Multithread(paillier_ciphertext_t **qLL, paillier_ciphertext_t **qRR, std::vector<int> input, boundary *node, paillier_ciphertext_t **alpha, protocol proto, int idx)
+{
+	//cout << "GSRO_Multithread" << endl;
+	for(int i = 0; i < input.size(); i++)
+	{
+		int num = input[i];
+		alpha[num] = proto.AS_CMP_SRO(qLL, qRR, node[num].LL, node[num].RR);
+	}
+}
+//AS_CMP nodeRetrieval in multithread
+void AS_CMP_NodeRetrievalinThread(std::vector<int> inputJ, std::vector<int *> inputNodeGroup, int &remained,	std::vector<int> inputCnt, boundary *node, paillier_ciphertext_t ***data, paillier_ciphertext_t **alpha, paillier_ciphertext_t ***cand, protocol proto, int idx)
+{
+	//cout << "sNodeRetrievalforDatainThread" << endl;
+
+	int end_dim = proto.dim;
+	paillier_ciphertext_t * TMP_VALUE = new paillier_ciphertext_t;
+	TMP_VALUE = proto.cipher_MAX;
+
+	if (proto.query == RANGE){}
+	else if (proto.query == TOPK){TMP_VALUE = proto.cipher_zero;}
+	else if (proto.query == KNN){}
+	else if(proto.query == CLASSIFICATION){end_dim = proto.dim+1;}
+
+	paillier_ciphertext_t **tmp = new paillier_ciphertext_t *[end_dim];
+	for(int i = 0; i < inputJ.size(); i++)
+	{
+		if(remained == 0)
+			break;
+
+		for(int j = 1; j <= inputNodeGroup[i][0]; j++)
+		{
+			int nodeId = inputNodeGroup[i][j];
+			if(node[nodeId].NumData >= inputJ[i] + 1)
+			{
+				int dataId = node[nodeId].indata_id[inputJ[i]];
+				for(int k = 0; k < end_dim ; k++)
+				{
+					if(j == 1)
+					{
+						cand[inputCnt[i]][k] = proto.SM_p1(data[dataId][k], alpha[nodeId], idx);
+					}
+					else
+					{
+						tmp[k] = (paillier_ciphertext_t*) malloc(sizeof(paillier_ciphertext_t));
+						mpz_init(tmp[k]->c);
+						tmp[k] = proto.SM_p1(data[dataId][k], alpha[nodeId], idx);
+						paillier_mul(proto.pubkey, cand[inputCnt[i]][k], cand[inputCnt[i]][k], tmp[k]);
+					}
+				}
+				if(node[nodeId].NumData == j + 1)
+					remained--;
+			}
+			else
+			{
+				for(int k = 0; k < end_dim ; k++)
+				{
+					if(j == 1)
+					{
+						cand[inputCnt[i]][k] = proto.SM_p1(TMP_VALUE, alpha[nodeId], idx);
+					}
+					else
+					{
+						tmp[k] = (paillier_ciphertext_t*) malloc(sizeof(paillier_ciphertext_t));
+						mpz_init(tmp[k]->c);
+						tmp[k] = proto.SM_p1(TMP_VALUE, alpha[nodeId], idx);
+						paillier_mul(proto.pubkey, cand[inputCnt[i]][k], cand[inputCnt[i]][k], tmp[k]);
+					}
+					
+				}
+			}
+		}
+	}
+	delete[] tmp;
+}
+//AS_CMP_SRO in multithread
+void AS_CMP_SRO_dataquery_Multithread(paillier_ciphertext_t *** cand, boundary q, std::vector<int> input, paillier_ciphertext_t **alpha, protocol proto, int idx, paillier_ciphertext_t * cipher_rand)
+{
+	for(int i = 0; i < input.size(); i++)
+	{
+		int num = input[i];
+		alpha[num] = proto.AS_CMP_SRO(cand[num], cand[num], q.LL, q.RR);
+		for( int j = 0 ; j < proto.dim ; j++ ){
+			paillier_mul( proto.pubkey, cand[num][j], cand[num][j], cipher_rand);
+		}
+	}
+}
+
+void AS_CMP_NodeExpansion_Multithread(paillier_ciphertext_t **q, paillier_ciphertext_t *K_DIST, std::vector<int> input, boundary *node, paillier_ciphertext_t **alpha, protocol proto, int idx)
+{
+	
+	//std::cout << "idx = " << idx << std::endl;
+	paillier_ciphertext_t **psi = new paillier_ciphertext_t *[3];
+	paillier_ciphertext_t *cipher_Max = paillier_create_enc(1048575);	
+	paillier_ciphertext_t *temp_coord1;
+	paillier_ciphertext_t *temp_coord2;
+	paillier_ciphertext_t *temp_coord3;
+	paillier_ciphertext_t *temp_alpha = new paillier_ciphertext_t;
+	mpz_init(temp_alpha->c);
+
+	paillier_ciphertext_t **shortestPoint = new paillier_ciphertext_t *[proto.dim];
+	for(int i = 0; i < proto.dim; i++)
+	{
+		shortestPoint[i] = new paillier_ciphertext_t;
+		mpz_init(shortestPoint[i]->c);
+	}
+
+	paillier_ciphertext_t *temp_nodedist = new paillier_ciphertext_t;
+	mpz_init(temp_nodedist->c);
+
+	paillier_ciphertext_t **cihper_nodedist = new paillier_ciphertext_t*[input.size()];
+	for(int i = 0; i < input.size(); i++)
+	{
+		cihper_nodedist[i] = new paillier_ciphertext_t;
+		mpz_init(cihper_nodedist[i]->c);
+	}
+
+	for(int i = 0; i < input.size(); i++)
+	{
+		int num = input[i];
+		for(int j = 0; j < proto.dim; j++)
+		{
+			psi[0] = proto.AS_CMP_MIN_BOOL(q[j], node[num].LL[j]);
+			psi[1] = proto.AS_CMP_MIN_BOOL(q[j], node[num].RR[j]);
+			psi[2] = proto.SBXOR(psi[0], psi[1], idx);
+			temp_coord1 = proto.SM_p1(psi[2], q[j], idx);
+			temp_coord2 = proto.SM_p1(psi[0], node[num].LL[j], idx);
+			temp_coord3 = proto.SM_p1(proto.SBN(psi[0]), node[num].RR[j], idx);
+			paillier_mul(proto.pubkey, temp_coord3, temp_coord2, temp_coord3);
+			temp_coord3 = proto.SM_p1(proto.SBN(psi[2]), temp_coord3, idx);
+			paillier_mul(proto.pubkey, shortestPoint[j], temp_coord1, temp_coord3);
+		}
+		temp_nodedist = proto.SSEDm(q, shortestPoint, proto.dim);
+		paillier_subtract(proto.pubkey, temp_alpha, proto.cipher_one, alpha[num]);
+		paillier_mul(proto.pubkey, cihper_nodedist[i], proto.SM_p1(alpha[num], cipher_Max, idx), proto.SM_p1(temp_alpha, temp_nodedist, idx));
+		alpha[num] = proto.AS_CMP_MIN_BOOL(cihper_nodedist[i], K_DIST);
+	}
+	delete[] psi;
+
+	delete cipher_Max;
+	delete temp_coord1;
+	delete temp_coord2;
+	delete temp_coord3;
+
+	delete temp_alpha;
+	delete[] shortestPoint;
+	delete temp_nodedist;
+	delete[] cihper_nodedist;
+}
+
+void AS_CMP_MIN_VALUE_inThread(std::vector<int> inputIdx, int idx, paillier_ciphertext_t ** cipher, paillier_ciphertext_t ** min, protocol proto)
+{
+	paillier_ciphertext_t ** copy_cipher = new paillier_ciphertext_t*[inputIdx.size()];
+	for(int i = 0; i < inputIdx.size(); i++)
+	{
+		copy_cipher[i] = cipher[inputIdx[i]];
+	}
+	min[idx] = proto.AS_CMP_MINn(copy_cipher, inputIdx.size());
+	gmp_printf("thread_min ::   %10Zd \n", paillier_dec(0, proto.pubkey, proto.prvkey, min[idx]));
+}
+
 
 //COMPUTE NEW CLUSTERSUM for KMEANS_CLUSTERING_PB in thread
 
@@ -666,9 +822,6 @@ void ComputeNEWCLUSTER_forKMEANS_PBinThread(std::vector<int> input, paillier_cip
 	delete [] idx_arr;
 	delete [] tmp_data;
 }
-
-
-
 
 
 void Comp_Cluster_inThread(paillier_ciphertext_t*** cipher, paillier_ciphertext_t*** former_Center, std::vector<int> inputIdx, paillier_ciphertext_t*** NewSumCluster, paillier_ciphertext_t** NewSumCntCluster, protocol proto, int i)

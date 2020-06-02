@@ -52,3 +52,30 @@ total time : 21.018339
 # retrieved node : 7
 
 
+time : 2020-06-02-15-37-18
+query : KNN_PGI TREE_LEVEL : 7 THREAD : 4 DATA : 2000 DIMENSION : 6 BITS : 22 k : 5 KEY : 512  QUERY : 10 10 10 10 10 10 
+total time : 20.742182
+                SMIN            subtract    nodeRetrievalSRO             excheck       nodeRetrieval     exnodeRetrieval                SSED          kNN&update
+            1.849434            0.475335            1.909883            1.746265            4.630165            4.619991            0.565527            3.693138
+            8.916293            2.291633            9.207722            8.418909           22.322460           22.273408            2.726459           17.804966
+# retrieved node : 7
+
+
+time : 2020-06-02-19-40-28
+query : KNN_PGI TREE_LEVEL : 7 THREAD : 4 DATA : 2000 DIMENSION : 6 BITS : 22 k : 5 KEY : 512  QUERY : 10 10 10 10 10 10 
+total time : 20.560078
+                SMIN            subtract    nodeRetrievalSRO             excheck       nodeRetrieval     exnodeRetrieval                SSED          kNN&update
+            1.820124            0.463455            1.880802            1.720799            4.602607            4.603105            0.564178            3.663053
+            8.852711            2.254151            9.147837            8.369614           22.386138           22.388559            2.744046           17.816338
+# retrieved node : 7
+
+
+time : 2020-06-02-20-37-28
+query : KNN_PGI TREE_LEVEL : 7 THREAD : 4 DATA : 2000 DIMENSION : 6 BITS : 22 k : 5 KEY : 512  QUERY : 10 10 10 10 10 10 
+total time : 20.446085
+                SMIN            subtract    nodeRetrievalSRO             excheck       nodeRetrieval     exnodeRetrieval                SSED          kNN&update
+            1.845108            0.456039            1.859336            1.716927            4.567541            4.565669            0.559160            3.643797
+            9.024261            2.230448            9.093847            8.397339           22.339441           22.330284            2.734802           17.821488
+# retrieved node : 7
+
+

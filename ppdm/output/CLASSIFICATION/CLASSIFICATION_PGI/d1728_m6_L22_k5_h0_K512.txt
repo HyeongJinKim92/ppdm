@@ -16,3 +16,30 @@ total time : 36.646099
 # retrieved node : 7
 
 
+time : 2020-06-02-15-46-00
+query : CLASSIFICATION_PGI TREE_LEVEL : 5 THREAD : 4 DATA : 1728 DIMENSION : 6 BITS : 22 k : 5 KEY : 512  QUERY : 0 0 0 0 0 0 
+total time : 36.589024
+                SMIN            subtract                 kNN            classify    nodeRetrievalSRO             excheck       nodeRetrieval     exnodeRetrieval                SSED
+            6.073955            1.426354           12.932413            0.133017            0.502475            0.433484            4.643466            4.535072            1.844492
+           16.600484            3.898311           35.345063            0.363545            1.373295            1.184737           12.690871           12.394624            5.041108
+# retrieved node : 7
+
+
+time : 2020-06-02-19-51-04
+query : CLASSIFICATION_PGI TREE_LEVEL : 5 THREAD : 4 DATA : 1728 DIMENSION : 6 BITS : 22 k : 5 KEY : 512  QUERY : 0 0 0 0 0 0 
+total time : 36.523102
+                SMIN            subtract                 kNN            classify    nodeRetrievalSRO             excheck       nodeRetrieval     exnodeRetrieval                SSED
+            5.925158            1.446687           12.967931            0.131116            0.493621            0.437688            4.651375            4.556761            1.845246
+           16.223041            3.961020           35.506105            0.358996            1.351532            1.198386           12.735433           12.476379            5.052271
+# retrieved node : 7
+
+
+time : 2020-06-02-20-53-05
+query : CLASSIFICATION_PGI TREE_LEVEL : 5 THREAD : 4 DATA : 1728 DIMENSION : 6 BITS : 22 k : 5 KEY : 512  QUERY : 0 0 0 0 0 0 
+total time : 36.557026
+                SMIN            subtract                 kNN            classify    nodeRetrievalSRO             excheck       nodeRetrieval     exnodeRetrieval                SSED
+            5.853363            1.445003           13.030146            0.131376            0.493746            0.443135            4.662453            4.561151            1.853365
+           16.011594            3.952736           35.643342            0.359372            1.350620            1.212173           12.753917           12.476811            5.069792
+# retrieved node : 7
+
+

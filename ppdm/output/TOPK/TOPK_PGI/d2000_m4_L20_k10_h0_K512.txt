@@ -88,3 +88,79 @@ Result(8) :	489	468	473	395
 Result(9) :	498	492	310	505	
 
 
+time : 2020-06-02-13-12-04
+query : TOPK_PGI TREE_LEVEL : 7 THREAD : 4 DATA : 2000 DIMENSION : 4 BITS : 20 k : 10 KEY : 512  QUERY : 10 10 10 10 10 
+total time : 15.976321
+                SMAX            subtract               Query    nodeRetrievalSRO       nodeRetrieval     exnodeRetrieval                  CS              exSMAX         Topk&update             excheck
+            0.609815            0.679666            0.018951            1.276479            2.965972            2.958324            0.233028            1.587978            3.403372            0.354375
+            3.816990            4.254211            0.118617            7.989820           18.564798           18.516931            1.458583            9.939572           21.302598            2.218125
+# retrieved node : 4
+Result(0) :	477	427	506	501	
+Result(1) :	435	471	472	510	
+Result(2) :	488	437	490	456	
+Result(3) :	349	506	501	507	
+Result(4) :	449	491	472	431	
+Result(5) :	470	491	491	388	
+Result(6) :	463	457	493	425	
+Result(7) :	446	478	482	420	
+Result(8) :	489	468	473	395	
+Result(9) :	498	492	310	505	
+
+
+time : 2020-06-02-13-22-22
+query : TOPK_PGI TREE_LEVEL : 7 THREAD : 4 DATA : 2000 DIMENSION : 4 BITS : 20 k : 10 KEY : 512  QUERY : 10 10 10 10 10 
+total time : 15.891153
+                SMAX            subtract               Query    nodeRetrievalSRO       nodeRetrieval     exnodeRetrieval                  CS              exSMAX         Topk&update             excheck
+            0.569494            0.660222            0.018767            1.224932            2.958375            2.957449            0.232071            1.631424            3.398474            0.353248
+            3.583718            4.154654            0.118095            7.708264           18.616488           18.610664            1.460378           10.266240           21.385949            2.222921
+# retrieved node : 4
+Result(0) :	477	427	506	501	
+Result(1) :	435	471	472	510	
+Result(2) :	488	437	490	456	
+Result(3) :	349	506	501	507	
+Result(4) :	449	491	472	431	
+Result(5) :	470	491	491	388	
+Result(6) :	463	457	493	425	
+Result(7) :	446	478	482	420	
+Result(8) :	489	468	473	395	
+Result(9) :	498	492	310	505	
+
+
+time : 2020-06-02-19-34-25
+query : TOPK_PGI TREE_LEVEL : 7 THREAD : 4 DATA : 2000 DIMENSION : 4 BITS : 20 k : 10 KEY : 512  QUERY : 10 10 10 10 10 
+total time : 16.054749
+                SMAX            subtract               Query    nodeRetrievalSRO       nodeRetrieval     exnodeRetrieval                  CS              exSMAX         Topk&update             excheck
+            0.619907            0.692574            0.018948            1.261894            2.986905            2.987163            0.235219            1.571586            3.420854            0.357602
+            3.861207            4.313825            0.118022            7.859941           18.604494           18.606100            1.465108            9.788914           21.307431            2.227394
+# retrieved node : 4
+Result(0) :	477	427	506	501	
+Result(1) :	435	471	472	510	
+Result(2) :	488	437	490	456	
+Result(3) :	349	506	501	507	
+Result(4) :	449	491	472	431	
+Result(5) :	470	491	491	388	
+Result(6) :	463	457	493	425	
+Result(7) :	446	478	482	420	
+Result(8) :	489	468	473	395	
+Result(9) :	498	492	310	505	
+
+
+time : 2020-06-02-20-19-19
+query : TOPK_PGI TREE_LEVEL : 7 THREAD : 4 DATA : 2000 DIMENSION : 4 BITS : 20 k : 10 KEY : 512  QUERY : 10 10 10 10 10 
+total time : 15.865004
+                SMAX            subtract               Query    nodeRetrievalSRO       nodeRetrieval     exnodeRetrieval                  CS              exSMAX         Topk&update             excheck
+            0.527909            0.661943            0.018818            1.223294            2.967397            2.964342            0.232408            1.630668            3.398376            0.355647
+            3.327509            4.172347            0.118616            7.710645           18.704040           18.684785            1.464907           10.278396           21.420579            2.241705
+# retrieved node : 4
+Result(0) :	477	427	506	501	
+Result(1) :	435	471	472	510	
+Result(2) :	488	437	490	456	
+Result(3) :	349	506	501	507	
+Result(4) :	449	491	472	431	
+Result(5) :	470	491	491	388	
+Result(6) :	463	457	493	425	
+Result(7) :	446	478	482	420	
+Result(8) :	489	468	473	395	
+Result(9) :	498	492	310	505	
+
+

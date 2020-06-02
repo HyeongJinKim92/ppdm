@@ -95,7 +95,6 @@ int** protocol::sRange_PB(paillier_ciphertext_t*** data, boundary q, boundary* n
 		{
 			result[(*result_num)]=data[i]; //result¿¡ »ðÀÔ
 			(*result_num)++;
-			printf("\n");
 		}	
 	}
 
@@ -109,8 +108,6 @@ int** protocol::sRange_PB(paillier_ciphertext_t*** data, boundary q, boundary* n
 	}
 	return FsRange_Bob(result, rand, (*result_num), dim);
 }
-
-
 
 // PARALLEL + GARBLED + INDEX (RANGE)
 int** protocol::sRange_PGI(paillier_ciphertext_t*** data, boundary q, boundary* node, int NumData, int NumNode, int* result_num)
@@ -149,25 +146,28 @@ int** protocol::sRange_PGI(paillier_ciphertext_t*** data, boundary q, boundary* 
 	time_variable["SRO_D"] = time_variable.find("SRO_D")->second + duration_sec.count();
 	
 	
-	cout<<"sRangeG NumNodeGroup : " << NumNodeGroup<<endl;
-	cout<<"sRangeG cnt : "<<cnt<<endl;
+	cout<<"sRange_PGI NumNodeGroup : " << NumNodeGroup<<endl;
+	cout<<"sRange_PGI cnt : "<<cnt<<endl;
 	paillier_ciphertext_t*** result;
 	result = sRange_result(alpha, cand, cnt, NumNodeGroup, result_num);
 	
-	cout<<"sRange_result end"<<endl;
+	cout<<"sRange_PGI end"<<endl;
 
 	return FsRange_Bob(result, rand, (*result_num), dim);
 }
 
 
 // PARALLEL + AS_CMP + INDEX (RANGE)
-int** protocol::sRange_PAI(paillier_ciphertext_t*** data, boundary q, boundary* node, int NumData, int NumNode, int* result_num)
+int** protocol::sRange_PAI(paillier_ciphertext_t*** data, boundary query, boundary* node, int NumData, int NumNode, int* result_num)
 {
-
 	printf("\n===== Now sRange_PAI starts =====\n");
 	int i=0, j=0, m=0;
 	int rand = 5;
-
+	if( thread_num < 1 ) 
+	{
+		cout << "THREAD NUM IS ERROR" << endl;
+		exit(1);
+	}
 	int NumNodeGroup = 0;
 
 	paillier_ciphertext_t* cipher_rand = paillier_create_enc(rand);
@@ -178,23 +178,33 @@ int** protocol::sRange_PAI(paillier_ciphertext_t*** data, boundary q, boundary* 
 
 	paillier_ciphertext_t*** cand ;
 
-	cand = Parallel_GSRO_sNodeRetrievalforRange(data, q.LL, q.RR, node, NumData, NumNode, &cnt, &NumNodeGroup, 1);
+
+	cand = PARALLEL_ASCMP_SRO_sNodeRetrieval(data, query.LL, query.RR, node, NumData, NumNode, &cnt, &NumNodeGroup, 1);
 	totalNumOfRetrievedNodes += NumNodeGroup;
+
 
 
 	paillier_ciphertext_t** alpha = (paillier_ciphertext_t**)malloc(sizeof(paillier_ciphertext_t*)*cnt);
 
-	Parallel_GSRO_inMultithread(cnt, cand, q, alpha, cipher_rand);
+
+	startTime = std::chrono::system_clock::now(); // startTime check
+	PARALLEL_AS_CMP_SRO_inMultithread(cnt, cand, query, alpha, cipher_rand);
+	endTime = std::chrono::system_clock::now(); // endTime check
+	duration_sec = endTime - startTime;  // calculate duration 
+	time_variable["SRO_D"] = time_variable.find("SRO_D")->second + duration_sec.count();
 	
-	cout<<"sRangeG NumNodeGroup : " << NumNodeGroup<<endl;
-	cout<<"sRangeG cnt : "<<cnt<<endl;
+	
+	cout<<"sRange_PAI NumNodeGroup : " << NumNodeGroup<<endl;
+	cout<<"sRange_PAI cnt : "<<cnt<<endl;
 	paillier_ciphertext_t*** result;
 	result = sRange_result(alpha, cand, cnt, NumNodeGroup, result_num);
 	
+	cout<<"sRange_PAI end"<<endl;
+
 	return FsRange_Bob(result, rand, (*result_num), dim);
 }
 
-
+// Parallel nodeRetrieval + Garbled
 paillier_ciphertext_t*** protocol::Parallel_GSRO_sNodeRetrievalforRange(paillier_ciphertext_t*** data, paillier_ciphertext_t** cipher_qLL, paillier_ciphertext_t** cipher_qRR, boundary* node, int NumData, int NumNode, int* cnt, int* NumNodeGroup, int type)
 {
 	printf("\n===== Now Parallel_GSRO_sNodeRetrievalfor %d starts =====\n", (int)query);
@@ -413,6 +423,151 @@ paillier_ciphertext_t*** protocol::Parallel_GSRO_inMultithread(int cnt, paillier
 			cout << "THIE QUERY IS NOT RANGE" << endl;
 			//GSROThread[i] = std::thread(GSRO_Multithread, std::ref(q), std::ref(q), std::ref(NumNodeInput[i]), std::ref(node), std::ref(alpha), std::ref(*this), i);
 		}		
+	}
+
+	for(int i = 0; i < NumThread; i++)
+	{
+		GSROThread[i].join();
+	}
+
+	delete[] NumNodeInput;
+	delete[] GSROThread;
+}
+
+paillier_ciphertext_t*** protocol::PARALLEL_ASCMP_SRO_sNodeRetrieval(paillier_ciphertext_t*** data, paillier_ciphertext_t** cipher_qLL, paillier_ciphertext_t** cipher_qRR, boundary* node, int NumData, int NumNode, int* cnt, int* NumNodeGroup, int type)
+{
+	printf("\n===== Now PARALLEL_ASCMP_SRO_sNodeRetrieval starts =====\n");
+	printf("NumNode : %d thread_num : %d\n", NumNode, thread_num);
+	int i=0, j=0, m=0;
+
+
+	paillier_ciphertext_t** alpha = (paillier_ciphertext_t**) malloc(sizeof(paillier_ciphertext_t*)*NumNode);
+	for( i = 0 ; i < NumNode ; i++ ){
+		alpha[i] = (paillier_ciphertext_t*) malloc(sizeof(paillier_ciphertext_t));
+		mpz_init(alpha[i]->c);
+	}
+
+	startTime = std::chrono::system_clock::now(); // startTime check
+	// Check Overlap
+	int NumThread = thread_num;
+	if(NumThread > NumNode)
+	{
+		NumThread = NumNode;
+	}
+	std::vector<int> *NumNodeInput = new std::vector<int>[NumThread];
+	int count = 0;
+	for(int i = 0; i < NumNode; i++)
+	{
+		NumNodeInput[count++].push_back(i);
+		count %= NumThread;
+	}
+	std::thread *GSROThread = new std::thread[NumThread];
+	for(int i = 0; i < NumThread; i++)
+	{
+		GSROThread[i] = std::thread(AS_CMP_SRO_Multithread, std::ref(cipher_qLL), std::ref(cipher_qRR), std::ref(NumNodeInput[i]), std::ref(node), std::ref(alpha), std::ref(*this), type);
+	}
+
+	for(int i = 0; i < NumThread; i++)
+	{
+		GSROThread[i].join();
+	}
+
+	delete[] NumNodeInput;
+	delete[] GSROThread;
+
+	endTime = std::chrono::system_clock::now(); // endTime check
+	duration_sec = endTime - startTime;  // calculate duration 
+	time_variable["nodeRetrievalSRO"] = time_variable.find("nodeRetrievalSRO")->second + duration_sec.count();
+
+
+	int** node_group;
+	node_group = sRange_sub(alpha, NumNode, NumNodeGroup);
+
+
+	paillier_ciphertext_t*** cand = (paillier_ciphertext_t***)malloc(sizeof(paillier_ciphertext_t**)*(*NumNodeGroup)*FanOut);		
+	for(int i = 0 ; i < *NumNodeGroup * FanOut ; i++ ) {
+		cand[i] = (paillier_ciphertext_t**)malloc(sizeof(paillier_ciphertext_t*)*dim);
+		for(int j = 0 ; j < dim ; j ++ ){
+			cand[i][j] = (paillier_ciphertext_t*) malloc(sizeof(paillier_ciphertext_t));
+			mpz_init(cand[i][j]->c);
+		}
+	}
+
+	startTime = std::chrono::system_clock::now(); // startTime check
+	// Extract Data
+	int threadNum = thread_num;
+	if(threadNum > NumNode)
+	{
+		threadNum = NumNode;
+	}
+
+	int remained = 0;
+
+	float progress = 0.1;
+
+	std::vector<int*> *inputNodeGroup = new std::vector<int *>[threadNum];
+	std::vector<int> *inputJ = new std::vector<int>[threadNum];
+	std::vector<int> *inputCnt = new std::vector<int>[threadNum];
+	int currentCount = 0;
+	for(int i = 0; i < *NumNodeGroup; i++)
+	{
+		remained = node_group[i][0];
+		int *nodeGroup = node_group[i];
+		for(int j = 0; j < FanOut; j++)
+		{
+			inputNodeGroup[currentCount].push_back(nodeGroup);
+			inputJ[currentCount].push_back(j);
+			inputCnt[currentCount].push_back(*cnt);
+			(*cnt)++;
+			currentCount = (currentCount + 1) % threadNum;
+		}
+	}
+
+	std::thread *sNodeRetrievalforDataThread = new std::thread[threadNum];
+	for(int i = 0; i < threadNum; i++)
+	{
+		sNodeRetrievalforDataThread[i] = std::thread(AS_CMP_NodeRetrievalinThread, std::ref(inputJ[i]), std::ref(inputNodeGroup[i]), std::ref(remained), std::ref(inputCnt[i]), std::ref(node), std::ref(data), std::ref(alpha), std::ref(cand), std::ref(*this), i);
+	}
+
+	for(int i = 0; i < threadNum; i++)
+	{
+		sNodeRetrievalforDataThread[i].join();
+	}
+
+	delete[] inputNodeGroup;
+	delete[] inputJ;
+	delete[] inputCnt;
+	delete[] sNodeRetrievalforDataThread;
+
+	endTime = std::chrono::system_clock::now(); // endTime check
+	duration_sec = endTime - startTime;  // calculate duration 
+	time_variable["nodeRetrieval"] = time_variable.find("nodeRetrieval")->second + duration_sec.count();
+
+	return cand;
+}
+
+paillier_ciphertext_t*** protocol::PARALLEL_AS_CMP_SRO_inMultithread(int cnt, paillier_ciphertext_t*** cand, boundary q, paillier_ciphertext_t** alpha, paillier_ciphertext_t* cipher_rand)
+{	
+	int NumThread = thread_num;
+	if(NumThread > cnt)
+	{
+		NumThread = cnt;
+	}
+	std::vector<int> *NumNodeInput = new std::vector<int>[NumThread];
+	int count = 0;
+	for(int i = 0; i < cnt; i++)
+	{
+		NumNodeInput[count++].push_back(i);
+		count %= NumThread;
+	}
+
+	std::thread *GSROThread = new std::thread[NumThread];
+	for(int i = 0; i < NumThread; i++)
+	{
+		if (query == RANGE)
+		{
+			GSROThread[i] = std::thread(GSRO_dataquery_Multithread, std::ref(cand), std::ref(q), std::ref(NumNodeInput[i]), std::ref(alpha), std::ref(*this), i, std::ref(cipher_rand));
+		}
 	}
 
 	for(int i = 0; i < NumThread; i++)

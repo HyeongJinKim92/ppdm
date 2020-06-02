@@ -1,0 +1,18 @@
+time : 2020-06-02-15-46-42
+query : CLASSIFICATION_PAI TREE_LEVEL : 5 THREAD : 4 DATA : 1728 DIMENSION : 6 BITS : 22 k : 5 KEY : 512  QUERY : 0 0 0 0 0 0 
+total time : 32.002277
+                SMIN            subtract                 kNN            classify    nodeRetrievalSRO             excheck       nodeRetrieval     exnodeRetrieval                SSED
+            1.932424            1.421236           12.959618            0.132967            0.145026            0.297768            4.638141            4.567735            1.847826
+            6.038394            4.441048           40.495923            0.415492            0.453175            0.930460           14.493160           14.273157            5.774044
+# retrieved node : 7
+
+
+time : 2020-06-02-15-49-43
+query : CLASSIFICATION_PAI TREE_LEVEL : 5 THREAD : 4 DATA : 1728 DIMENSION : 6 BITS : 22 k : 5 KEY : 512  QUERY : 0 0 0 0 0 0 
+total time : 31.901510
+                SMIN            subtract                 kNN            classify    nodeRetrievalSRO             excheck       nodeRetrieval     exnodeRetrieval                SSED
+            1.925996            1.421675           12.925346            0.132841            0.139086            0.297346            4.632286            4.529072            1.841554
+            6.037320            4.456450           40.516409            0.416411            0.435986            0.932074           14.520584           14.197047            5.772624
+# retrieved node : 7
+
+
